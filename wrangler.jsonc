@@ -1,0 +1,10 @@
+{
+  // Déploiement Cloudflare Workers : on ne sert que des fichiers statiques.
+  // Pas de "main" — il n'y a pas de code serveur. Si un jour on ajoute une
+  // fonction (formulaire, base de données), elle viendra s'ajouter ici.
+  "name": "dohab-site",
+  "compatibility_date": "2026-09-11",
+  "assets": {
+    "directory": "./dist"
+  }
+}

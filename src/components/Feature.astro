@@ -1,0 +1,21 @@
+---
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+interface Props { locale: Locale; photo: string; prefix: string; flip?: boolean }
+const { locale, photo, prefix, flip = false } = Astro.props;
+const tr = t(locale);
+const bullets = [1, 2, 3];
+---
+<div class:list={['feat', flip && 'flip']}>
+  <div class="feat-art rv-img"><img src={`/photos/${photo}`} alt="" loading="lazy" /></div>
+  <div>
+    <p class="eyebrow rv">{tr(`${prefix}.eyebrow`)}</p>
+    <h2 class="rv" style="--d:70ms">{tr(`${prefix}.h`)}</h2>
+    <p class="lead rv" style="--d:140ms">{tr(`${prefix}.p`)}</p>
+    <ul>
+      {bullets.map((n, i) => (
+        <li class="rv" style={`--d:${200 + i * 50}ms`}><span>{tr(`${prefix}.li${n}`)}</span></li>
+      ))}
+    </ul>
+  </div>
+</div>

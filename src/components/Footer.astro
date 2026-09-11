@@ -1,0 +1,42 @@
+---
+import { site, type Locale } from '../site.config';
+import { t } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+---
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-in">
+      <div>
+        <b>{site.name}</b>
+        <p style="margin-top:.6rem">{tr('foot.tag')}</p>
+      </div>
+      <div>
+        <span class="k">{tr('foot.nav')}</span>
+        <ul>
+          <li><a href="#work">{tr('nav.work')}</a></li>
+          <li><a href="#finitions">{tr('nav.colors')}</a></li>
+          <li><a href="#process">{tr('nav.process')}</a></li>
+          <li><a href="#contact">{tr('nav.contact')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="k">{tr('foot.legalh')}</span>
+        <ul>
+          <li>{site.street}, {site.postcode} {site.city}</li>
+          <li>{site.vat}</li>
+          <li>{site.phone}</li>
+          <li>{site.email}</li>
+        </ul>
+      </div>
+    </div>
+    <p class="legal">{tr('foot.legal')}</p>
+  </div>
+</footer>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true">
+  <button class="close" id="lbClose" aria-label="close">&times;</button>
+  <img id="lbImg" src="" alt="" />
+  <div class="cap" id="lbCap"></div>
+</div>

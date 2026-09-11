@@ -1,0 +1,95 @@
+---
+import { site, type Locale } from '../site.config';
+import { t } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+
+// ⚠ À FAIRE (toi) : brancher le formulaire.
+// Créer une clé sur https://web3forms.com (gratuit, pas de backend),
+// la coller ci-dessous, et remplacer le bloc script de démonstration
+// par un vrai envoi. Tant que la clé est vide, le formulaire n'envoie rien.
+const WEB3FORMS_KEY = '';
+---
+<section class="band tint" id="contact">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow rv">{tr('contact.eyebrow')}</p>
+        <h2 class="rv" style="--d:60ms">{tr('contact.h2')}</h2>
+      </div>
+      <p class="lead rv" style="--d:120ms">{tr('contact.sub')}</p>
+    </div>
+
+    <div class="contact">
+      <form id="form" class="rv" novalidate data-key={WEB3FORMS_KEY}>
+        <div class="two">
+          <div class="field">
+            <label for="n">{tr('form.name')}</label>
+            <input id="n" name="name" type="text" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="e">{tr('form.email')}</label>
+            <input id="e" name="email" type="email" autocomplete="email" />
+          </div>
+        </div>
+        <div class="two">
+          <div class="field">
+            <label for="tel">{tr('form.phone')}</label>
+            <input id="tel" name="phone" type="tel" autocomplete="tel" />
+          </div>
+          <div class="field">
+            <label for="ty">{tr('form.type')}</label>
+            <select id="ty" name="type">
+              <option>{tr('filter.dressing')}</option>
+              <option>{tr('filter.kitchen')}</option>
+              <option>{tr('filter.living')}</option>
+              <option>{tr('filter.bath')}</option>
+              <option>{tr('form.other')}</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="m">{tr('form.msg')}</label>
+          <textarea id="m" name="message" rows="5"></textarea>
+        </div>
+
+        {/* piège à robots : invisible pour un humain, rempli par les bots */}
+        <input type="text" name="botcheck" tabindex="-1" autocomplete="off"
+               style="position:absolute;left:-9999px" aria-hidden="true" />
+
+        <button class="btn" type="submit">{tr('form.send')}</button>
+        <p class="form-note">{tr('form.note')}</p>
+        <p class="sent" id="sent">{tr('form.demo')}</p>
+      </form>
+
+      <div class="direct">
+        <a href={site.whatsapp}>
+          <span><span class="k">{tr('direct.wa')}</span><span class="v">{site.phone}</span></span>
+          <span class="arw">&rarr;</span>
+        </a>
+        <a href={site.phoneHref}>
+          <span><span class="k">{tr('direct.call')}</span><span class="v">{site.phone}</span></span>
+          <span class="arw">&rarr;</span>
+        </a>
+        <a href={`mailto:${site.email}`}>
+          <span><span class="k">{tr('direct.mail')}</span><span class="v">{site.email}</span></span>
+          <span class="arw">&rarr;</span>
+        </a>
+        <div class="zone">
+          <span class="k">{tr('direct.zone')}</span><span>{tr('direct.zonev')}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Démonstration : on affiche juste le message de confirmation.
+  // À remplacer par l'envoi Web3Forms une fois la clé en place.
+  const form = document.getElementById('form') as HTMLFormElement;
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.getElementById('sent')!.classList.add('on');
+  });
+</script>

@@ -1,0 +1,19 @@
+---
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+const items = [1, 2, 3];
+---
+<section class="band tight">
+  <div class="wrap promises">
+    {items.map((n, i) => (
+      <div class="promise rv" style={`--d:${i * 90}ms`}>
+        <span class="eyebrow">0{n}</span>
+        <b>{tr(`strip.${n}t`)}</b>
+        <p>{tr(`strip.${n}d`)}</p>
+      </div>
+    ))}
+  </div>
+</section>

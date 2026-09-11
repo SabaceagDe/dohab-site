@@ -1,0 +1,33 @@
+---
+import { site, type Locale } from '../site.config';
+import { t, locales, localeHref } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+---
+<div class="mockbar"><span>{tr('mock.bar')}</span></div>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href={localeHref(locale)}><b>DO&nbsp;HAB</b><span class="tagsm">demo</span></a>
+    <nav class="nav-links">
+      <a href="#work">{tr('nav.work')}</a>
+      <a href="#finitions">{tr('nav.colors')}</a>
+      <a href="#process">{tr('nav.process')}</a>
+      <a href="#about">{tr('nav.about')}</a>
+    </nav>
+
+    {/* De vraies URL, plus un bouton JavaScript : chaque langue est
+        une page que Google peut indexer séparément. */}
+    <div class="lang">
+      {locales.map((l) => (
+        <a
+          href={localeHref(l)}
+          aria-current={l === locale ? 'page' : undefined}
+          data-active={l === locale}>{l.toUpperCase()}</a>
+      ))}
+    </div>
+
+    <a class="btn sm" href="#contact">{tr('nav.cta')}</a>
+  </div>
+</header>

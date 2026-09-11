@@ -1,0 +1,42 @@
+/* ==================================================================
+   DO HAB — maquette
+   COULEURS       : bloc :root ci-dessous
+   TEXTES         : script, objet T (nl / fr / en)
+   PHOTOS         : script, tableau JOBS
+   CATEGORIES     : script, tableau CATS
+   TEINTES        : script, tableau FINITIONS
+   ------------------------------------------------------------------
+   Parti pris : la photo parle, la typo se tait.
+   Une seule police, en graisses légères. Pas de gros titres gras.
+   Fonds clairs uniquement — jamais de version sombre.
+   ================================================================== */
+:root{
+  color-scheme:light;
+  --paper:#FFFFFF;        /* fond principal : les photos dominent */
+  --ground:#FAF8F5;       /* bandes alternées, très légèrement chaudes */
+  --surface:#FFFFFF;
+  --surface-2:#F1ECE4;
+  --ink:#33302B;          /* brun-gris sombre, jamais du noir pur */
+  --soft:#5C574F;
+  --muted:#8C847A;
+  --line:#EAE4DB;
+  --accent:#5D6E51;       /* vert sauge — repris de la bibliothèque verte */
+  --accent-ink:#FFFFFF;
+  --accent-soft:#EEF1E9;
+
+  --f:"Figtree","Helvetica Neue",Arial,sans-serif;
+
+  --t-xs:.76rem;
+  --t-sm:.9rem;
+  --t-md:1.02rem;
+  --t-lg:clamp(1.1rem,1.02rem + .35vw,1.28rem);
+  --t-h3:clamp(1.15rem,1.05rem + .4vw,1.4rem);
+  --t-h2:clamp(1.55rem,1.3rem + 1.1vw,2.25rem);
+  --t-h1:clamp(1.9rem,1.5rem + 1.7vw,3rem);
+
+  --gut:clamp(1.15rem,4.5vw,4rem);
+  --maxw:1400px;
+  --split:minmax(0,1fr) minmax(0,1fr);
+  --gap:clamp(1.6rem,4vw,4rem);
+  --r:3px;
+}

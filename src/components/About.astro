@@ -1,0 +1,19 @@
+---
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+interface Props { locale: Locale; photo: string }
+const { locale, photo } = Astro.props;
+const tr = t(locale);
+---
+<section class="band" id="about">
+  <div class="wrap about">
+    <div class="rv-img"><img src={`/photos/${photo}`} alt="" loading="lazy" /></div>
+    <div class="body">
+      <p class="eyebrow rv">{tr('about.eyebrow')}</p>
+      <h2 class="rv" style="--d:60ms">{tr('about.h2')}</h2>
+      <p class="rv" style="--d:130ms">{tr('about.p1')}</p>
+      <p class="rv" style="--d:180ms">{tr('about.p2')}</p>
+      <p class="rv" style="--d:230ms">{tr('about.p3')}</p>
+    </div>
+  </div>
+</section>

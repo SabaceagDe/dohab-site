@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Promises from '../components/Promises.astro';
+import RoomTiles from '../components/RoomTiles.astro';
+import Gallery from '../components/Gallery.astro';
+import Feature from '../components/Feature.astro';
+import Finishes from '../components/Finishes.astro';
+import Steps from '../components/Steps.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+
+const locale = 'nl' as const;
+---
+<Base locale={locale}>
+  <Nav locale={locale} />
+  <main>
+    <Hero locale={locale} photo="cuisine-noyer-hotte.webp" />
+    <Promises locale={locale} />
+    <RoomTiles locale={locale} />
+    <Gallery locale={locale} />
+
+    <section class="band tint">
+      <div class="wrap">
+        <Feature locale={locale} prefix="feat1" photo="armoire-etageres-noyer.webp" />
+        <Feature locale={locale} prefix="feat2" photo="cuisine-noyer-ilot-noir.webp" flip />
+      </div>
+    </section>
+
+    <Finishes locale={locale} />
+    <Steps locale={locale} />
+    <About locale={locale} photo="salon-panneau-chene.webp" />
+    <Contact locale={locale} />
+  </main>
+  <Footer locale={locale} />
+</Base>

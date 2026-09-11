@@ -1,0 +1,28 @@
+---
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+import { rooms } from '../data/rooms';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+---
+<section class="band tint" id="rooms">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow rv">{tr('rooms.eyebrow')}</p>
+        <h2 class="rv" style="--d:60ms">{tr('rooms.h2')}</h2>
+      </div>
+      <p class="lead rv" style="--d:120ms">{tr('rooms.sub')}</p>
+    </div>
+
+    <div class="tiles">
+      {rooms.map((r, i) => (
+        <button class="tile rv" type="button" data-room={r.room} style={`--d:${i * 80}ms`}>
+          <img src={`/photos/${r.photo}`} alt="" loading="lazy" />
+          <span>{tr(r.key)}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+</section>

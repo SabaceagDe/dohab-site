@@ -1,0 +1,21 @@
+---
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+interface Props { locale: Locale; photo: string }
+const { locale, photo } = Astro.props;
+const tr = t(locale);
+---
+<section class="hero">
+  <img src={`/photos/${photo}`} alt="" fetchpriority="high" />
+  <div class="hero-in wrap">
+    <div class="hero-txt">
+      <p class="eyebrow rv">{tr('hero.eyebrow')}</p>
+      <h1 class="rv" style="--d:90ms" set:html={tr('hero.h1')} />
+      <p class="rv" style="--d:180ms">{tr('hero.sub')}</p>
+      <div class="hero-cta rv" style="--d:270ms">
+        <a class="btn pale" href="#contact">{tr('hero.cta1')}</a>
+        <a class="btn pale ghost-on-photo" href="#work">{tr('hero.cta2')}</a>
+      </div>
+    </div>
+  </div>
+</section>

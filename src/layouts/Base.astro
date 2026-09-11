@@ -1,0 +1,82 @@
+---
+import '../styles/tokens.css';
+import '../styles/global.css';
+import { site, type Locale } from '../site.config';
+import { t, locales, localeHref } from '../i18n';
+
+interface Props { locale: Locale; title?: string; description?: string }
+const { locale, title, description } = Astro.props;
+const tr = t(locale);
+
+const pageTitle = title ?? `${site.name} — ${tr('hero.eyebrow')}`;
+const pageDesc = description ?? tr('hero.sub');
+
+// TODO (à toi) : compléter le JSON-LD avec les horaires et l'URL réelle
+// une fois le domaine acheté. Schema.org > LocalBusiness.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: site.name,
+  telephone: site.phone,
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.street,
+    postalCode: site.postcode,
+    addressLocality: site.city,
+    addressCountry: site.country
+  },
+  areaServed: site.areaServed,
+  vatID: site.vat
+};
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDesc} />
+
+    {/* hreflang : dit à Google que ces trois pages sont la même page */}
+    {locales.map((l) => (
+      <link rel="alternate" hreflang={l} href={new URL(localeHref(l), Astro.site)} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site)} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600&display=swap"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <slot />
+
+    <script>
+      // Apparitions au défilement. Le voile est posé sur l'image et non sur
+      // son conteneur : un conteneur découpé a une surface nulle et
+      // l'IntersectionObserver ne le voit jamais passer.
+      const items = document.querySelectorAll('.rv, .rv-img');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        items.forEach((el) => el.classList.add('in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add('in');
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -6% 0px', threshold: 0.1 }
+        );
+        items.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+---
+/**
+ * COMPOSANT DE RÉFÉRENCE.
+ * Il montre le schéma utilisé partout ailleurs :
+ *   1. le frontmatter (entre les ---) tourne au BUILD, sur le serveur ;
+ *   2. le markup est généré une fois, en HTML statique ;
+ *   3. le bloc script en bas part au navigateur et ne fait que du filtrage.
+ * Aucune donnée ne transite par le réseau : tout est déjà dans la page.
+ */
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+import { projets } from '../data/projets';
+import { finitionById } from '../data/finitions';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+
+const filters = [
+  { room: 'all', key: 'filter.all' },
+  { room: 'dressing', key: 'filter.dressing' },
+  { room: 'cuisine', key: 'filter.kitchen' },
+  { room: 'salon', key: 'filter.living' },
+  { room: 'bain', key: 'filter.bath' }
+];
+---
+<section class="band" id="work">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow rv">{tr('work.eyebrow')}</p>
+        <h2 class="rv" style="--d:60ms">{tr('work.h2')}</h2>
+      </div>
+      <p class="lead rv" style="--d:120ms">{tr('work.sub')}</p>
+    </div>
+
+    <div class="filters rv">
+      {filters.map((f) => (
+        <button class="chip" type="button" data-room={f.room} aria-pressed={f.room === 'all'}>
+          {tr(f.key)}
+        </button>
+      ))}
+      <span class="active-color" id="activeColor">
+        <span class="dot" id="acSw"></span>
+        <span id="acName" style="font-size:var(--t-xs)"></span>
+        <button class="x" type="button" id="acClear" aria-label="reset">&times;</button>
+      </span>
+    </div>
+
+    <div class="gal" id="gal">
+      {projets.map((p, i) => {
+        const f = finitionById(p.finish);
+        return (
+          <article
+            class="card rv"
+            data-room={p.room}
+            data-finish={p.finish}
+            data-title={tr(`${p.id}.t`)}
+            style={`--d:${(i % 4) * 80}ms`}>
+            <div class="thumb">
+              <img src={`/photos/${p.photo}`} alt={tr(`${p.id}.t`)} loading="lazy" />
+            </div>
+            <h3>{tr(`${p.id}.t`)}</h3>
+            <p>{tr(`${p.id}.c`)}</p>
+            <div class="meta">
+              <span class="dot" style={`background:${f?.hex}`}></span>
+              <span>{f?.n}</span>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <p class="empty" id="empty" style="display:none">{tr('work.empty')}</p>
+  </div>
+</section>
+
+<script>
+  // ---- filtrage : pièce (chips + tuiles) et teinte (pastilles) ----
+  const gal = document.getElementById('gal')!;
+  const cards = [...gal.querySelectorAll<HTMLElement>('.card')];
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('.chip')];
+  const empty = document.getElementById('empty')!;
+  const activeColor = document.getElementById('activeColor')!;
+
+  let room = 'all';
+  let finish: string | null = null;
+
+  function apply() {
+    let shown = 0;
+    for (const c of cards) {
+      const ok =
+        (room === 'all' || c.dataset.room === room) &&
+        (!finish || c.dataset.finish === finish);
+      c.classList.toggle('hide', !ok);
+      if (ok) shown++;
+    }
+    empty.style.display = shown ? 'none' : 'block';
+    activeColor.classList.toggle('on', Boolean(finish));
+  }
+
+  function setRoom(next: string) {
+    room = next;
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.room === room)));
+    apply();
+  }
+
+  chips.forEach((c) => c.addEventListener('click', () => setRoom(c.dataset.room!)));
+
+  // les tuiles de pièce pilotent le même filtre
+  document.querySelectorAll<HTMLElement>('.tile').forEach((tile) =>
+    tile.addEventListener('click', () => {
+      setRoom(tile.dataset.room!);
+      document.getElementById('work')!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    })
+  );
+
+  // les pastilles de teinte
+  const swatches = [...document.querySelectorAll<HTMLElement>('.fin')];
+  swatches.forEach((s) =>
+    s.addEventListener('click', () => {
+      const id = s.dataset.finish!;
+      finish = finish === id ? null : id;
+      swatches.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.finish === finish)));
+      if (finish) {
+        (document.getElementById('acSw') as HTMLElement).style.background = s.dataset.hex!;
+        document.getElementById('acName')!.textContent = s.dataset.name!;
+        document.getElementById('work')!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      apply();
+    })
+  );
+
+  document.getElementById('acClear')!.addEventListener('click', () => {
+    finish = null;
+    swatches.forEach((x) => x.setAttribute('aria-pressed', 'false'));
+    apply();
+  });
+
+  // ---- agrandissement au clic ----
+  const lb = document.getElementById('lb')!;
+  const lbImg = document.getElementById('lbImg') as HTMLImageElement;
+  const lbCap = document.getElementById('lbCap')!;
+
+  gal.addEventListener('click', (e) => {
+    const card = (e.target as HTMLElement).closest<HTMLElement>('.card');
+    if (!card) return;
+    lbImg.src = card.querySelector('img')!.src;
+    lbCap.textContent = card.dataset.title ?? '';
+    lb.classList.add('on');
+  });
+
+  lb.addEventListener('click', (e) => {
+    const el = e.target as HTMLElement;
+    if (el === lb || el.id === 'lbClose') lb.classList.remove('on');
+  });
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') lb.classList.remove('on');
+  });
+
+  apply();
+</script>

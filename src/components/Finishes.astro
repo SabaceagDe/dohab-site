@@ -1,0 +1,37 @@
+---
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+import { finitions } from '../data/finitions';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+---
+<section class="band" id="finitions">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow rv">{tr('colors.eyebrow')}</p>
+        <h2 class="rv" style="--d:60ms">{tr('colors.h2')}</h2>
+      </div>
+      <p class="lead rv" style="--d:120ms">{tr('colors.sub')}</p>
+    </div>
+
+    <div class="finis">
+      {finitions.map((f, i) => (
+        <button
+          class="fin rv"
+          type="button"
+          data-finish={f.id}
+          data-hex={f.hex}
+          data-name={f.n}
+          aria-pressed="false"
+          style={`--d:${i * 40}ms`}>
+          <span class="swatch" style={`background:${f.hex}`}></span>
+          <span class="n">{f.n}</span>
+        </button>
+      ))}
+    </div>
+
+    <p class="note rv">{tr('colors.note')}</p>
+  </div>
+</section>

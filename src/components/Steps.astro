@@ -1,0 +1,29 @@
+---
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+const steps = [1, 2, 3, 4, 5];
+---
+<section class="band tint" id="process">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow rv">{tr('process.eyebrow')}</p>
+        <h2 class="rv" style="--d:60ms">{tr('process.h2')}</h2>
+      </div>
+      <p class="lead rv" style="--d:120ms">{tr('process.sub')}</p>
+    </div>
+
+    <div class="steps">
+      {steps.map((n, i) => (
+        <div class="step rv" style={`--d:${i * 80}ms`}>
+          <span class="num">0{n}</span>
+          <h3>{tr(`p${n}.t`)}</h3>
+          <p>{tr(`p${n}.d`)}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
