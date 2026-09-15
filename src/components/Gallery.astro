@@ -56,15 +56,15 @@ const filters = [
             data-room={p.room}
             data-finish={p.finish}
             data-title={tr(`${p.id}.t`)}
+            data-caption={tr(`${p.id}.c`)}
             style={`--d:${(i % 4) * 80}ms`}>
             <div class="thumb">
               <img src={`/photos/${p.photo}`} alt={tr(`${p.id}.t`)} loading="lazy" />
             </div>
             <h3>{tr(`${p.id}.t`)}</h3>
-            <p>{tr(`${p.id}.c`)}</p>
             <div class="meta">
               <span class="dot" style={`background:${f?.hex}`}></span>
-              <span>{f?.n}</span>
+              <span>{tr(`finish.${p.finish}`)}</span>
             </div>
           </article>
         );
@@ -146,7 +146,10 @@ const filters = [
     const card = (e.target as HTMLElement).closest<HTMLElement>('.card');
     if (!card) return;
     lbImg.src = card.querySelector('img')!.src;
-    lbCap.textContent = card.dataset.title ?? '';
+    // titre en gras, description en dessous : le détail se lit une fois la
+    // photo ouverte, pas dans la grille
+    lbCap.innerHTML =
+      `<strong>${card.dataset.title ?? ''}</strong><span>${card.dataset.caption ?? ''}</span>`;
     lb.classList.add('on');
   });
 

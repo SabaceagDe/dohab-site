@@ -1,0 +1,83 @@
+---
+/**
+ * MENTIONS LÉGALES — une seule page, trois langues.
+ * Les identifiants (n° d'entreprise, adresse, gérant, hébergeur) viennent
+ * de src/site.config.ts ; tout le texte vient de src/i18n/*.json sous les
+ * clés "legal.*". Il n'y a rien à modifier ici pour corriger une phrase.
+ */
+import { site, type Locale } from '../site.config';
+import { t, localeHref } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+
+// Le tableau d'identification : intitulé à gauche, donnée à droite.
+const identite: [string, string][] = [
+  [tr('legal.name'),  site.legalName],
+  [tr('legal.form'),  tr('legal.formv')],
+  [tr('legal.seat'),  `${site.street}, ${site.postcode} ${site.city}, ${tr('legal.country')}`],
+  [tr('legal.bce'),   site.enterpriseNumber],
+  [tr('legal.vatn'),  site.vat],
+  [tr('legal.rpm'),   tr('legal.rpmv')],
+  [tr('legal.rep'),   site.manager],
+  [tr('legal.mail'),  site.email],
+  [tr('legal.tel'),   site.phone]
+];
+---
+<section class="band">
+  <div class="wrap narrow">
+    <p class="eyebrow">{tr('legal.eyebrow')}</p>
+    <h1 class="legal-h1">{tr('legal.h1')}</h1>
+    <p class="lead">{tr('legal.intro')}</p>
+
+    <dl class="ident">
+      {identite.map(([k, v]) => (
+        <div>
+          <dt>{k}</dt>
+          <dd>{v}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <div class="prose">
+      <h2>{tr('legal.h.host')}</h2>
+      <p>
+        {tr('legal.p.host')} {site.host.name}, {site.host.address} —
+        <a href={site.host.url} rel="noopener noreferrer" target="_blank">{site.host.url}</a>
+      </p>
+
+      <h2>{tr('legal.h.ip')}</h2>
+      <p>{tr('legal.p.ip1')}</p>
+      <p>{tr('legal.p.ip2')}</p>
+
+      <h2>{tr('legal.h.resp')}</h2>
+      <p>{tr('legal.p.resp1')}</p>
+      <p>{tr('legal.p.resp2')}</p>
+
+      <h2>{tr('legal.h.data')}</h2>
+      <p>{tr('legal.p.data0')}</p>
+      <p>{tr('legal.p.data1')}</p>
+      <p>
+        {tr('legal.p.data2')}{' '}
+        <a href={site.formProcessor.privacy} rel="noopener noreferrer" target="_blank">
+          {site.formProcessor.name}</a>{tr('legal.p.data2b')}
+      </p>
+      <p>{tr('legal.p.data2c')}</p>
+      <p>{tr('legal.p.data3')}</p>
+      <p>
+        {tr('legal.p.data4')} <a href={`mailto:${site.email}`}>{site.email}</a>.
+        {' '}{tr('legal.p.data5')}
+      </p>
+
+      <h2>{tr('legal.h.cookies')}</h2>
+      <p>{tr('legal.p.cookies')}</p>
+
+      <h2>{tr('legal.h.law')}</h2>
+      <p>{tr('legal.p.law')}</p>
+
+      <p class="updated">{tr('legal.updated')}</p>
+    </div>
+
+    <p class="back"><a href={localeHref(locale)}>&larr; {tr('legal.back')}</a></p>
+  </div>
+</section>

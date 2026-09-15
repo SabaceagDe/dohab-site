@@ -1,0 +1,41 @@
+---
+/**
+ * LES ESCALIERS.
+ * Une section à part : ce n'est pas la galerie des réalisations, ce sont
+ * les configurations qu'on fabrique. Les visuels sont des dessins, pas
+ * des photos, et la section le dit — on ne fait pas passer un schéma
+ * pour un chantier terminé.
+ */
+import { type Locale } from '../site.config';
+import { t } from '../i18n';
+import { escaliers } from '../data/escaliers';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+---
+<section class="band" id="escaliers">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow rv">{tr('stairs.eyebrow')}</p>
+        <h2 class="rv" style="--d:60ms">{tr('stairs.h2')}</h2>
+      </div>
+      <p class="lead rv" style="--d:120ms">{tr('stairs.sub')}</p>
+    </div>
+
+    <div class="esc">
+      {escaliers.map((e, i) => (
+        <article class="esc-card rv" style={`--d:${(i % 4) * 80}ms`}>
+          <div class="esc-img">
+            <img src={`/illustrations/${e.image}`} alt={tr(`${e.id}.t`)}
+                 width="680" height="520" loading="lazy" />
+          </div>
+          <h3>{tr(`${e.id}.t`)}</h3>
+          <p>{tr(`${e.id}.c`)}</p>
+        </article>
+      ))}
+    </div>
+
+    <p class="note rv">{tr('stairs.note')}</p>
+  </div>
+</section>

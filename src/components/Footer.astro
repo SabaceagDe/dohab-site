@@ -1,6 +1,6 @@
 ---
 import { site, type Locale } from '../site.config';
-import { t } from '../i18n';
+import { t, legalHref } from '../i18n';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
@@ -28,6 +28,7 @@ const tr = t(locale);
           <li>{site.vat}</li>
           <li>{site.phone}</li>
           <li>{site.email}</li>
+          <li><a href={legalHref(locale)}>{tr('legal.footlink')}</a></li>
         </ul>
       </div>
     </div>
@@ -37,6 +38,8 @@ const tr = t(locale);
 
 <div class="lb" id="lb" role="dialog" aria-modal="true">
   <button class="close" id="lbClose" aria-label="close">&times;</button>
-  <img id="lbImg" src="" alt="" />
+  {/* pas de src="" ici : un src vide fait recharger la page elle-même
+      comme si c'était une image. C'est Gallery.astro qui le remplit. */}
+  <img id="lbImg" alt="" />
   <div class="cap" id="lbCap"></div>
 </div>

@@ -23,11 +23,11 @@ const tr = t(locale);
           type="button"
           data-finish={f.id}
           data-hex={f.hex}
-          data-name={f.n}
+          data-name={tr(`finish.${f.id}`)}
           aria-pressed="false"
           style={`--d:${i * 40}ms`}>
           <span class="swatch" style={`background:${f.hex}`}></span>
-          <span class="n">{f.n}</span>
+          <span class="n">{tr(`finish.${f.id}`)}</span>
         </button>
       ))}
     </div>

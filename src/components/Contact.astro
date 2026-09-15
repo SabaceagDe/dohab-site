@@ -5,11 +5,11 @@ interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
 
-// ⚠ À FAIRE (toi) : brancher le formulaire.
-// Créer une clé sur https://web3forms.com (gratuit, pas de backend),
-// la coller ci-dessous, et remplacer le bloc script de démonstration
-// par un vrai envoi. Tant que la clé est vide, le formulaire n'envoie rien.
-const WEB3FORMS_KEY = '';
+// Clé publique Web3Forms. Elle est faite pour vivre dans la page :
+// elle n'autorise qu'une chose, envoyer vers l'adresse liée au compte
+// (info@dohab.be). Changer de destinataire se fait sur web3forms.com,
+// pas ici. Vider cette chaîne remet le formulaire en démonstration.
+const WEB3FORMS_KEY = '55f5f6c3-39f2-4cfd-8a22-44618077d37c';
 ---
 <section class="band tint" id="contact">
   <div class="wrap">
@@ -22,7 +22,13 @@ const WEB3FORMS_KEY = '';
     </div>
 
     <div class="contact">
-      <form id="form" class="rv" novalidate data-key={WEB3FORMS_KEY}>
+      <form id="form" class="rv" novalidate
+            data-key={WEB3FORMS_KEY}
+            data-subject={`${tr('form.subject')} — ${site.name}`}
+            data-sending={tr('form.sending')}
+            data-ok={tr('form.ok')}
+            data-invalid={tr('form.invalid')}
+            data-error={tr('form.error')}>
         <div class="two">
           <div class="field">
             <label for="n">{tr('form.name')}</label>
@@ -60,7 +66,7 @@ const WEB3FORMS_KEY = '';
 
         <button class="btn" type="submit">{tr('form.send')}</button>
         <p class="form-note">{tr('form.note')}</p>
-        <p class="sent" id="sent">{tr('form.demo')}</p>
+        <p class="sent" id="sent" role="status" aria-live="polite"></p>
       </form>
 
       <div class="direct">
@@ -85,11 +91,78 @@ const WEB3FORMS_KEY = '';
 </section>
 
 <script>
-  // Démonstration : on affiche juste le message de confirmation.
-  // À remplacer par l'envoi Web3Forms une fois la clé en place.
-  const form = document.getElementById('form') as HTMLFormElement;
-  form?.addEventListener('submit', (e) => {
+  // Envoi via Web3Forms : pas de serveur à nous, la demande part
+  // directement du navigateur vers leur API, qui la relaie par e-mail.
+  const form = document.getElementById('form') as HTMLFormElement | null;
+  const sent = document.getElementById('sent');
+  const btn = form?.querySelector('button[type=submit]') as HTMLButtonElement | null;
+
+  // messages : ils viennent des data-* du formulaire, donc traduits
+  const msg = (kind: 'sending' | 'ok' | 'invalid' | 'error') => {
+    if (!sent || !form) return;
+    sent.textContent = form.dataset[kind] ?? '';
+    sent.classList.add('on');
+    sent.classList.toggle('bad', kind === 'invalid' || kind === 'error');
+  };
+
+  const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+
+  // Renvoie true si tout est rempli, et souligne en rouge ce qui manque.
+  const valide = () => {
+    if (!form) return false;
+    let ok = true;
+    for (const nom of ['name', 'email', 'message']) {
+      const el = form.elements.namedItem(nom) as HTMLInputElement;
+      const vide = !el.value.trim();
+      const mauvais = vide || (nom === 'email' && !EMAIL.test(el.value.trim()));
+      el.closest('.field')?.classList.toggle('bad', mauvais);
+      if (mauvais) ok = false;
+    }
+    return ok;
+  };
+
+  // on enlève le liseré rouge dès que la personne corrige
+  form?.addEventListener('input', (e) => {
+    (e.target as HTMLElement).closest('.field')?.classList.remove('bad');
+  });
+
+  form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    document.getElementById('sent')!.classList.add('on');
+    if (!form) return;
+
+    const cle = form.dataset.key;
+    if (!cle) { msg('ok'); return; }          // pas de clé : mode maquette
+
+    if (!valide()) { msg('invalid'); return; }
+
+    const data = new FormData(form);
+    data.append('access_key', cle);
+    data.append('subject', form.dataset.subject ?? 'Nouvelle demande');
+    data.append('from_name', String(data.get('name') ?? ''));
+    // contexte utile dans l'e-mail : langue et page d'origine
+    data.append('langue', document.documentElement.lang);
+    data.append('page', location.href);
+
+    btn && (btn.disabled = true);
+    msg('sending');
+
+    try {
+      const r = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: data
+      });
+      const rep = await r.json().catch(() => ({}));
+      if (r.ok && rep.success) {
+        form.reset();
+        msg('ok');
+      } else {
+        msg('error');
+      }
+    } catch {
+      msg('error');                            // hors ligne, ou requête bloquée
+    } finally {
+      btn && (btn.disabled = false);
+    }
   });
 </script>

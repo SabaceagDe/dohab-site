@@ -81,6 +81,18 @@ export const projets: Projet[] = [
     "finish": "gris"
   },
   {
+    "id": "cuisine-ilot-cannele-noir",
+    "photo": "cuisine-ilot-cannele-noir.webp",
+    "room": "cuisine",
+    "finish": "blanc"
+  },
+  {
+    "id": "cuisine-greige-laiton",
+    "photo": "cuisine-greige-laiton.webp",
+    "room": "cuisine",
+    "finish": "creme"
+  },
+  {
     "id": "mur-tv-pierre",
     "photo": "mur-tv-pierre.webp",
     "room": "salon",
@@ -109,6 +121,30 @@ export const projets: Projet[] = [
     "photo": "chambre-tv-cannele.webp",
     "room": "salon",
     "finish": "blanc"
+  },
+  {
+    "id": "mur-tv-gris-cheminee",
+    "photo": "mur-tv-gris-cheminee.webp",
+    "room": "salon",
+    "finish": "gris"
+  },
+  {
+    "id": "bibliotheque-blanche-lumiere",
+    "photo": "bibliotheque-blanche-lumiere.webp",
+    "room": "salon",
+    "finish": "blanc"
+  },
+  {
+    "id": "paroi-creme-niche-chene",
+    "photo": "paroi-creme-niche-chene.webp",
+    "room": "salon",
+    "finish": "creme"
+  },
+  {
+    "id": "buffet-chene-brique",
+    "photo": "buffet-chene-brique.webp",
+    "room": "salon",
+    "finish": "chene"
   },
   {
     "id": "armoire-grise-niche",
@@ -159,6 +195,24 @@ export const projets: Projet[] = [
     "finish": "creme"
   },
   {
+    "id": "armoire-greige-poignees-noires",
+    "photo": "armoire-greige-poignees-noires.webp",
+    "room": "dressing",
+    "finish": "gris"
+  },
+  {
+    "id": "armoires-sous-pente",
+    "photo": "armoires-sous-pente.webp",
+    "room": "dressing",
+    "finish": "blanc"
+  },
+  {
+    "id": "dressing-rose-moulure",
+    "photo": "dressing-rose-moulure.webp",
+    "room": "dressing",
+    "finish": "creme"
+  },
+  {
     "id": "bain-noyer-miroir-ovale",
     "photo": "bain-noyer-miroir-ovale.webp",
     "room": "bain",
@@ -175,5 +229,11 @@ export const projets: Projet[] = [
     "photo": "bain-chene-liseres-noirs.webp",
     "room": "bain",
     "finish": "chene"
+  },
+  {
+    "id": "lave-mains-rouille",
+    "photo": "lave-mains-rouille.webp",
+    "room": "bain",
+    "finish": "noyer"
   }
 ];

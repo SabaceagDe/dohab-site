@@ -18,4 +18,18 @@ export function t(locale: Locale) {
 /** Le chemin d'accueil d'une langue : nl → "/", fr → "/fr/" */
 export const localeHref = (locale: Locale) => (locale === 'nl' ? '/' : `/${locale}/`);
 
+/**
+ * Les mentions légales. L'adresse est traduite elle aussi : un visiteur
+ * francophone n'a pas de raison d'atterrir sur une URL néerlandaise.
+ * Pour renommer une de ces pages : change le nom du fichier dans
+ * src/pages/ ET la ligne correspondante ci-dessous, rien d'autre.
+ */
+const legalPaths = {
+  nl: '/juridische-informatie/',
+  fr: '/fr/mentions-legales/',
+  en: '/en/legal-notice/'
+} as const;
+
+export const legalHref = (locale: Locale) => legalPaths[locale];
+
 export const locales = ['nl', 'fr', 'en'] as const;

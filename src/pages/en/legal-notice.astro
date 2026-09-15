@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Legal from '../../components/Legal.astro';
+import Footer from '../../components/Footer.astro';
+import { t } from '../../i18n';
+
+const locale = 'en' as const;
+const tr = t(locale);
+---
+<Base locale={locale} page="legal" title={`${tr('legal.h1')} — DO HAB`} description={tr('legal.intro')}>
+  <Nav locale={locale} page="legal" />
+  <main>
+    <Legal locale={locale} />
+  </main>
+  <Footer locale={locale} />
+</Base>

@@ -2,14 +2,23 @@
 import '../styles/tokens.css';
 import '../styles/global.css';
 import { site, type Locale } from '../site.config';
-import { t, locales, localeHref } from '../i18n';
+import { t, locales, localeHref, legalHref } from '../i18n';
 
-interface Props { locale: Locale; title?: string; description?: string }
-const { locale, title, description } = Astro.props;
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  page?: 'home' | 'legal';
+}
+const { locale, title, description, page = 'home' } = Astro.props;
 const tr = t(locale);
 
 const pageTitle = title ?? `${site.name} — ${tr('hero.eyebrow')}`;
 const pageDesc = description ?? tr('hero.sub');
+
+// L'équivalent de CETTE page dans chaque langue — pas l'accueil.
+const versLangue = page === 'legal' ? legalHref : localeHref;
+const canonique = new URL(versLangue(locale), Astro.site);
 
 // TODO (à toi) : compléter le JSON-LD avec les horaires et l'URL réelle
 // une fois le domaine acheté. Schema.org > LocalBusiness.
@@ -38,20 +47,35 @@ const jsonLd = {
     <title>{pageTitle}</title>
     <meta name="description" content={pageDesc} />
 
-    {/* hreflang : dit à Google que ces trois pages sont la même page */}
+    {/* Un SVG suffit : tous les navigateurs actuels le lisent, et il
+        reste net sur un écran Retina comme dans un onglet épinglé.
+        Sans cette ligne, chaque visite déclenche un 404 sur
+        /favicon.ico que le navigateur demande tout seul. */}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#5D6E51" />
+
+    <link rel="canonical" href={canonique} />
+
+    {/* hreflang : dit à Google que ces trois pages sont la même page,
+        dans trois langues. Sur les mentions légales, ce sont bien les
+        trois pages de mentions légales qui se répondent. */}
     {locales.map((l) => (
-      <link rel="alternate" hreflang={l} href={new URL(localeHref(l), Astro.site)} />
+      <link rel="alternate" hreflang={l} href={new URL(versLangue(l), Astro.site)} />
     ))}
-    <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(versLangue('nl'), Astro.site)} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600&display=swap"
-    />
+    {/* La police est servie depuis notre propre domaine (public/fonts).
+        Passer par Google enverrait l'adresse IP de chaque visiteur chez eux,
+        ce qui demanderait une bannière de consentement pour rien.
+        Les deux graisses de tête sont préchargées ; les autres suivent. */}
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="/fonts/figtree-latin-400-normal.woff2" />
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="/fonts/figtree-latin-300-normal.woff2" />
 
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {page === 'home' && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
   </head>
   <body>
     <slot />
