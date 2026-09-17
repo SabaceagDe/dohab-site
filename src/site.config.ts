@@ -41,7 +41,7 @@ export const site = {
   email: 'info@dohab.be',
 
   // zone couverte, utilisée dans le JSON-LD et le pied de page
-  areaServed: ['Vlaams-Brabant', 'Brussel', 'Bruxelles'],
+  areaServed: ['Belgium'],
 
   locales: ['nl', 'fr', 'en'] as const,
   defaultLocale: 'nl' as const
