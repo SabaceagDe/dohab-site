@@ -37,7 +37,7 @@ const tr = t(locale);
 </footer>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true">
-  <button class="close" id="lbClose" aria-label="close">&times;</button>
+  <button class="close" id="lbClose" aria-label={tr('lb.close')}>&times;</button>
   {/* pas de src="" ici : un src vide fait recharger la page elle-même
       comme si c'était une image. C'est Gallery.astro qui le remplit. */}
   <img id="lbImg" alt="" />

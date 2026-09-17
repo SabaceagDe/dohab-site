@@ -5,11 +5,19 @@ interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
 
-// Clé publique Web3Forms. Elle est faite pour vivre dans la page :
-// elle n'autorise qu'une chose, envoyer vers l'adresse liée au compte
-// (info@dohab.be). Changer de destinataire se fait sur web3forms.com,
-// pas ici. Vider cette chaîne remet le formulaire en démonstration.
-const WEB3FORMS_KEY = '55f5f6c3-39f2-4cfd-8a22-44618077d37c';
+// Clé publique Web3Forms. Elle est faite pour vivre dans la page : elle
+// n'autorise qu'une chose, envoyer vers l'adresse liée au compte. Changer
+// de destinataire se fait sur web3forms.com, pas ici. Vider cette chaîne
+// remet le formulaire en démonstration.
+//
+// Deuxième clé. La première (55f5f6c3…, liée à info@dohab.be) était
+// acceptée par l'API — elle répondait success:true — mais aucune demande
+// n'arrivait jamais dans la boîte, alors que les mails de compte de
+// Web3Forms, eux, y arrivaient. C'est leur liste de suppression : après un
+// rebond ils bloquent les notifications vers cette adresse, sans rien dire.
+// Le contournement est une adresse neuve ; la suppression vise l'adresse,
+// pas le domaine.
+const WEB3FORMS_KEY = '0c7a0a3c-a915-48ab-89bd-6db77150739e';
 ---
 <section class="band tint" id="contact">
   <div class="wrap">

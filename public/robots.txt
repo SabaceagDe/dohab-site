@@ -6,11 +6,11 @@
 # retrouveraient dans Google Images avant qu'on ait tranché la question
 # des autorisations.
 #
-# LE JOUR DU LANCEMENT, une fois dohab.be branché :
-#   - supprimer la ligne "Disallow: /"
-#   - décommenter les deux lignes du bas
+# LE JOUR DU LANCEMENT, une fois dohab.be branché : remplacer les deux
+# lignes ci-dessous par
+#     User-agent: *
+#     Allow: /
+# Pas de sitemap à déclarer : six pages, toutes liées depuis l'accueil,
+# Google les trouve seul.
 User-agent: *
 Disallow: /
-
-# Allow: /
-# Sitemap: https://dohab.be/sitemap-index.xml

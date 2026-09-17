@@ -161,5 +161,21 @@ const filters = [
     if (e.key === 'Escape') lb.classList.remove('on');
   });
 
+  // ---- ancres du menu : #work-cuisine descend ici et filtre ----
+  // Une ancre plutôt qu'un clic JavaScript, pour que le lien fonctionne
+  // aussi depuis les mentions légales, où la galerie n'existe pas encore.
+  const PIECES = ['cuisine', 'dressing', 'salon', 'bain'];
+  function depuisAncre(doux: boolean) {
+    const m = location.hash.match(/^#work-([a-z]+)$/);
+    if (!m || !PIECES.includes(m[1])) return;
+    setRoom(m[1]);
+    document.getElementById('work')!.scrollIntoView({
+      behavior: doux ? 'smooth' : 'auto',
+      block: 'start'
+    });
+  }
+  addEventListener('hashchange', () => depuisAncre(true));
+  depuisAncre(false);
+
   apply();
 </script>

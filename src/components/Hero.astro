@@ -1,21 +1,138 @@
 ---
+/**
+ * LE CARROUSEL D'ACCUEIL.
+ *
+ * Construit sur le défilement natif avec accroche (scroll-snap) plutôt que
+ * sur des transformations CSS : le glissement au doigt, la molette
+ * horizontale et le clavier fonctionnent d'eux-mêmes, et si le JavaScript
+ * ne se charge pas, les quatre diapos restent consultables à la main.
+ */
 import type { Locale } from '../site.config';
 import { t } from '../i18n';
-interface Props { locale: Locale; photo: string }
-const { locale, photo } = Astro.props;
+import { diapos } from '../data/heroSlides';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
 const tr = t(locale);
 ---
-<section class="hero">
-  <img src={`/photos/${photo}`} alt="" fetchpriority="high" />
-  <div class="hero-in wrap">
-    <div class="hero-txt">
-      <p class="eyebrow rv">{tr('hero.eyebrow')}</p>
-      <h1 class="rv" style="--d:90ms" set:html={tr('hero.h1')} />
-      <p class="rv" style="--d:180ms">{tr('hero.sub')}</p>
-      <div class="hero-cta rv" style="--d:270ms">
-        <a class="btn pale" href="#contact">{tr('hero.cta1')}</a>
-        <a class="btn pale ghost-on-photo" href="#work">{tr('hero.cta2')}</a>
-      </div>
-    </div>
+<section class="hero" id="hero" aria-roledescription="carrousel" aria-label={tr('slide.role')}>
+  <div class="hero-piste" id="heroPiste" tabindex="0">
+    {diapos.map((d, i) => (
+      <article class={`hero-slide${d.dessin ? ' clair' : ''}`} id={`slide-${i}`}
+               aria-label={`${i + 1} / ${diapos.length}`}>
+        {d.photo && (
+          <img class="hero-fond" src={`/photos/${d.photo}`} alt=""
+               loading={i === 0 ? 'eager' : 'lazy'}
+               fetchpriority={i === 0 ? 'high' : 'auto'} />
+        )}
+        {d.dessin && (
+          <img class="hero-dessin" src={`/illustrations/${d.dessin}`} alt=""
+               loading="lazy" width="680" height="520" />
+        )}
+        <div class="hero-in wrap">
+          <div class="hero-txt">
+            <p class="eyebrow">{tr(d.cles.eyebrow)}</p>
+            {i === 0
+              ? <h1 set:html={tr(d.cles.titre)} />
+              : <h2 set:html={tr(d.cles.titre)} />}
+            <p>{tr(d.cles.sub)}</p>
+            <div class="hero-cta">
+              <a class="btn pale" href="#contact">{tr('hero.cta1')}</a>
+              <a class="btn pale ghost-on-photo" href={d.lien}>{tr(d.cles.cta)}</a>
+            </div>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <button class="hero-fleche prec" id="heroPrec" type="button" aria-label={tr('slide.prev')}>
+    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none">
+      <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+  <button class="hero-fleche suiv" id="heroSuiv" type="button" aria-label={tr('slide.next')}>
+    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none">
+      <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+
+  <div class="hero-points" id="heroPoints">
+    {diapos.map((d, i) => (
+      <button type="button" data-i={i} aria-current={i === 0 ? 'true' : 'false'}
+              aria-label={`${tr('slide.go')} ${i + 1}`}><span></span></button>
+    ))}
   </div>
 </section>
+
+<script>
+  const piste = document.getElementById('heroPiste');
+  if (piste) {
+    const slides = [...piste.querySelectorAll<HTMLElement>('.hero-slide')];
+    const points = [...document.querySelectorAll<HTMLButtonElement>('#heroPoints button')];
+    const doux = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let actif = 0;
+
+    const aller = (i: number) => {
+      const n = (i + slides.length) % slides.length;
+      piste.scrollTo({ left: slides[n].offsetLeft, behavior: doux ? 'smooth' : 'auto' });
+    };
+
+    // Quelle diapo est réellement à l'écran ? On l'observe au lieu de la
+    // déduire : au doigt, la personne peut s'arrêter où elle veut.
+    const obs = new IntersectionObserver(
+      (entrees) => {
+        for (const e of entrees) {
+          if (e.intersectionRatio < 0.6) continue;
+          actif = slides.indexOf(e.target as HTMLElement);
+          points.forEach((p, i) => p.setAttribute('aria-current', String(i === actif)));
+          // Les points et les flèches flottent au-dessus de toutes les diapos :
+          // ils ne peuvent pas savoir en CSS seul si celle du dessous est claire
+          // ou sombre. On leur dit.
+          document.getElementById('hero')!.classList.toggle(
+            'sur-clair', slides[actif].classList.contains('clair'));
+          // Les diapos hors champ sortent de l'ordre de tabulation, sinon la
+          // tabulation part se perdre dans des boutons qu'on ne voit pas.
+          slides.forEach((s, i) =>
+            s.querySelectorAll<HTMLAnchorElement>('a').forEach(
+              (a) => (a.tabIndex = i === actif ? 0 : -1)
+            )
+          );
+        }
+      },
+      { root: piste, threshold: [0.6] }
+    );
+    slides.forEach((s) => obs.observe(s));
+
+    document.getElementById('heroPrec')!.addEventListener('click', () => aller(actif - 1));
+    document.getElementById('heroSuiv')!.addEventListener('click', () => aller(actif + 1));
+    points.forEach((p) => p.addEventListener('click', () => aller(Number(p.dataset.i))));
+
+    piste.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); aller(actif + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); aller(actif - 1); }
+    });
+
+    // Défilement automatique, mais jamais contre la personne : il s'arrête au
+    // survol, au focus clavier, dès qu'on pose le doigt sur la piste, quand
+    // l'onglet passe en arrière-plan — et il ne démarre pas du tout si le
+    // système est réglé sur « réduire les animations ».
+    let minuteur: number | undefined;
+    const arreter = () => { if (minuteur) clearInterval(minuteur); minuteur = undefined; };
+    const demarrer = () => {
+      if (!doux) return;
+      arreter();
+      minuteur = window.setInterval(() => { if (!document.hidden) aller(actif + 1); }, 6500);
+    };
+
+    const zone = document.getElementById('hero')!;
+    zone.addEventListener('mouseenter', arreter);
+    zone.addEventListener('mouseleave', demarrer);
+    zone.addEventListener('focusin', arreter);
+    zone.addEventListener('focusout', demarrer);
+    piste.addEventListener('pointerdown', arreter, { passive: true });
+    document.addEventListener('visibilitychange', () => (document.hidden ? arreter() : demarrer()));
+    demarrer();
+  }
+</script>

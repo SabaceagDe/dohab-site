@@ -1,5 +1,4 @@
 {
-"mock.bar": "MAQUETTE — textes et coordonnées à confirmer",
 "nav.work": "Réalisations",
 "nav.colors": "Finitions",
 "nav.process": "Notre méthode",
@@ -25,7 +24,7 @@
 "work.sub": "Chaque projet est pensé dans les moindres détails, fabriqué avec soin et posé par notre équipe.",
 "work.empty": "Aucune réalisation ne correspond à cette sélection.",
 "filter.all": "Toutes",
-"filter.dressing": "Armoires & dressings",
+"filter.dressing": "Chambre",
 "filter.kitchen": "Cuisines",
 "filter.living": "Salon & TV",
 "filter.bath": "Salle de bain",
@@ -90,7 +89,6 @@
 "form.msg": "Parlez-nous de votre projet",
 "form.send": "Envoyer ma demande",
 "form.note": "Vos coordonnées sont utilisées uniquement pour répondre à votre demande.",
-"form.demo": "Maquette : le formulaire n'envoie pas encore de demande.",
 "form.subject": "Nouvelle demande via le site",
 "form.sending": "Envoi en cours…",
 "form.ok": "Merci, votre demande nous est bien parvenue. Nous revenons vers vous rapidement.",
@@ -106,7 +104,7 @@
 "foot.tag": "Mobilier et agencement sur mesure.",
 "foot.nav": "Navigation",
 "foot.legalh": "Informations",
-"foot.legal": "Maquette de démonstration. Les photos présentées correspondent à de vraies réalisations. Textes et coordonnées à confirmer.",
+"foot.legal": "© 2026 DO HAB — Agencement et mobilier sur mesure.",
 
 "cuisine-noyer-ilot-noir.t": "Cuisine en noyer & îlot noir",
 "cuisine-noyer-ilot-noir.c": "Un contraste élégant entre le noyer chaleureux et l'îlot noir. La tablette repas en chêne prolonge naturellement l'ensemble, avec des façades sans poignée pour une ligne épurée.",
@@ -280,5 +278,28 @@
 "esc-demi.t": "Demi-tournant avec palier",
 "esc-demi.c": "Deux volées parallèles séparées par un palier de repos, pour monter haut dans une emprise au sol réduite.",
 "esc-garde-corps.t": "Garde-corps et rampes",
-"esc-garde-corps.c": "Mains courantes, poteaux et barreaudage, posés sur un escalier existant comme en bord de trémie ou de mezzanine."
+"esc-garde-corps.c": "Mains courantes, poteaux et barreaudage, posés sur un escalier existant comme en bord de trémie ou de mezzanine.",
+"lb.close": "Fermer",
+
+"slide.role": "Carrousel d'accueil",
+"slide.prev": "Diapositive précédente",
+"slide.next": "Diapositive suivante",
+"slide.go": "Aller à la diapositive",
+"sl2.eyebrow": "Cuisines",
+"sl2.h": "La cuisine se dessine <em>avant de se fabriquer.</em>",
+"sl2.sub": "Façades, caissons et plans sortent du même atelier, aux dimensions relevées chez vous.",
+"sl2.cta": "Voir les cuisines",
+"sl3.eyebrow": "Chambre & dressings",
+"sl3.h": "Chaque centimètre <em>compte.</em>",
+"sl3.sub": "Plafonds en pente, murs jamais d'équerre, gaines qui traversent : c'est là que le sur-mesure prend son sens.",
+"sl3.cta": "Voir les armoires",
+"sl4.eyebrow": "Escaliers",
+"sl4.h": "Et l'escalier <em>qui va avec.</em>",
+"sl4.sub": "Droit, quart tournant, demi-tournant, garde-corps. Relevé sur place, fabriqué à la hauteur exacte de votre trémie.",
+"sl4.cta": "Voir les escaliers",
+
+"sl5.eyebrow": "Salon & murs TV",
+"sl5.h": "Un mur entier, <em>d'un seul tenant.</em>",
+"sl5.sub": "Meuble bas suspendu, niches éclairées, foyer intégré : l'écran cesse d'être posé là par hasard.",
+"sl5.cta": "Voir les salons"
 }

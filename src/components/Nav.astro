@@ -20,16 +20,19 @@ const base = page === 'home' ? '' : localeHref(locale);
 const ancre = (id: string) => `${base}#${id}`;
 const versLangue = page === 'legal' ? legalHref : localeHref;
 ---
-<div class="mockbar"><span>{tr('mock.bar')}</span></div>
-
 <header class="nav">
   <div class="wrap nav-in">
-    <a class="brand" href={localeHref(locale)}><b>DO&nbsp;HAB</b><span class="tagsm">demo</span></a>
+    <a class="brand" href={localeHref(locale)}><b>DO&nbsp;HAB</b></a>
     <nav class="nav-links">
-      <a href={ancre('work')}>{tr('nav.work')}</a>
+      {/* Le menu annonce des pièces, pas des sections : un clic descend à
+          la galerie ET applique le filtre. Le "-cuisine" de l'ancre est lu
+          par Gallery.astro ; il survit à un changement de page, ce qu'un
+          simple data-attribut n'aurait pas fait. */}
+      <a href={ancre('work-cuisine')}>{tr('filter.kitchen')}</a>
+      <a href={ancre('work-dressing')}>{tr('filter.dressing')}</a>
+      <a href={ancre('work-salon')}>{tr('filter.living')}</a>
+      <a href={ancre('work-bain')}>{tr('filter.bath')}</a>
       <a href={ancre('escaliers')}>{tr('nav.stairs')}</a>
-      <a href={ancre('finitions')}>{tr('nav.colors')}</a>
-      <a href={ancre('process')}>{tr('nav.process')}</a>
       <a href={ancre('about')}>{tr('nav.about')}</a>
     </nav>
 

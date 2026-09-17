@@ -20,12 +20,23 @@ const pageDesc = description ?? tr('hero.sub');
 const versLangue = page === 'legal' ? legalHref : localeHref;
 const canonique = new URL(versLangue(locale), Astro.site);
 
-// TODO (à toi) : compléter le JSON-LD avec les horaires et l'URL réelle
-// une fois le domaine acheté. Schema.org > LocalBusiness.
+// Aperçu de partage. Sans ces balises, un lien collé dans WhatsApp ou
+// Messenger arrive nu : juste l'adresse, aucune image, aucun titre. Pour
+// une entreprise dont les clients s'échangent des liens par téléphone,
+// c'est la première impression qui se joue là.
+const ogLocale = { nl: 'nl_BE', fr: 'fr_BE', en: 'en_GB' }[locale];
+const carte = new URL('/social-card.jpg', Astro.site).href;
+
+// Fiche Schema.org : c'est ce que Google lit pour afficher l'entreprise
+// dans son panneau de droite et sur Maps. Les horaires restent à ajouter
+// le jour où le patron les fixe : openingHours: ['Mo-Sa 08:00-18:00'].
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: site.name,
+  url: new URL(localeHref(locale), Astro.site).href,
+  image: new URL('/social-card.jpg', Astro.site).href,
+  vatID: site.vat,
   telephone: site.phone,
   email: site.email,
   address: {
@@ -55,6 +66,21 @@ const jsonLd = {
     <meta name="theme-color" content="#5D6E51" />
 
     <link rel="canonical" href={canonique} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDesc} />
+    <meta property="og:url" content={canonique} />
+    <meta property="og:image" content={carte} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={ogLocale} />
+    {locales.filter((l) => l !== locale).map((l) => (
+      <meta property="og:locale:alternate"
+            content={{ nl: 'nl_BE', fr: 'fr_BE', en: 'en_GB' }[l]} />
+    ))}
+    <meta name="twitter:card" content="summary_large_image" />
 
     {/* hreflang : dit à Google que ces trois pages sont la même page,
         dans trois langues. Sur les mentions légales, ce sont bien les
