@@ -10,13 +10,15 @@ const tr = t(locale);
 // de destinataire se fait sur web3forms.com, pas ici. Vider cette chaîne
 // remet le formulaire en démonstration.
 //
-// Deuxième clé. La première (55f5f6c3…, liée à info@dohab.be) était
-// acceptée par l'API — elle répondait success:true — mais aucune demande
-// n'arrivait jamais dans la boîte, alors que les mails de compte de
-// Web3Forms, eux, y arrivaient. C'est leur liste de suppression : après un
-// rebond ils bloquent les notifications vers cette adresse, sans rien dire.
-// Le contournement est une adresse neuve ; la suppression vise l'adresse,
-// pas le domaine.
+// Si un jour les demandes cessent d'arriver, voici ce qu'on a appris à
+// nos dépens : Web3Forms rejette silencieusement les envois venant d'un
+// sous-domaine gratuit. Tant que le site vivait sur *.workers.dev, leur
+// API répondait success:true et jetait la demande — aucune erreur, aucune
+// trace, et les mails de compte de Web3Forms arrivaient normalement, ce
+// qui brouillait la piste. Le même formulaire en localhost fonctionnait.
+// Depuis que le site est servi sur dohab.be, tout passe.
+// Donc : avant de soupçonner ce code, vérifier d'abord depuis quel
+// domaine la page est servie.
 const WEB3FORMS_KEY = '0c7a0a3c-a915-48ab-89bd-6db77150739e';
 ---
 <section class="band tint" id="contact">
