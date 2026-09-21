@@ -58,6 +58,12 @@ section[id]{scroll-margin-top:84px}
     scrollbar-width:none;-ms-overflow-style:none}
   .nav-links::-webkit-scrollbar{display:none}
   .nav-links a{white-space:nowrap}
+  /* Les six liens ne tiennent pas dans la largeur d'un téléphone : la barre
+     défile. Sans indice visuel, le dernier mot paraît simplement coupé et
+     personne ne pense à glisser. Le fondu sur le bord droit dit « ça
+     continue ». */
+  .nav-links{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 2rem),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 2rem),transparent)}
 }
 .lang{display:flex;gap:.15rem}
 .lang button{background:none;border:0;cursor:pointer;padding:.3rem .45rem;border-radius:var(--r);
@@ -153,6 +159,41 @@ section[id]{scroll-margin-top:84px}
   .hero-txt{max-width:none}
   .hero-in{padding-bottom:3.2rem}
   .hero-cta .btn{flex:1 1 100%}
+}
+
+/* Sur téléphone, le carrousel doit tenir en une vue sans être un mur de
+   texte : on garde le sur-titre, le titre et les deux boutons, et on
+   retire le paragraphe. Qui veut en savoir plus appuie sur un bouton —
+   c'est à ça qu'ils servent. Le texte n'est pas masqué au lecteur d'écran
+   par hasard : il ne dit rien que la page ne redise plus bas. */
+@media (max-width:640px){
+  /* :not(.eyebrow) est indispensable — le sur-titre est lui aussi un <p>,
+     et sans ce filtre il disparaissait avec le paragraphe. */
+  .hero-txt p:not(.eyebrow){display:none}
+  .hero-txt h1,.hero-txt h2{margin-top:.5rem}
+  .hero-cta{margin-top:1.15rem;flex-wrap:nowrap;gap:.5rem}
+  /* côte à côte plutôt qu'empilés : deux blocs pleine largeur mangeaient
+     autant de hauteur que le paragraphe qu'on vient d'enlever */
+  .hero-cta .btn{flex:1 1 0;min-width:0;padding-inline:.7rem;
+    font-size:var(--t-sm);text-align:center;line-height:1.25}
+  /* Le voile descend plus bas : le haut de la photo reste net, et il ne
+     s'assombrit qu'à partir du tiers inférieur, là où le texte se pose.
+     Attention en le retouchant — le sur-titre est en blanc à 80 %, et
+     au-dessus d'un plan de travail clair il disparaît si le voile est
+     trop léger à cette hauteur. */
+  .hero-slide:not(.clair)::after{
+    background:linear-gradient(180deg,rgba(28,26,23,0) 0%,rgba(28,26,23,.12) 34%,
+      rgba(28,26,23,.52) 58%,rgba(28,26,23,.88) 100%)}
+  /* Ceinture et bretelles : le voile ne suffit pas quand le texte tombe
+     pile sur un plan de travail blanc. L'ombre portée tient la lisibilité
+     quelle que soit la photo qu'on mettra dans le carrousel demain. */
+  .hero-slide:not(.clair) .hero-txt{text-shadow:0 1px 16px rgba(28,26,23,.55)}
+  .hero-slide:not(.clair) .hero-txt .eyebrow{color:#fff}
+  /* Le dessin remonte occuper le vide du haut au lieu de se glisser
+     derrière le titre, où il rendait les deux illisibles. Texte en bas,
+     dessin en haut, chacun chez soi. */
+  .hero-dessin{left:50%;right:auto;transform:translateX(-50%);
+    top:5%;bottom:auto;margin:0;height:44%;max-width:86%;opacity:.9}
 }
 
 /* ---- trois promesses ---- */
