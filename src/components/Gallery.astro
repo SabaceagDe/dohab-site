@@ -9,12 +9,31 @@
  */
 import type { Locale } from '../site.config';
 import { t } from '../i18n';
-import { projets } from '../data/projets';
+import { projets, type Projet } from '../data/projets';
+import auto from '../data/galerie-auto.json';
 import { finitionById } from '../data/finitions';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
+// tr() renvoie la clé elle-même quand la traduction manque ; ici on veut
+// du vide à la place, pour les photos ajoutées sans texte
+const trOu = (cle: string, sinon = '') => (tr(cle) === cle ? sinon : tr(cle));
+
+// Deux sources : les réalisations écrites à la main (projets.ts, avec
+// titre et description) et celles ajoutées par outils/galerie.py depuis
+// le dossier de photos (galerie-auto.json). On les regroupe par pièce ;
+// le tri est stable, donc dans chaque pièce les réalisations écrites à la
+// main passent d'abord, puis les ajouts, du plus récent au plus ancien.
+const ORDRE = ['cuisine', 'salon', 'dressing', 'bain'];
+const tout: Projet[] = [...projets, ...(auto as Projet[])].sort(
+  (a, b) => ORDRE.indexOf(a.room) - ORDRE.indexOf(b.room)
+);
+// sans titre traduit, une photo prend le nom de sa pièce
+const titrePiece: Record<string, string> = {
+  cuisine: 'filter.kitchen', dressing: 'filter.dressing', salon: 'filter.living', bain: 'filter.bath'
+};
+const titre = (p: Projet) => trOu(`${p.id}.t`, tr(titrePiece[p.room]));
 
 const filters = [
   { room: 'all', key: 'filter.all' },
@@ -48,24 +67,26 @@ const filters = [
     </div>
 
     <div class="gal" id="gal">
-      {projets.map((p, i) => {
-        const f = finitionById(p.finish);
+      {tout.map((p, i) => {
+        const f = p.finish ? finitionById(p.finish) : undefined;
         return (
           <article
             class="card rv"
             data-room={p.room}
-            data-finish={p.finish}
-            data-title={tr(`${p.id}.t`)}
-            data-caption={tr(`${p.id}.c`)}
+            data-finish={p.finish ?? ''}
+            data-title={titre(p)}
+            data-caption={trOu(`${p.id}.c`)}
             style={`--d:${(i % 4) * 80}ms`}>
             <div class="thumb">
-              <img src={`/photos/${p.photo}`} alt={tr(`${p.id}.t`)} loading="lazy" />
+              <img src={`/photos/${p.photo}`} alt={titre(p)} loading="lazy" />
             </div>
-            <h3>{tr(`${p.id}.t`)}</h3>
-            <div class="meta">
-              <span class="dot" style={`background:${f?.hex}`}></span>
-              <span>{tr(`finish.${p.finish}`)}</span>
-            </div>
+            <h3>{titre(p)}</h3>
+            {f && (
+              <div class="meta">
+                <span class="dot" style={`background:${f.hex}`}></span>
+                <span>{tr(`finish.${p.finish}`)}</span>
+              </div>
+            )}
           </article>
         );
       })}

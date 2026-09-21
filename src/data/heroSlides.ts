@@ -39,7 +39,8 @@ export const diapos: Diapo[] = [
   },
   {
     id: 'armoires',
-    photo: 'armoire-etageres-noyer.webp',
+    photo: 'rangement-colonnes-noires.webp',
+    cadrage: '50% 55%',
     lien: '#work-dressing',
     cles: { eyebrow: 'sl3.eyebrow', titre: 'sl3.h', sub: 'sl3.sub', cta: 'sl3.cta' }
   },

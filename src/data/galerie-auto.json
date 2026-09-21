@@ -1,0 +1,240 @@
+[
+  {
+    "id": "armoire-blanche-couloir",
+    "photo": "armoire-blanche-couloir.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_0200.HEIC"
+  },
+  {
+    "id": "cuisine-creme-marbre",
+    "photo": "cuisine-creme-marbre.webp",
+    "room": "cuisine",
+    "finish": "creme",
+    "source": "IMG_1187.HEIC"
+  },
+  {
+    "id": "chambre-niche-arrondie",
+    "photo": "chambre-niche-arrondie.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_1823.HEIC"
+  },
+  {
+    "id": "buanderie-integree",
+    "photo": "buanderie-integree.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_20260921_125541_632.jpg"
+  },
+  {
+    "id": "placard-etageres",
+    "photo": "placard-etageres.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_20260921_125541_645.jpg"
+  },
+  {
+    "id": "placards-angle",
+    "photo": "placards-angle.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_20260921_125541_723.jpg"
+  },
+  {
+    "id": "buanderie-colonnes",
+    "photo": "buanderie-colonnes.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_20260921_125542_112.jpg"
+  },
+  {
+    "id": "rangement-chaussures",
+    "photo": "rangement-chaussures.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_20260921_125542_166.jpg"
+  },
+  {
+    "id": "salon-panneaux-lattes",
+    "photo": "salon-panneaux-lattes.webp",
+    "room": "salon",
+    "finish": "chene",
+    "source": "IMG_2585.HEIC"
+  },
+  {
+    "id": "cuisine-blanche-vitrines-fumees",
+    "photo": "cuisine-blanche-vitrines-fumees.webp",
+    "room": "cuisine",
+    "finish": "blanc",
+    "source": "IMG_2747.HEIC"
+  },
+  {
+    "id": "entree-banc-capitonne",
+    "photo": "entree-banc-capitonne.webp",
+    "room": "dressing",
+    "finish": "gris",
+    "source": "IMG_2947.HEIC"
+  },
+  {
+    "id": "armoire-portes-miroir",
+    "photo": "armoire-portes-miroir.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_3675.JPG.jpeg"
+  },
+  {
+    "id": "bureau-integre",
+    "photo": "bureau-integre.webp",
+    "room": "salon",
+    "finish": "blanc",
+    "source": "IMG_3679.DNG"
+  },
+  {
+    "id": "chevet-chene",
+    "photo": "chevet-chene.webp",
+    "room": "dressing",
+    "finish": "chene",
+    "source": "IMG_3681.DNG"
+  },
+  {
+    "id": "chambre-armoire-miroir",
+    "photo": "chambre-armoire-miroir.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_3682.DNG"
+  },
+  {
+    "id": "lave-mains-chene",
+    "photo": "lave-mains-chene.webp",
+    "room": "bain",
+    "finish": "chene",
+    "source": "IMG_3687.DNG"
+  },
+  {
+    "id": "cuisine-ouverte-blanc-chene",
+    "photo": "cuisine-ouverte-blanc-chene.webp",
+    "room": "cuisine",
+    "finish": "blanc",
+    "source": "IMG_3693.DNG"
+  },
+  {
+    "id": "entree-miroir-lumineux",
+    "photo": "entree-miroir-lumineux.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_3696.DNG"
+  },
+  {
+    "id": "coiffeuse-grand-miroir",
+    "photo": "coiffeuse-grand-miroir.webp",
+    "room": "dressing",
+    "finish": "gris",
+    "source": "IMG_3846.HEIC"
+  },
+  {
+    "id": "cuisine-bois-blanc",
+    "photo": "cuisine-bois-blanc.webp",
+    "room": "cuisine",
+    "finish": "chene",
+    "source": "IMG_3940.JPG.jpeg"
+  },
+  {
+    "id": "cuisine-ilot-marbre-ensemble",
+    "photo": "cuisine-ilot-marbre-ensemble.webp",
+    "room": "cuisine",
+    "finish": "noyer",
+    "source": "IMG_4021.HEIC"
+  },
+  {
+    "id": "escalier-rangements",
+    "photo": "escalier-rangements.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "IMG_4108.HEIC"
+  },
+  {
+    "id": "salon-mur-texture-chene",
+    "photo": "salon-mur-texture-chene.webp",
+    "room": "salon",
+    "finish": "chene",
+    "source": "IMG_4209.HEIC"
+  },
+  {
+    "id": "bain-blanc-colonne",
+    "photo": "bain-blanc-colonne.webp",
+    "room": "bain",
+    "finish": "blanc",
+    "source": "IMG_4861.HEIC"
+  },
+  {
+    "id": "cuisine-chene-ilot-blanc",
+    "photo": "cuisine-chene-ilot-blanc.webp",
+    "room": "cuisine",
+    "finish": "chene",
+    "source": "IMG_5267.HEIC"
+  },
+  {
+    "id": "miroirs-lumineux-arche",
+    "photo": "miroirs-lumineux-arche.webp",
+    "room": "salon",
+    "finish": "gris",
+    "source": "IMG_5388.HEIC"
+  },
+  {
+    "id": "mur-tv-panneau-sombre",
+    "photo": "mur-tv-panneau-sombre.webp",
+    "room": "salon",
+    "finish": "noyer",
+    "source": "IMG_7241.HEIC"
+  },
+  {
+    "id": "cuisine-greige-etageres",
+    "photo": "cuisine-greige-etageres.webp",
+    "room": "cuisine",
+    "finish": "gris",
+    "source": "IMG_8555.JPG.jpeg"
+  },
+  {
+    "id": "cuisine-classique-creme",
+    "photo": "cuisine-classique-creme.webp",
+    "room": "cuisine",
+    "finish": "creme",
+    "source": "IMG_9189.HEIC"
+  },
+  {
+    "id": "mur-tv-lumineux",
+    "photo": "mur-tv-lumineux.webp",
+    "room": "salon",
+    "finish": "gris",
+    "source": "WhatsApp Image 2026-08-28 at 11.48.13.jpeg"
+  },
+  {
+    "id": "rangement-wc",
+    "photo": "rangement-wc.webp",
+    "room": "bain",
+    "finish": "gris",
+    "source": "WhatsApp Image 2026-08-28 at 11.48.14 (1).jpeg"
+  },
+  {
+    "id": "armoires-blanches",
+    "photo": "armoires-blanches.webp",
+    "room": "dressing",
+    "finish": "blanc",
+    "source": "WhatsApp Image 2026-08-28 at 11.48.16 (1).jpeg"
+  },
+  {
+    "id": "vasque-bois-fonce",
+    "photo": "vasque-bois-fonce.webp",
+    "room": "bain",
+    "finish": "noyer",
+    "source": "WhatsApp Image 2026-08-28 at 11.48.16 (4).jpeg"
+  },
+  {
+    "id": "meuble-tv-noir",
+    "photo": "meuble-tv-noir.webp",
+    "room": "salon",
+    "finish": "gris",
+    "source": "WhatsApp Image 2026-08-28 at 11.48.16.jpeg"
+  }
+]

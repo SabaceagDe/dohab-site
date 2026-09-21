@@ -25,8 +25,18 @@ import pillow_heif
 pillow_heif.register_heif_opener()   # sans ça, Pillow ne lit pas les .HEIC
 
 BUREAU = os.path.join(os.path.expanduser('~'), 'Desktop')
-SRC1 = os.path.join(BUREAU, 'dohab_pictures')
-SRC2 = os.path.join(BUREAU, 'dohab_pictures_2')
+PHOTOS = os.path.join(BUREAU, 'dohab_pictures')
+
+
+def src(nom):
+    # Les originaux sont rangés par pièce (cuisine/, chambre/…) : on les
+    # cherche par leur nom, quel que soit le sous-dossier où ils sont.
+    for dossier, _, fichiers in os.walk(PHOTOS):
+        if nom in fichiers:
+            return os.path.join(dossier, nom)
+    return os.path.join(PHOTOS, nom)   # introuvable : signalé plus bas
+
+
 WEB = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                    'public', 'photos')
 
@@ -36,16 +46,17 @@ LARGEUR, QUALITE = 2400, 80
 # Les correspondances ont été retrouvées en comparant les images, pas au
 # hasard : si tu remplaces une photo, mets à jour la ligne.
 PAIRES = [
-    ('cuisine-noyer-hotte.webp',     os.path.join(SRC1, 'IMG_9583.HEIC')),
-    ('cuisine-noyer-ilot-noir.webp', os.path.join(SRC1, 'IMG_7242.HEIC')),
-    ('armoire-etageres-noyer.webp',  os.path.join(SRC1, 'IMG_3935.HEIC')),
+    ('cuisine-noyer-hotte.webp',     src('IMG_9583.HEIC')),
+    ('cuisine-noyer-ilot-noir.webp', src('IMG_7242.HEIC')),
+    ('armoire-etageres-noyer.webp',  src('IMG_3935.HEIC')),
     # Celle-ci vient de WhatsApp : l'original est déjà recompressé à
     # 2000 px. On ne peut pas faire mieux que 1920 px. Si le patron
     # retrouve la photo d'origine, la substituer ici.
     ('mur-tv-gris-cheminee.webp',
-     os.path.join(SRC2, 'WhatsApp Image 2026-08-28 at 11.48.14.jpeg')),
-    ('chambre-tv-cannele.webp',      os.path.join(SRC1, 'IMG_9263.HEIC')),
-    ('bain-noyer-miroir-ovale.webp', os.path.join(SRC1, 'IMG_3700.HEIC')),
+     src('WhatsApp Image 2026-08-28 at 11.48.14.jpeg')),
+    ('chambre-tv-cannele.webp',      src('IMG_9263.HEIC')),
+    ('bain-noyer-miroir-ovale.webp', src('IMG_3700.HEIC')),
+    ('rangement-colonnes-noires.webp', src('IMG_3948.HEIC')),
 ]
 
 for nom, source in PAIRES:

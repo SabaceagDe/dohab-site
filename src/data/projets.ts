@@ -1,7 +1,9 @@
 /**
- * LES RÉALISATIONS.
- * Ajouter un chantier = déposer la photo dans public/photos/
- * et ajouter une ligne ici. Le titre et la description se
+ * LES RÉALISATIONS ÉCRITES À LA MAIN.
+ * Pour ajouter une photo, le plus simple n'est plus ici : dépose-la dans
+ * le bon sous-dossier de Bureau/dohab_pictures et lance
+ * outils/galerie.py (voir ce fichier). Ici, c'est pour les réalisations
+ * qu'on veut présenter avec un titre et une description à soi. Le titre et la description se
  * traduisent dans src/i18n/*.json sous la clé "<id>.t" et "<id>.c".
  */
 export type Room = 'dressing' | 'cuisine' | 'salon' | 'bain';
@@ -10,7 +12,7 @@ export interface Projet {
   id: string;      // sert de clé de traduction
   photo: string;   // nom du fichier dans public/photos/
   room: Room;
-  finish: string;  // id d'une finition (src/data/finitions.ts)
+  finish?: string; // id d'une finition (src/data/finitions.ts) — facultatif
 }
 
 export const projets: Projet[] = [
