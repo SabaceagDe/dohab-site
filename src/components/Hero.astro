@@ -5,7 +5,7 @@
  * Construit sur le défilement natif avec accroche (scroll-snap) plutôt que
  * sur des transformations CSS : le glissement au doigt, la molette
  * horizontale et le clavier fonctionnent d'eux-mêmes, et si le JavaScript
- * ne se charge pas, les quatre diapos restent consultables à la main.
+ * ne se charge pas, les diapos restent consultables à la main.
  */
 import type { Locale } from '../site.config';
 import { t } from '../i18n';
@@ -21,6 +21,7 @@ const tr = t(locale);
                aria-label={`${i + 1} / ${diapos.length}`}>
         {d.photo && (
           <img class="hero-fond" src={`/photos/${d.photo}`} alt=""
+               style={d.cadrage ? `--cadrage:${d.cadrage}` : undefined}
                loading={i === 0 ? 'eager' : 'lazy'}
                fetchpriority={i === 0 ? 'high' : 'auto'} />
         )}

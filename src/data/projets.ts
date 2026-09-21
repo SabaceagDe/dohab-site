@@ -119,7 +119,7 @@ export const projets: Projet[] = [
   {
     "id": "chambre-tv-cannele",
     "photo": "chambre-tv-cannele.webp",
-    "room": "salon",
+    "room": "dressing",
     "finish": "blanc"
   },
   {

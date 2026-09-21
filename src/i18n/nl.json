@@ -228,7 +228,7 @@
   "sl2.h": "Eerst getekend, <em>dan pas gemaakt.</em>",
   "sl2.sub": "Fronten, kasten en werkbladen komen uit hetzelfde atelier, op de maten die bij u zijn opgenomen.",
   "sl2.cta": "Keukens bekijken",
-  "sl3.eyebrow": "Slaapkamer & dressings",
+  "sl3.eyebrow": "Kasten & dressings",
   "sl3.h": "Elke centimeter <em>telt.</em>",
   "sl3.sub": "Schuine plafonds, scheve muren, leidingen die dwars lopen: daar bewijst maatwerk zijn nut.",
   "sl3.cta": "Kasten bekijken",
@@ -239,5 +239,13 @@
   "sl5.eyebrow": "Woonkamer & tv-wanden",
   "sl5.h": "Een hele wand, <em>uit één geheel.</em>",
   "sl5.sub": "Zwevende onderkast, verlichte nissen, ingebouwde haard: het scherm staat er niet langer zomaar.",
-  "sl5.cta": "Woonkamers bekijken"
+  "sl5.cta": "Woonkamers bekijken",
+  "sl6.eyebrow": "Slaapkamer",
+  "sl6.h": "Rust, <em>tot op de millimeter.</em>",
+  "sl6.sub": "Kaptafel, tv-meubel, hoofdbord: alles ontworpen voor de kamer, niets zomaar neergezet.",
+  "sl6.cta": "Slaapkamers bekijken",
+  "sl7.eyebrow": "Badkamer",
+  "sl7.h": "Hout, <em>ook vlak bij het water.</em>",
+  "sl7.sub": "Wastafelmeubels, kolomkasten en nissen gemaakt voor vocht, met een afwerking die blijft.",
+  "sl7.cta": "Badkamers bekijken"
 }

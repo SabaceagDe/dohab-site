@@ -228,7 +228,7 @@
   "sl2.h": "Drawn first, <em>then built.</em>",
   "sl2.sub": "Fronts, carcasses and worktops come from one workshop, to the dimensions measured at your place.",
   "sl2.cta": "See the kitchens",
-  "sl3.eyebrow": "Bedroom & wardrobes",
+  "sl3.eyebrow": "Wardrobes & dressing rooms",
   "sl3.h": "Every centimetre <em>counts.</em>",
   "sl3.sub": "Sloping ceilings, crooked walls, pipes running through: that is where made-to-measure earns its keep.",
   "sl3.cta": "See the wardrobes",
@@ -239,5 +239,13 @@
   "sl5.eyebrow": "Living room & media walls",
   "sl5.h": "A whole wall, <em>as one piece.</em>",
   "sl5.sub": "Floating base unit, lit recesses, built-in fire: the screen stops looking like an afterthought.",
-  "sl5.cta": "See the living rooms"
+  "sl5.cta": "See the living rooms",
+  "sl6.eyebrow": "Bedroom",
+  "sl6.h": "Calm, <em>fitted to the millimetre.</em>",
+  "sl6.sub": "Dressing table, TV unit, headboard: everything drawn for the room, nothing placed by chance.",
+  "sl6.cta": "See the bedrooms",
+  "sl7.eyebrow": "Bathroom",
+  "sl7.h": "Wood, <em>even next to water.</em>",
+  "sl7.sub": "Vanity units, tall cabinets and niches built for humidity, with finishes that last.",
+  "sl7.cta": "See the bathrooms"
 }

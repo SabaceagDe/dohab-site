@@ -44,6 +44,8 @@ PAIRES = [
     # retrouve la photo d'origine, la substituer ici.
     ('mur-tv-gris-cheminee.webp',
      os.path.join(SRC2, 'WhatsApp Image 2026-08-28 at 11.48.14.jpeg')),
+    ('chambre-tv-cannele.webp',      os.path.join(SRC1, 'IMG_9263.HEIC')),
+    ('bain-noyer-miroir-ovale.webp', os.path.join(SRC1, 'IMG_3700.HEIC')),
 ]
 
 for nom, source in PAIRES:
@@ -70,10 +72,12 @@ for nom, source in PAIRES:
             h = int(W / ar)
             im = im.crop((0, (H - h) // 2, W, (H - h) // 2 + h))
 
-    # on n'agrandit jamais : agrandir n'ajoute aucun détail, ça ne fait
-    # que gonfler le fichier
-    cible = min(LARGEUR, im.size[0])
-    im = im.resize((cible, round(cible / ar)), Image.LANCZOS)
+    # LARGEUR borne le plus grand côté : une photo en portrait sort en
+    # 1800 x 2400, pas en 2400 x 3200 qui pèserait le double pour rien.
+    # Et on n'agrandit jamais : ça n'ajoute aucun détail.
+    echelle = min(1.0, LARGEUR / max(im.size))
+    taille = (round(im.size[0] * echelle), round(im.size[1] * echelle))
+    im = im.resize(taille, Image.LANCZOS)
     im.save(chemin, 'WEBP', quality=QUALITE, method=6)
 
     print(f'{nom:32} {ancien.size[0]}px/{avant}ko  ->  {im.size[0]}px/'

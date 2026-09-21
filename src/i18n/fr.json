@@ -289,7 +289,7 @@
 "sl2.h": "La cuisine se dessine <em>avant de se fabriquer.</em>",
 "sl2.sub": "Façades, caissons et plans sortent du même atelier, aux dimensions relevées chez vous.",
 "sl2.cta": "Voir les cuisines",
-"sl3.eyebrow": "Chambre & dressings",
+"sl3.eyebrow": "Armoires & dressings",
 "sl3.h": "Chaque centimètre <em>compte.</em>",
 "sl3.sub": "Plafonds en pente, murs jamais d'équerre, gaines qui traversent : c'est là que le sur-mesure prend son sens.",
 "sl3.cta": "Voir les armoires",
@@ -301,5 +301,14 @@
 "sl5.eyebrow": "Salon & murs TV",
 "sl5.h": "Un mur entier, <em>d'un seul tenant.</em>",
 "sl5.sub": "Meuble bas suspendu, niches éclairées, foyer intégré : l'écran cesse d'être posé là par hasard.",
-"sl5.cta": "Voir les salons"
+"sl5.cta": "Voir les salons",
+
+"sl6.eyebrow": "Chambre",
+"sl6.h": "Le calme, <em>rangé au millimètre.</em>",
+"sl6.sub": "Coiffeuse, meuble TV, tête de lit : tout est dessiné pour la pièce, rien n'est posé au hasard.",
+"sl6.cta": "Voir les chambres",
+"sl7.eyebrow": "Salle de bain",
+"sl7.h": "Le bois, <em>même près de l'eau.</em>",
+"sl7.sub": "Meubles vasque, colonnes et niches pensés pour l'humidité, avec des finitions qui tiennent.",
+"sl7.cta": "Voir les salles de bain"
 }
