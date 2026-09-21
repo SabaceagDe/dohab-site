@@ -254,14 +254,32 @@ section[id]{scroll-margin-top:84px}
 .empty{color:var(--muted);padding:2rem 0}
 
 /* ---- lightbox ---- */
-.lb{position:fixed;inset:0;z-index:100;background:rgba(26,24,21,.93);display:none;
+.lb{position:fixed;inset:0;z-index:100;background:rgba(26,24,21,.97);display:none;
   align-items:center;justify-content:center;padding:clamp(1rem,4vw,3rem)}
 .lb.on{display:flex}
-.lb img{max-width:100%;max-height:80vh;width:auto;border-radius:var(--r)}
+/* la légende est collée en bas : on réserve sa place sous la photo,
+   sinon le texte passait par-dessus le bas de l'image */
+.lb{padding-bottom:clamp(7.5rem,14vh,9rem)}
+.lb img{max-width:100%;max-height:calc(100vh - 12rem);width:auto;border-radius:var(--r)}
 .lb .cap{position:absolute;left:0;right:0;bottom:0;padding:1.2rem;color:rgba(255,255,255,.9);
   font-size:var(--t-sm);text-align:center}
 .lb .close{position:absolute;top:1rem;right:1.1rem;background:none;border:1px solid rgba(255,255,255,.35);
   border-radius:var(--r);color:#fff;cursor:pointer;font-size:1rem;line-height:1;padding:.4rem .65rem}
+.lb-fleche{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(28,26,23,.45);
+  color:#fff;display:grid;place-items:center;cursor:pointer;transition:.2s}
+.lb-fleche:hover{background:rgba(28,26,23,.8)}
+.lb-fleche.prec{left:clamp(.5rem,2vw,1.6rem)}
+.lb-fleche.suiv{right:clamp(.5rem,2vw,1.6rem)}
+.lb.seule .lb-fleche{display:none}
+/* sur téléphone on glisse au doigt : les flèches restent, plus discrètes */
+@media (max-width:640px){.lb-fleche{width:38px;height:38px;background:rgba(28,26,23,.3)}}
+.lb .cap em{display:block;font-style:normal;opacity:.55;margin-top:.35rem;font-size:var(--t-xs);letter-spacing:.08em}
+.lb img.vers-g{animation:lbG .28s ease-out}
+.lb img.vers-d{animation:lbD .28s ease-out}
+@keyframes lbG{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@keyframes lbD{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.lb img.vers-g,.lb img.vers-d{animation:none}}
 
 /* ---- lignes image + texte ---- */
 .feat{display:grid;grid-template-columns:var(--split);gap:var(--gap);align-items:center}

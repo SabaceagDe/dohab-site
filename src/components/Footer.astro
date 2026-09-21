@@ -41,5 +41,19 @@ const tr = t(locale);
   {/* pas de src="" ici : un src vide fait recharger la page elle-même
       comme si c'était une image. C'est Gallery.astro qui le remplit. */}
   <img id="lbImg" alt="" />
+  {/* flèches : parcourent les photos actuellement visibles dans la
+      galerie, donc seulement les cuisines si le filtre cuisine est actif */}
+  <button class="lb-fleche prec" id="lbPrec" type="button" aria-label={tr('lb.prev')}>
+    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none">
+      <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+  <button class="lb-fleche suiv" id="lbSuiv" type="button" aria-label={tr('lb.next')}>
+    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none">
+      <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
   <div class="cap" id="lbCap"></div>
 </div>

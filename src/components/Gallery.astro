@@ -137,28 +137,71 @@ const filters = [
     apply();
   });
 
-  // ---- agrandissement au clic ----
+  // ---- agrandissement au clic, et défilement d'une photo à l'autre ----
   const lb = document.getElementById('lb')!;
   const lbImg = document.getElementById('lbImg') as HTMLImageElement;
   const lbCap = document.getElementById('lbCap')!;
+  const lbPrec = document.getElementById('lbPrec')!;
+  const lbSuiv = document.getElementById('lbSuiv')!;
 
-  gal.addEventListener('click', (e) => {
-    const card = (e.target as HTMLElement).closest<HTMLElement>('.card');
-    if (!card) return;
+  // La liste est figée à l'ouverture : ce sont les fiches visibles à ce
+  // moment-là. Ouvrir une cuisine avec le filtre « Cuisines » actif fait
+  // donc défiler les cuisines, et seulement elles.
+  let liste: HTMLElement[] = [];
+  let pos = 0;
+
+  const montrer = (i: number, sens: 0 | 1 | -1 = 0) => {
+    pos = (i + liste.length) % liste.length;       // on boucle aux deux bouts
+    const card = liste[pos];
     lbImg.src = card.querySelector('img')!.src;
     // titre en gras, description en dessous : le détail se lit une fois la
     // photo ouverte, pas dans la grille
     lbCap.innerHTML =
-      `<strong>${card.dataset.title ?? ''}</strong><span>${card.dataset.caption ?? ''}</span>`;
+      `<strong>${card.dataset.title ?? ''}</strong><span>${card.dataset.caption ?? ''}</span>` +
+      (liste.length > 1 ? `<em>${pos + 1} / ${liste.length}</em>` : '');
+    // petit glissement dans le sens du geste ; relancer l'animation
+    // demande de retirer la classe, forcer un recalcul, puis la remettre
+    lbImg.classList.remove('vers-g', 'vers-d');
+    if (sens) { void lbImg.offsetWidth; lbImg.classList.add(sens > 0 ? 'vers-g' : 'vers-d'); }
+  };
+
+  const fermer = () => lb.classList.remove('on');
+
+  gal.addEventListener('click', (e) => {
+    const card = (e.target as HTMLElement).closest<HTMLElement>('.card');
+    if (!card) return;
+    liste = [...gal.querySelectorAll<HTMLElement>('.card:not(.hide)')];
+    lb.classList.toggle('seule', liste.length < 2);
+    montrer(Math.max(0, liste.indexOf(card)));
     lb.classList.add('on');
   });
 
+  lbPrec.addEventListener('click', () => montrer(pos - 1, -1));
+  lbSuiv.addEventListener('click', () => montrer(pos + 1, 1));
+
   lb.addEventListener('click', (e) => {
     const el = e.target as HTMLElement;
-    if (el === lb || el.id === 'lbClose') lb.classList.remove('on');
+    if (el === lb || el.id === 'lbClose') fermer();
   });
   addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') lb.classList.remove('on');
+    if (!lb.classList.contains('on')) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') montrer(pos + 1, 1);
+    if (e.key === 'ArrowLeft') montrer(pos - 1, -1);
+  });
+
+  // Au doigt : on glisse vers la gauche pour la suivante. Seul un geste
+  // franchement horizontal compte, sinon un simple tapotement ou un
+  // défilement vertical changerait de photo par accident.
+  let x0 = 0, y0 = 0;
+  lb.addEventListener('touchstart', (e) => {
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+  }, { passive: true });
+  lb.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - x0;
+    const dy = e.changedTouches[0].clientY - y0;
+    if (liste.length < 2 || Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    dx < 0 ? montrer(pos + 1, 1) : montrer(pos - 1, -1);
   });
 
   // ---- ancres du menu : #work-cuisine descend ici et filtre ----

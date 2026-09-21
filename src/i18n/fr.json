@@ -268,6 +268,8 @@
 "esc-garde-corps.c": "Pour un escalier existant, une trémie ou une mezzanine.",
 "lb.close": "Fermer",
 
+"lb.prev": "Photo précédente",
+"lb.next": "Photo suivante",
 "slide.role": "Carrousel d'accueil",
 "slide.prev": "Diapositive précédente",
 "slide.next": "Diapositive suivante",

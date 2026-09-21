@@ -220,6 +220,8 @@
   "legal.p.data0": "Filling in this form is not compulsory: a call or a direct email does just as well. If you do use it, we process your details to answer your enquiry and prepare a possible quotation — processing that follows from your own approach and from the exchanges that precede a contract.",
   "legal.p.data2c": "Web3Forms, which delivers the form, and Cloudflare, which hosts the site, are established outside the European Union: your message passes through their servers before it reaches us. It is then kept in our mailbox, which is hosted in Europe.",
   "lb.close": "Close",
+  "lb.prev": "Previous photo",
+  "lb.next": "Next photo",
   "slide.role": "Home page carousel",
   "slide.prev": "Previous slide",
   "slide.next": "Next slide",
