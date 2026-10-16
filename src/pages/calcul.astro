@@ -1,0 +1,225 @@
+---
+// Page cachée : accessible uniquement via /calcul (aucun lien sur le site, noindex).
+// Aucune donnée n'est stockée ni envoyée : tout se calcule dans le navigateur.
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Calcul rapide · DO HAB</title>
+    <style is:global>
+      :root {
+        --bg: #f6f5f2;
+        --card: #ffffff;
+        --text: #1d1d1b;
+        --muted: #6b6a66;
+        --line: #dedcd6;
+        --accent: #1d1d1b;
+        --accent-text: #ffffff;
+        --error: #c0392b;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #141413;
+          --card: #1e1e1c;
+          --text: #f1efe9;
+          --muted: #9a988f;
+          --line: #34332f;
+          --accent: #f1efe9;
+          --accent-text: #141413;
+          --error: #e5786b;
+        }
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 24px 16px;
+      }
+      main {
+        width: 100%;
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 4px;
+        letter-spacing: 0.02em;
+      }
+      .types {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .types button {
+        font: inherit;
+        font-size: 1.05rem;
+        font-weight: 600;
+        padding: 14px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--text);
+        cursor: pointer;
+      }
+      .types button[aria-pressed="true"] {
+        background: var(--accent);
+        color: var(--accent-text);
+        border-color: var(--accent);
+      }
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      input {
+        font: inherit;
+        font-size: 1.25rem;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--text);
+        width: 100%;
+      }
+      input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+      input.invalid { border-color: var(--error); }
+      .result {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .result span { color: var(--muted); font-size: 0.9rem; }
+      output {
+        font-size: 2.2rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      .result small { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+      #reset {
+        font: inherit;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>DO HAB · Calcul de prix</h1>
+
+      <div class="types" role="group" aria-label="Type de calcul">
+        <button type="button" data-type="1" aria-pressed="true">Type 1</button>
+        <button type="button" data-type="2" aria-pressed="false">Type 2</button>
+      </div>
+
+      <label>
+        Prix de base du meuble (€)
+        <input id="base" type="text" inputmode="decimal" autocomplete="off" placeholder="0" />
+      </label>
+      <label>
+        Poids total (kg)
+        <input id="kg" type="text" inputmode="decimal" autocomplete="off" placeholder="0" />
+      </label>
+      <label>
+        Coût des ouvriers (€)
+        <input id="workers" type="text" inputmode="decimal" autocomplete="off" placeholder="0" />
+      </label>
+
+      <section class="result" aria-live="polite">
+        <span>Prix final</span>
+        <output id="total">—</output>
+        <small id="detail"></small>
+      </section>
+
+      <button type="button" id="reset">Effacer</button>
+    </main>
+
+    <script>
+      // Coefficients — à modifier ici si les marges changent
+      const MARGE_ACHAT = 1.1;   // base × 1.1
+      const PRIX_PAR_KG = 1.5;   // 1.5 € par kg
+      const MARGE = 1.15;        // 15 %
+
+      // Type 1 : ((base × 1.1 + 1.5 × kg) × 1.15 + ouvriers) × 1.15
+      // Type 2 : ((base × 1.1 + 1.5 × kg) + ouvriers) × 1.15
+      function calc(type, base, kg, workers) {
+        const materiel = base * MARGE_ACHAT + PRIX_PAR_KG * kg;
+        const total = type === 1
+          ? (materiel * MARGE + workers) * MARGE
+          : (materiel + workers) * MARGE;
+        return { materiel, total };
+      }
+
+      const eur = new Intl.NumberFormat('fr-BE', { style: 'currency', currency: 'EUR' });
+      const fields = ['base', 'kg', 'workers'].map((id) => document.getElementById(id));
+      const totalEl = document.getElementById('total');
+      const detailEl = document.getElementById('detail');
+      const typeButtons = document.querySelectorAll('.types button');
+      let type = 1;
+
+      // Accepte "12,5", "12.5" et "1 200,50" ; vide = 0 ; texte invalide = NaN
+      function parse(input) {
+        const raw = input.value.replace(/[\s\u00a0]/g, '').replace(',', '.');
+        if (raw === '') return 0;
+        if (!/^\d*\.?\d+$|^\d+\.$/.test(raw)) return NaN;
+        return parseFloat(raw);
+      }
+
+      function update() {
+        let ok = true;
+        const [base, kg, workers] = fields.map((f) => {
+          const v = parse(f);
+          f.classList.toggle('invalid', Number.isNaN(v));
+          if (Number.isNaN(v)) ok = false;
+          return v;
+        });
+
+        if (!ok || fields[0].value.trim() === '') {
+          totalEl.textContent = '—';
+          detailEl.textContent = '';
+          return;
+        }
+
+        const { materiel, total } = calc(type, base, kg, workers);
+        totalEl.textContent = eur.format(total);
+        detailEl.textContent = 'Meuble + transport : ' + eur.format(materiel);
+      }
+
+      typeButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          type = Number(btn.dataset.type);
+          typeButtons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+          update();
+        });
+      });
+
+      fields.forEach((f) => f.addEventListener('input', update));
+
+      document.getElementById('reset').addEventListener('click', () => {
+        fields.forEach((f) => { f.value = ''; f.classList.remove('invalid'); });
+        update();
+        fields[0].focus();
+      });
+    </script>
+  </body>
+</html>
