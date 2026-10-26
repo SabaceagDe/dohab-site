@@ -1,0 +1,12 @@
+---
+// Message de confirmation ou d'erreur après un envoi de formulaire.
+// Les endpoints redirigent avec ?ok=… ou ?err=… (POST → redirection → GET).
+import { errorText, okText, type ErrorCode, type OkCode } from '../../lib/forms';
+
+const ok = Astro.url.searchParams.get('ok');
+const err = Astro.url.searchParams.get('err');
+const okMsg = ok && ok in okText ? okText[ok as OkCode] : null;
+const errMsg = err && err in errorText ? errorText[err as ErrorCode] : null;
+---
+{errMsg && <p class="flash err" role="alert">{errMsg}</p>}
+{okMsg && !errMsg && <p class="flash ok" role="status">{okMsg}</p>}

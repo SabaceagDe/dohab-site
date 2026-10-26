@@ -1,0 +1,166 @@
+---
+/**
+ * Mise en page de l'espace interne (/admin). Pensée téléphone d'abord :
+ * le patron s'en sert sur chantier.
+ */
+import '../styles/tokens.css';
+
+interface Props {
+  title: string;
+  active?: 'paiements' | 'calcul';
+}
+const { title, active } = Astro.props;
+const user = Astro.locals.user;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title} · DO HAB</title>
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="/admin/paiements">DO HAB</a>
+      <nav>
+        <a href="/admin/paiements" aria-current={active === 'paiements' ? 'page' : undefined}>Paiements</a>
+        <a href="/admin/calcul" aria-current={active === 'calcul' ? 'page' : undefined}>Calcul</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="foot">
+      {user && <span>Connecté : {user}</span>}
+      <a href="/cdn-cgi/access/logout">Se déconnecter</a>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --a-bg: var(--ground);
+    --a-card: var(--surface);
+    --a-ink: var(--ink);
+    --a-soft: var(--soft);
+    --a-muted: var(--muted);
+    --a-line: var(--line);
+    --a-accent: var(--accent);
+    --a-accent-ink: var(--accent-ink);
+    --a-accent-soft: var(--accent-soft);
+    --a-due: #9A4B2E;
+    --a-due-soft: #F7ECE6;
+    --a-error: #B3261E;
+    --a-error-soft: #FBEAE8;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --a-bg: #161513;
+      --a-card: #201F1C;
+      --a-ink: #EFEBE4;
+      --a-soft: #C9C3B9;
+      --a-muted: #9A948A;
+      --a-line: #34322E;
+      --a-accent: #9DB38C;
+      --a-accent-ink: #161513;
+      --a-accent-soft: #252B21;
+      --a-due: #E39A78;
+      --a-due-soft: #2E211B;
+      --a-error: #F2A097;
+      --a-error-soft: #33201E;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--a-bg);
+    color: var(--a-ink);
+    font-family: var(--f);
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-text-size-adjust: 100%;
+  }
+  a { color: inherit; }
+  main { max-width: 860px; margin: 0 auto; padding: 1rem 1rem 3rem; }
+
+  .top {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: .7rem 1rem;
+    background: var(--a-card);
+    border-bottom: 1px solid var(--a-line);
+  }
+  .brand { font-weight: 600; letter-spacing: .08em; text-decoration: none; }
+  .top nav { display: flex; gap: .25rem; }
+  .top nav a {
+    text-decoration: none; padding: .45rem .7rem; border-radius: 6px; color: var(--a-soft);
+  }
+  .top nav a[aria-current='page'] { background: var(--a-accent-soft); color: var(--a-ink); font-weight: 600; }
+
+  .foot {
+    max-width: 860px; margin: 0 auto; padding: 1rem;
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem;
+    color: var(--a-muted); font-size: .85rem;
+  }
+
+  h1 { font-size: 1.45rem; margin: .4rem 0 1rem; font-weight: 600; }
+  h2 { font-size: 1.1rem; margin: 0 0 .75rem; font-weight: 600; }
+
+  .card {
+    background: var(--a-card);
+    border: 1px solid var(--a-line);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* --- formulaires --- */
+  .grid { display: grid; gap: .75rem; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .grid.two { grid-template-columns: 1fr 1fr; } .span { grid-column: 1 / -1; } }
+  label { display: grid; gap: .3rem; font-size: .9rem; color: var(--a-soft); }
+  label .opt { color: var(--a-muted); font-weight: 400; }
+  input, select, textarea {
+    font: inherit; font-size: 16px; /* 16px : évite le zoom auto sur iPhone */
+    color: var(--a-ink);
+    background: var(--a-bg);
+    border: 1px solid var(--a-line);
+    border-radius: 8px;
+    padding: .65rem .75rem;
+    width: 100%;
+  }
+  textarea { min-height: 4.5rem; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--a-accent); outline-offset: 1px; }
+  fieldset { border: 1px dashed var(--a-line); border-radius: 8px; padding: .75rem; margin: 0; }
+  legend { padding: 0 .35rem; font-size: .9rem; color: var(--a-soft); }
+
+  .btn {
+    font: inherit; font-weight: 600; cursor: pointer;
+    border: 0; border-radius: 8px; padding: .75rem 1.1rem;
+    background: var(--a-accent); color: var(--a-accent-ink);
+    min-height: 44px;
+  }
+  .btn.ghost { background: transparent; color: var(--a-ink); border: 1px solid var(--a-line); }
+  .btn.danger { background: transparent; color: var(--a-error); border: 1px solid currentColor; }
+  .actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+
+  details > summary { cursor: pointer; font-weight: 600; list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before { content: '+ '; color: var(--a-accent); }
+  details[open] > summary::before { content: '− '; }
+  details[open] > summary { margin-bottom: .9rem; }
+
+  /* --- messages --- */
+  .flash { border-radius: 8px; padding: .7rem .9rem; margin-bottom: 1rem; font-weight: 500; }
+  .flash.ok { background: var(--a-accent-soft); }
+  .flash.err { background: var(--a-error-soft); color: var(--a-error); }
+
+  .money { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .due { color: var(--a-due); }
+  .muted { color: var(--a-muted); }
+  .bar { height: 6px; border-radius: 3px; background: var(--a-line); overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--a-accent); }
+</style>
