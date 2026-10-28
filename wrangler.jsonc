@@ -21,8 +21,7 @@
     {
       "binding": "DB",
       "database_name": "dohab-db",
-      // À remplacer par l'id affiché par `npx wrangler d1 create dohab-db`
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "5fd75a21-97e6-465f-a6bd-33711c110af7",
       "migrations_dir": "migrations"
     }
   ],
