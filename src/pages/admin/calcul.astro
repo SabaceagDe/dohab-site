@@ -1,6 +1,9 @@
 ---
-// Page cachée : accessible uniquement via /calcul (aucun lien sur le site, noindex).
+// Outil interne, derrière Cloudflare Access comme tout /admin.
+// (Avant : une URL « cachée » /calcul — mais la formule était lisible par
+// n'importe qui ouvrant la page. Une URL secrète n'est pas un contrôle d'accès.)
 // Aucune donnée n'est stockée ni envoyée : tout se calcule dans le navigateur.
+export const prerender = false;
 ---
 <!doctype html>
 <html lang="fr">

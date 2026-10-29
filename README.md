@@ -1,7 +1,8 @@
 # dohab-site
 
-Site vitrine DO HAB — Astro, généré en statique, trois langues.
-Aucun serveur, aucune base de données : le build produit des fichiers HTML.
+Site vitrine DO HAB — Astro, trois langues. Le site public est généré en
+statique ; seul l'espace interne `/admin` tourne côté serveur (Worker
+Cloudflare + base D1), derrière Cloudflare Access.
 
 ## Démarrer
 
@@ -77,10 +78,37 @@ sœurs en `hreflang`. Pour mettre le français devant, il suffit de changer
    Chaque `git push` sur `main` relance le build et met le site à jour.
    Domaine et compte au nom de l'entreprise.
 
+## Espace interne `/admin`
+
+Suivi des paiements clients (total HTVA, versements, reste) et page de
+calcul. Réservé au patron et à Denis via Cloudflare Access.
+
+| Fichier | Rôle |
+| --- | --- |
+| `migrations/0001_init.sql` | tables `orders` et `payments` |
+| `src/lib/db.ts` | toutes les requêtes SQL |
+| `src/lib/money.ts` | montants en centimes, saisie « 1.250,50 » |
+| `src/lib/forms.ts` | validation des formulaires, messages |
+| `src/middleware.ts` | vérif. du jeton Access, anti-CSRF, no-store |
+| `src/pages/admin/` | pages (`paiements/`, `calcul`) et endpoints (`api/`) |
+
+Le « reste à payer » n'est jamais stocké : total − somme des versements.
+Rien n'est effacé : une suppression remplit `deleted_at`.
+
+En local :
+
+```bash
+npx wrangler d1 migrations apply dohab-db --local   # une fois
+npm run dev                                          # /admin sans Access en dev
+```
+
+Nouvelle migration : `npx wrangler d1 migrations create dohab-db <nom>`,
+l'appliquer en `--local`, puis en `--remote` **avant** de pousser le code
+qui l'utilise.
+
 ## Ce qu'on ne construit pas
 
-Pas de comptes, pas d'espace client, pas de back-office, pas de
-calculateur de prix, pas de réservation en ligne, pas de bannière
+Pas de comptes clients, pas de réservation en ligne, pas de bannière
 cookies (parce qu'aucun cookie tiers n'est posé).
 
 ## Référence

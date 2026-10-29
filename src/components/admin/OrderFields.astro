@@ -1,0 +1,29 @@
+---
+// Champs d'une commande — partagés par « nouvelle commande » et « modifier ».
+import { centsToInput } from '../../lib/money';
+import type { OrderRow } from '../../lib/db';
+
+interface Props { order?: OrderRow }
+const { order } = Astro.props;
+---
+<div class="grid two">
+  <label>Client
+    <input name="client_name" required maxlength="200" autocomplete="off" value={order?.client_name} />
+  </label>
+  <label>Téléphone <span class="opt">(facultatif)</span>
+    <input name="client_phone" type="tel" maxlength="50" autocomplete="off" value={order?.client_phone ?? ''} />
+  </label>
+  <label class="span">Adresse du chantier <span class="opt">(facultatif)</span>
+    <input name="address" maxlength="300" autocomplete="off" value={order?.address ?? ''} />
+  </label>
+  <label>Travaux <span class="opt">(ex. cuisine + dressing)</span>
+    <input name="label" maxlength="200" autocomplete="off" value={order?.label ?? ''} />
+  </label>
+  <label>Total HTVA (€)
+    <input name="total" required inputmode="decimal" autocomplete="off" placeholder="ex. 8500 ou 8500,50"
+      value={order ? centsToInput(order.total_cents) : ''} />
+  </label>
+  <label class="span">Note <span class="opt">(facultatif)</span>
+    <textarea name="note" maxlength="2000">{order?.note ?? ''}</textarea>
+  </label>
+</div>

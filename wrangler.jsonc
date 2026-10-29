@@ -1,10 +1,37 @@
 {
-  // Déploiement Cloudflare Workers : on ne sert que des fichiers statiques.
-  // Pas de "main" — il n'y a pas de code serveur. Si un jour on ajoute une
-  // fonction (formulaire, base de données), elle viendra s'ajouter ici.
+  // Déploiement Cloudflare Workers.
+  // - Les pages publiques sont des fichiers statiques servis depuis ./dist.
+  // - Le Worker (code généré par Astro) ne sert que /admin/* : suivi des
+  //   paiements, export CSV, page de calcul.
   "name": "dohab-site",
   "compatibility_date": "2026-09-11",
+  "main": "./dist/_worker.js/index.js",
   "assets": {
+    "binding": "ASSETS",
     "directory": "./dist"
+  },
+
+  // Le Worker ne doit être joignable QUE via dohab.be, où Cloudflare Access
+  // protège /admin. L'adresse *.workers.dev et les URL de preview
+  // contourneraient Access : on les coupe.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dohab-db",
+      "database_id": "5fd75a21-97e6-465f-a6bd-33711c110af7",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Cloudflare Access (Zero Trust → Access → Applications → l'app "admin").
+  // Le middleware vérifie la signature du jeton Access sur chaque requête
+  // /admin : sans ces deux valeurs, /admin refuse tout en production.
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "https://bitter-thunder-7422.cloudflareaccess.com",
+    // "Application Audience (AUD) Tag" de l'application Access
+    "ACCESS_AUD": "2e247f36f6433b33c54cbc8b2fc51fc02e79bd0774b5959f3b19781f3b0d9b09"
   }
 }

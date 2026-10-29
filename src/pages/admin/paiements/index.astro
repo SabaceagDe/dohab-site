@@ -1,0 +1,122 @@
+---
+// Suivi des paiements : formulaire « nouvelle commande » + liste.
+export const prerender = false;
+
+import Admin from '../../../layouts/Admin.astro';
+import Flash from '../../../components/admin/Flash.astro';
+import OrderFields from '../../../components/admin/OrderFields.astro';
+import PaymentFields from '../../../components/admin/PaymentFields.astro';
+import { listOrders } from '../../../lib/db';
+import { formatEuros } from '../../../lib/money';
+
+const orders = await listOrders(Astro.locals.runtime.env.DB);
+
+const open = orders.filter((o) => o.total_cents - o.paid_cents > 0);
+const outstanding = open.reduce((s, o) => s + (o.total_cents - o.paid_cents), 0);
+const pct = (o: (typeof orders)[number]) =>
+  Math.min(100, Math.round((o.paid_cents / o.total_cents) * 100));
+---
+<Admin title="Paiements" active="paiements">
+  <h1>Paiements clients</h1>
+  <Flash />
+
+  <section class="card summary">
+    <div>
+      <span class="muted">Reste à encaisser</span>
+      <strong class="money big">{formatEuros(outstanding)}</strong>
+    </div>
+    <div>
+      <span class="muted">Commandes non soldées</span>
+      <strong class="big">{open.length}</strong>
+    </div>
+  </section>
+
+  <details class="card" open={orders.length === 0}>
+    <summary>Nouvelle commande</summary>
+    <form method="post" action="/admin/api/orders">
+      <input type="hidden" name="_action" value="create" />
+      <OrderFields />
+      <fieldset style="margin-top:.9rem">
+        <legend>Acompte reçu</legend>
+        <PaymentFields optional />
+      </fieldset>
+      <div class="actions"><button class="btn" type="submit">Enregistrer</button></div>
+    </form>
+  </details>
+
+  {orders.length > 0 && (
+    <section>
+      <input id="filtre" type="search" placeholder="Rechercher un client, une adresse…" aria-label="Rechercher" />
+      <ul class="orders">
+        {orders.map((o) => {
+          const rest = o.total_cents - o.paid_cents;
+          const haystack = [o.client_name, o.label, o.address, o.client_phone].filter(Boolean).join(' ').toLowerCase();
+          return (
+            <li data-search={haystack}>
+              <a href={`/admin/paiements/${o.id}`}>
+                <div class="who">
+                  <strong>{o.client_name}</strong>
+                  {o.label && <span class="muted">{o.label}</span>}
+                </div>
+                <div class="nums">
+                  {rest > 0
+                    ? <strong class="money due">reste {formatEuros(rest)}</strong>
+                    : rest === 0
+                      ? <strong class="paid">Soldé</strong>
+                      : <strong class="money due">trop-perçu {formatEuros(-rest)}</strong>}
+                  <span class="muted money">{formatEuros(o.paid_cents)} / {formatEuros(o.total_cents)}</span>
+                </div>
+                <div class="bar"><span style={`width:${pct(o)}%`} /></div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <p id="aucun" class="muted" hidden>Aucun résultat.</p>
+      <p class="export"><a href="/admin/export.csv">Exporter tout en CSV (Excel)</a></p>
+    </section>
+  )}
+</Admin>
+
+<style>
+  .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .summary div { display: grid; gap: .2rem; }
+  .summary .muted { font-size: .85rem; }
+  .big { font-size: 1.35rem; }
+  #filtre { margin-bottom: .75rem; }
+  .orders { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .orders a {
+    display: grid; gap: .55rem;
+    grid-template-columns: 1fr auto;
+    background: var(--a-card);
+    border: 1px solid var(--a-line);
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    text-decoration: none;
+  }
+  .orders a:hover { border-color: var(--a-accent); }
+  .who, .nums { display: grid; gap: .1rem; min-width: 0; }
+  .who strong, .who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nums { text-align: right; }
+  .nums .muted { font-size: .82rem; }
+  .paid { color: var(--a-accent); }
+  .bar { grid-column: 1 / -1; }
+  .export { margin-top: 1.25rem; font-size: .9rem; }
+</style>
+
+<script>
+  // Filtre instantané de la liste (côté navigateur, rien n'est envoyé).
+  const input = document.getElementById('filtre') as HTMLInputElement | null;
+  const rows = Array.from(document.querySelectorAll<HTMLLIElement>('.orders li'));
+  const none = document.getElementById('aucun');
+  input?.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let shown = 0;
+    for (const li of rows) {
+      const hit = !q || (li.dataset.search ?? '').includes(q);
+      li.hidden = !hit;
+      if (hit) shown++;
+    }
+    if (none) none.hidden = shown > 0;
+  });
+</script>

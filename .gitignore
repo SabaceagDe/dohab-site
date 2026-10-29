@@ -6,3 +6,8 @@ dist/
 
 # les originaux pleine résolution : lourds, jamais déployés
 photos-originales/
+
+# Cloudflare : base D1 locale et secrets de dev — jamais dans le repo
+.wrangler/
+.dev.vars
+worker-configuration.d.ts
