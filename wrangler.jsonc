@@ -30,9 +30,8 @@
   // Le middleware vérifie la signature du jeton Access sur chaque requête
   // /admin : sans ces deux valeurs, /admin refuse tout en production.
   "vars": {
-    // ex. "https://dohab.cloudflareaccess.com"
-    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_TEAM_DOMAIN": "https://bitter-thunder-7422.cloudflareaccess.com",
     // "Application Audience (AUD) Tag" de l'application Access
-    "ACCESS_AUD": ""
+    "ACCESS_AUD": "2e247f36f6433b33c54cbc8b2fc51fc02e79bd0774b5959f3b19781f3b0d9b09"
   }
 }
