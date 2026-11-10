@@ -74,6 +74,8 @@
   "form.send": "Aanvraag versturen",
   "form.note": "Enkel om uw aanvraag te beantwoorden.",
   "direct.wa": "WhatsApp",
+  "wa.text": "Hallo DO HAB, ik heb een vraag over een meubel op maat.",
+  "wa.aria": "Stuur ons een bericht via WhatsApp",
   "direct.call": "Telefoon",
   "direct.mail": "E-mail",
   "direct.zone": "Werkgebied",

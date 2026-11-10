@@ -1,7 +1,7 @@
 import nl from './nl.json';
 import fr from './fr.json';
 import en from './en.json';
-import type { Locale } from '../site.config';
+import { site, type Locale } from '../site.config';
 
 const dictionaries = { nl, fr, en } as const;
 
@@ -33,3 +33,10 @@ const legalPaths = {
 export const legalHref = (locale: Locale) => legalPaths[locale];
 
 export const locales = ['nl', 'fr', 'en'] as const;
+
+/**
+ * Lien WhatsApp avec un premier message déjà écrit dans la langue de la
+ * page (clé wa.text) : le client n'a plus qu'à appuyer sur « envoyer ».
+ */
+export const whatsappHref = (locale: Locale) =>
+  `${site.whatsapp}?text=${encodeURIComponent(t(locale)('wa.text'))}`;

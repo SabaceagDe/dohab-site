@@ -83,6 +83,8 @@
 "form.error": "L'envoi n'a pas abouti. Réessayez dans un instant, ou appelez-nous directement.",
 
 "direct.wa": "WhatsApp",
+"wa.text": "Bonjour DO HAB, j'aimerais parler d'un projet de meuble sur mesure.",
+"wa.aria": "Écrivez-nous sur WhatsApp",
 "direct.call": "Téléphone",
 "direct.mail": "E-mail",
 "direct.zone": "Zone d'intervention",

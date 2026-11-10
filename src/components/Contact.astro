@@ -1,6 +1,6 @@
 ---
 import { site, type Locale } from '../site.config';
-import { t } from '../i18n';
+import { t, whatsappHref } from '../i18n';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
@@ -80,7 +80,7 @@ const WEB3FORMS_KEY = '0c7a0a3c-a915-48ab-89bd-6db77150739e';
       </form>
 
       <div class="direct">
-        <a href={site.whatsapp}>
+        <a href={whatsappHref(locale)} target="_blank" rel="noopener">
           <span><span class="k">{tr('direct.wa')}</span><span class="v">{site.phone}</span></span>
           <span class="arw">&rarr;</span>
         </a>
