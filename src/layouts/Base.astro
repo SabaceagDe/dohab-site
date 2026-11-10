@@ -3,6 +3,7 @@ import '../styles/tokens.css';
 import '../styles/global.css';
 import { site, type Locale } from '../site.config';
 import { t, locales, localeHref, legalHref } from '../i18n';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
 
 interface Props {
   locale: Locale;
@@ -105,6 +106,7 @@ const jsonLd = {
   </head>
   <body>
     <slot />
+    <WhatsAppButton locale={locale} />
 
     <script>
       // Apparitions au défilement. Le voile est posé sur l'image et non sur

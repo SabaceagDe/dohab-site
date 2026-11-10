@@ -1,0 +1,50 @@
+---
+/**
+ * BOUTON WHATSAPP FLOTTANT, en bas à droite de chaque page publique.
+ *
+ * Pourquoi : la plupart des clients préfèrent écrire sur WhatsApp plutôt
+ * que remplir un formulaire ou envoyer un e-mail. Un appui ouvre WhatsApp
+ * (l'app sur téléphone, WhatsApp Web sur ordinateur) avec un premier
+ * message déjà rédigé dans la langue de la page.
+ *
+ * Le numéro vient de site.config.ts, le message de la clé wa.text.
+ * L'icône est une simple bulle de discussion (pas le logo de WhatsApp).
+ */
+import type { Locale } from '../site.config';
+import { t, whatsappHref } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+---
+<a class="wa" href={whatsappHref(locale)} target="_blank" rel="noopener" aria-label={tr('wa.aria')}>
+  <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+    <path d="M12 3.2c-4.86 0-8.8 3.6-8.8 8.04 0 2.2.97 4.2 2.55 5.65L5 20.8l4.08-1.86c.93.27 1.91.42 2.92.42 4.86 0 8.8-3.6 8.8-8.05S16.86 3.2 12 3.2Z"
+          fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" />
+    <circle cx="8.3" cy="11.3" r="1.15" fill="currentColor" />
+    <circle cx="12" cy="11.3" r="1.15" fill="currentColor" />
+    <circle cx="15.7" cy="11.3" r="1.15" fill="currentColor" />
+  </svg>
+  <span>{tr('direct.wa')}</span>
+</a>
+
+<style>
+  .wa {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 50;                       /* sous le menu (60) et la visionneuse photo (100) */
+    display: inline-flex; align-items: center; gap: .5rem;
+    min-height: 52px; padding: 0 1.15rem 0 .95rem;
+    border-radius: 999px;
+    background: #187C44; color: #fff;  /* vert « message » ; blanc dessus = contraste 5,2:1 (AA) */
+    font: 600 1rem/1 var(--f); text-decoration: none;
+    box-shadow: 0 10px 24px -10px rgb(20 40 25 / .55), 0 2px 6px rgb(0 0 0 / .12);
+    transition: transform .15s ease, box-shadow .15s ease, background .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wa:hover { background: #166E3B; transform: translateY(-2px); }
+  .wa:active { transform: translateY(0); }
+  .wa:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .wa { transition: none; } .wa:hover { transform: none; } }
+  @media print { .wa { display: none; } }
+</style>

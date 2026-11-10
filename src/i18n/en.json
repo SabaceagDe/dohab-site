@@ -74,6 +74,8 @@
   "form.send": "Send request",
   "form.note": "Only used to answer your request.",
   "direct.wa": "WhatsApp",
+  "wa.text": "Hello DO HAB, I'd like to talk about a made-to-measure furniture project.",
+  "wa.aria": "Message us on WhatsApp",
   "direct.call": "Phone",
   "direct.mail": "Email",
   "direct.zone": "Working area",
