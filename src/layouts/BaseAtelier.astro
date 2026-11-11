@@ -2,18 +2,57 @@
 /**
  * Mise en page de la version « atelier » (dohab.be/experiment).
  * C'est la mise en page normale (Base.astro) + le style atelier + le
- * défilement doux. Comme atelier.css n'est importé qu'ici, il ne touche
+ * défilement doux (scripts/smooth.ts) + les effets (scripts/fx.ts) + le
+ * rideau d'ouverture. Comme atelier.css n'est chargé qu'ici, il ne touche
  * jamais les pages normales du site.
+ *
+ * ORDRE DES FEUILLES DE STYLE — important.
+ * atelier.css remplace des règles de global.css avec les mêmes sélecteurs :
+ * il doit donc arriver APRÈS. Un simple `import '../styles/atelier.css'`
+ * ne le garantit pas : en développement l'ordre était bon, mais dans le
+ * site construit, Astro plaçait global.css en dernier (fichier partagé par
+ * toutes les pages) et les règles d'atelier perdaient — d'où des cartes
+ * blanches à texte clair dans « Contact » sur dohab.be/experiment.
+ * On charge donc atelier.css par une balise <link> écrite à la main, au
+ * tout début de <body> : elle vient forcément après tout ce qui est dans
+ * <head>. `?url` demande à Vite l'adresse du fichier final (minifié, avec
+ * son empreinte dans le nom) au lieu de l'injecter lui-même.
  */
 import Base from './Base.astro';
-import '../styles/atelier.css';
+import atelierCss from '../styles/atelier.css?url';
 import type { Locale } from '../site.config';
 interface Props { locale: Locale; title?: string }
 const { locale, title } = Astro.props;
 ---
 <Base locale={locale} title={title} noindex bodyClass="accueil">
+  <link rel="stylesheet" href={atelierCss} />
+
+  {/* OUVERTURE — une fois par visite : sur un fond forêt, les cernes du logo
+      poussent depuis le cœur, les lettres suivent, puis le rideau se lève sur
+      le site (animations dans atelier.css, section « OUVERTURE »).
+      Le rideau n'existe que si le petit script ci-dessous pose la classe
+      .intro-on : sans JavaScript, ou si on l'a déjà vu dans cet onglet
+      (sessionStorage), ou si le système demande moins d'animations, rien ne
+      s'affiche. Il ne capte jamais les clics, et il est retiré de la page
+      après 3,5 s quoi qu'il arrive. */}
+  <div class="intro" id="intro" aria-hidden="true">
+    <img src="/logo/dohab-mark-clair.webp" alt="" width="760" height="184" />
+  </div>
+  <script is:inline>
+    (function () {
+      var el = document.getElementById('intro');
+      try {
+        if (sessionStorage.getItem('dohab-intro') || matchMedia('(prefers-reduced-motion: reduce)').matches) return el.remove();
+        sessionStorage.setItem('dohab-intro', '1');
+      } catch (e) { return el.remove(); }
+      document.documentElement.classList.add('intro-on');
+      setTimeout(function () { el.remove(); }, 3500);
+    })();
+  </script>
+
   <slot />
 </Base>
 <script>
   import '../scripts/smooth';
+  import '../scripts/fx';
 </script>
