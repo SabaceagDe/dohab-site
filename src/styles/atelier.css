@@ -428,12 +428,12 @@ html.lenis,html.lenis body{height:auto}
 /* ==================================================================
    HAUT DE PAGE EN WEBGL (scripts/hero-gl.ts)
    Le canvas recouvre les <img> dès que sa première image est dessinée.
-   Il « respire » : un zoom très lent, aller-retour, fait par le navigateur
-   sans redessiner (la carte graphique ne travaille que pendant un passage).
+   Il ne bouge pas entre deux passages : un zoom lent sur le canvas faisait
+   trembler les lignes fines des photos (elles sont recalculées à chaque
+   image, à cheval sur les pixels).
    ================================================================== */
 .hero-gl{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .5s ease}
-.hero-gl.pret{opacity:1;animation:respire 18s ease-in-out infinite alternate}
-@keyframes respire{to{scale:1.06}}
+.hero-gl.pret{opacity:1}
 
 /* ==================================================================
    TITRES MOT PAR MOT (scripts/fx.ts)
@@ -451,16 +451,18 @@ html.lenis,html.lenis body{height:auto}
    ================================================================== */
 .curseur{position:fixed;left:0;top:0;z-index:400;width:0;height:0;pointer-events:none;opacity:0;transition:opacity .3s}
 .curseur.la{opacity:1}
-.curseur span{position:absolute;left:-44px;top:-44px;display:grid;place-items:center;width:88px;height:88px;
-  border-radius:50%;background:var(--oak);color:transparent;font-size:var(--t-sm);font-weight:600;letter-spacing:.03em;
-  scale:.1;transition:scale .45s var(--ease),color .2s,background .3s}
-.curseur.lien span{scale:.42;background:rgba(196,153,95,.38)}
-.curseur.voir span{scale:1;color:var(--forest)}
-.curseur.appui span{scale:.86}
-.curseur.appui:not(.voir) span{scale:.3}
-/* sur une photo, la pastille remplace la loupe du système */
+/* le O du logo : l'empreinte de cernes, chêne sur un disque forêt pour rester
+   visible sur une photo claire comme sur une sombre. Petit en temps normal,
+   il grandit sur une photo qu'on peut ouvrir et se met à tourner. */
+.curseur span{position:absolute;left:-22px;top:-22px;width:44px;height:44px;border-radius:50%;
+  background:var(--forest) url(/logo/cernes-chene.webp) center/82% no-repeat;
+  box-shadow:0 2px 10px rgba(0,0,0,.28);scale:.4;transition:scale .4s var(--ease)}
+.curseur.lien span{scale:.55}
+.curseur.voir span{scale:1;animation:tourne 9s linear infinite}
+.curseur.appui span{scale:.34}
+.curseur.appui.voir span{scale:.86}
+/* sur une photo, le O remplace la loupe du système */
 .a-curseur :is(.card,.tile,#prix .item){cursor:none}
-.lb-ouverte .curseur span{background:var(--oak-2)}
 
 /* boutons aimantés : le retour à la place se fait en douceur */
 .btn{transition:background .3s var(--ease),border-color .3s var(--ease),color .3s,transform .3s var(--ease),translate .45s var(--ease)}
