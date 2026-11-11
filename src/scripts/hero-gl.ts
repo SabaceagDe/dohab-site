@@ -42,8 +42,8 @@ float bruit(vec2 p){
 // une photo, recadrée comme « object-fit: cover », avec un léger zoom
 vec4 photo(sampler2D s, vec4 c, vec2 uv, float zoom){
   uv = (uv - .5) / zoom + .5;
-  uv = uv * c.xy + c.zw;
-  return texture2D(s, vec2(uv.x, 1. - uv.y));
+  uv.y = 1. - uv.y;            // WebGL compte de bas en haut, une image de haut en bas
+  return texture2D(s, uv * c.xy + c.zw);
 }
 void main(){
   float n = bruit(v * vec2(2.5, 4.) + g) * .6 + bruit(v * vec2(7., 11.) - g) * .4;
@@ -51,8 +51,13 @@ void main(){
   float large = .26;                                   // largeur du bord flou
   float pos = mix(-large - .16, 1.16, t);
   float m = 1. - smoothstep(pos, pos + large, front + (n - .5) * .3);   // 0 = A, 1 = B
-  vec4 a = photo(A, cA, v + vec2(-.04 * m, 0.), 1.08 + .04 * t);
-  vec4 b = photo(B, cB, v + vec2(.04 * (1. - m), 0.), 1.14 - .06 * t);
+  // Les deux photos glissent un peu en sens inverse pendant le passage, sauf
+  // près des bords gauche et droit (sinon on irait chercher hors de la photo).
+  float bord = smoothstep(0., .14, v.x) * smoothstep(1., .86, v.x);
+  // Au repos (t = 0 ou 1) le zoom vaut exactement 1 : la photo est cadrée
+  // comme le <img> qu'elle recouvre, ni plus serrée ni décalée.
+  vec4 a = photo(A, cA, v + vec2(-.04 * m * bord, 0.), 1. + .03 * t);
+  vec4 b = photo(B, cB, v + vec2(.04 * (1. - m) * bord, 0.), 1.05 - .05 * t);
   gl_FragColor = mix(a, b, m);
 }`;
 
@@ -95,10 +100,12 @@ export function rideau(hero: HTMLElement, imgs: HTMLImageElement[]): Rideau | nu
   const uA = u('A'), uB = u('B'), ucA = u('cA'), ucB = u('cB'), ut = u('t'), ug = u('g');
 
   // --- les photos, envoyées à la carte graphique (« textures ») ---
-  // Pas plus grandes que nécessaire : une photo de 2400 px occupe 17 Mo de
-  // mémoire graphique ; sur un téléphone, 1000 px suffisent largement.
-  const dpr = Math.min(devicePixelRatio || 1, 1.5);
-  const cote = Math.min(2048, Math.ceil(Math.max(screen.width, screen.height) * dpr * 1.1));
+  // Le canvas a autant de pixels que l'écran (jusqu'à 2 par point), pour être
+  // aussi net que les <img>. Les photos ne sont pas envoyées plus grandes que
+  // nécessaire : sur un téléphone, 1000 px suffisent largement.
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const cote = Math.min(2560, gl.getParameter(gl.MAX_TEXTURE_SIZE) as number,
+    Math.ceil(Math.max(screen.width, screen.height) * dpr));
   const textures = new Map<number, WebGLTexture>();
 
   const charger = async (i: number): Promise<void> => {

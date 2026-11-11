@@ -1,7 +1,7 @@
 /**
  * Les « plus » de la version atelier (dohab.be/experiment) :
  *   1. les titres arrivent mot par mot ;
- *   2. un curseur qui suit la souris et annonce « Voir » sur les photos ;
+ *   2. le O du logo suit la souris et grandit sur les photos ;
  *   3. des boutons « aimantés » (ils se penchent vers la souris) ;
  *   4. la bande défilante accélère quand on fait défiler la page.
  *
@@ -53,18 +53,16 @@ if (!reduit) {
 
 /* ------------------------------------------------------------------
    2. Curseur
-   Un point chêne suit la souris avec un léger retard (à chaque image, il
-   parcourt 20 % de la distance qui le sépare de la souris). Sur une photo
-   qu'on peut ouvrir, il devient une pastille « Voir ». La flèche du
-   système reste visible partout ailleurs.
+   Le O du logo (l'empreinte de cernes) suit la souris avec un léger retard :
+   à chaque image, il parcourt 20 % de la distance qui le sépare de la
+   souris. Sur une photo qu'on peut ouvrir, il grandit et tourne. La flèche
+   du système reste visible partout ailleurs.
    ------------------------------------------------------------------ */
 if (souris && !reduit) {
   const c = document.createElement('div');
   c.className = 'curseur';
   c.setAttribute('aria-hidden', 'true');
-  const pastille = document.createElement('span');
-  pastille.textContent = ({ fr: 'Voir', nl: 'Bekijk', en: 'View' } as Record<string, string>)[document.documentElement.lang] ?? 'Voir';
-  c.appendChild(pastille);
+  c.appendChild(document.createElement('span'));
   document.body.appendChild(c);
   document.documentElement.classList.add('a-curseur');
 
