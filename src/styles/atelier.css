@@ -502,3 +502,34 @@ html.lenis,html.lenis body{height:auto}
     @keyframes ouvre{from{clip-path:inset(0 7% round 14px)}to{clip-path:inset(0 0 round 0px)}}
   }
 }
+
+/* ==================================================================
+   HAUT DE PAGE SUR GRAND ÉCRAN — la photo à côté du texte
+   Sur un téléphone la photo plein écran est bien cadrée. Sur un écran
+   large, la même photo étirée sur toute la largeur devenait énorme : on
+   n'en voyait qu'une bande, surtout pour les photos prises en hauteur.
+   À partir de 1100 px, la photo n'occupe donc plus que les deux tiers
+   droits : elle est affichée plus petite (on en voit bien plus) et sans
+   voile sombre, puisque le texte est à gauche sur le fond forêt. Son bord
+   gauche se fond dans le fond. Le canvas WebGL suit tout seul : il prend la
+   taille de .hero-fonds. En dessous de 1100 px, rien ne change.
+   ================================================================== */
+@media (min-width:1100px){
+  .hero-fonds{left:36%;top:76px}
+  .hero::after{background:
+    linear-gradient(90deg,var(--forest) 0%,var(--forest) 36%,rgba(28,43,34,.55) 42%,rgba(28,43,34,0) 52%),
+    linear-gradient(180deg,rgba(12,18,14,0) 0%,rgba(12,18,14,0) 76%,rgba(12,18,14,.7) 100%)}
+  .hero-bloc,.hero-sub{max-width:min(34rem,33vw)}
+  .hero-titre{max-width:none}
+  /* La barre de menu passe à cheval sur le panneau forêt et sur la photo :
+     elle prend le même fond forêt que le panneau (les deux forment un cadre
+     en L autour de la photo, qui commence sous la barre, à 76 px). Liens et
+     logo restent donc clairs, quelle que soit la photo : les règles
+     .sur-clair, utiles sur téléphone, sont annulées ici. */
+  .accueil .nav,.accueil .nav.solide,.accueil .nav.sur-clair:not(.solide){background:var(--forest);backdrop-filter:none}
+  .accueil .nav.sur-clair:not(.solide) :is(.nav-links a,.lang a){color:var(--on-dark-soft)}
+  .accueil .nav.sur-clair:not(.solide) :is(.nav-links a,.lang a):hover{color:#fff}
+  .accueil .nav.sur-clair:not(.solide) .lang a[data-active="true"]{background:rgba(238,240,234,.12);color:var(--oak-2)}
+  .accueil .nav.sur-clair:not(.solide) .logo-clair{display:block !important}
+  .accueil .nav.sur-clair:not(.solide) .logo-fonce{display:none !important}
+}
