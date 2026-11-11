@@ -1,0 +1,24 @@
+---
+/**
+ * BANDE « LE BOIS » — une respiration plein écran entre la galerie et les
+ * meubles mis en avant : la forêt en fond (elle glisse un peu moins vite que
+ * la page, effet de profondeur), une phrase, la ligne de cote.
+ * Photo : public/foret/collines-sapins.webp (libre de droits).
+ */
+import type { Locale } from '../site.config';
+import { t } from '../i18n';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+---
+<section class="bois" aria-label={tr('sl0.eyebrow')}>
+  <img class="bois-fond" src="/foret/collines-sapins.webp" alt="" loading="lazy" decoding="async"
+       width="2400" height="1600" data-parallax="0.18" />
+  <div class="wrap bois-in">
+    <div class="bois-bloc rv">
+      <h2>{tr('bois.h')}</h2>
+      <div class="cote" aria-hidden="true"><span>{tr('hero.eyebrow')}</span></div>
+      <p>{tr('bois.sub')}</p>
+    </div>
+  </div>
+</section>

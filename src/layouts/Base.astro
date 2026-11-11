@@ -10,8 +10,12 @@ interface Props {
   title?: string;
   description?: string;
   page?: 'home' | 'legal';
+  /** page à ne pas montrer dans Google (ex. /experiment) */
+  noindex?: boolean;
+  /** classe ajoutée à <body> (ex. 'accueil' pour la version atelier) */
+  bodyClass?: string;
 }
-const { locale, title, description, page = 'home' } = Astro.props;
+const { locale, title, description, page = 'home', noindex = false, bodyClass } = Astro.props;
 const tr = t(locale);
 
 const pageTitle = title ?? `${site.name} — ${tr('hero.eyebrow')}`;
@@ -67,6 +71,7 @@ const jsonLd = {
     <meta name="theme-color" content="#5D6E51" />
 
     <link rel="canonical" href={canonique} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
@@ -104,7 +109,7 @@ const jsonLd = {
       <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     )}
   </head>
-  <body>
+  <body class={bodyClass}>
     <slot />
     <WhatsAppButton locale={locale} />
 

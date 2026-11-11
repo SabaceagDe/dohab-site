@@ -2,8 +2,9 @@
 import type { Locale } from '../site.config';
 import { t } from '../i18n';
 import { finitions } from '../data/finitions';
-interface Props { locale: Locale }
-const { locale } = Astro.props;
+// bois : photo de rondins à côté des teintes (version atelier seulement)
+interface Props { locale: Locale; bois?: boolean }
+const { locale, bois = false } = Astro.props;
 const tr = t(locale);
 ---
 <section class="band" id="finitions">
@@ -16,6 +17,15 @@ const tr = t(locale);
       <p class="lead rv" style="--d:120ms">{tr('colors.sub')}</p>
     </div>
 
+    {/* version atelier : à gauche, du vrai bois ; à droite, les teintes */}
+    <div class:list={[bois && 'finis-cadre']}>
+    {bois && (
+      <div class="finis-bois rv-img">
+        <img src="/foret/rondins-bouleau.webp" alt={tr('bois.alt')} loading="lazy" decoding="async"
+             width="1000" height="1511" />
+      </div>
+    )}
+    <div>
     <div class="finis">
       {finitions.map((f, i) => (
         <button
@@ -33,5 +43,7 @@ const tr = t(locale);
     </div>
 
     <p class="note rv">{tr('colors.note')}</p>
+    </div>
+    </div>
   </div>
 </section>
