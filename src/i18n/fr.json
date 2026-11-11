@@ -22,6 +22,8 @@
 "work.h2": "Des intérieurs, pas des catalogues.",
 "work.sub": "Parcourez nos projets par pièce.",
 "work.empty": "Aucune réalisation ne correspond à cette sélection.",
+"work.more": "Voir plus de réalisations",
+"work.left": "restantes",
 "filter.all": "Toutes",
 "filter.dressing": "Chambre",
 "filter.kitchen": "Cuisines",

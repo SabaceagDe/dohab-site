@@ -1,11 +1,19 @@
 ---
 /**
- * LE CARROUSEL D'ACCUEIL.
+ * HAUT DE PAGE — version « atelier » (expérience de style).
  *
- * Construit sur le défilement natif avec accroche (scroll-snap) plutôt que
- * sur des transformations CSS : le glissement au doigt, la molette
- * horizontale et le clavier fonctionnent d'eux-mêmes, et si le JavaScript
- * ne se charge pas, les diapos restent consultables à la main.
+ * Une photo plein écran qui change toute seule (fondu lent + léger zoom),
+ * un grand titre fixe, et en bas un index des pièces : chaque entrée a sa
+ * barre de progression ; quand elle est pleine, on passe à la pièce
+ * suivante. Toucher une pièce l'affiche tout de suite et met à jour le
+ * lien « Voir les cuisines / armoires… ».
+ *
+ * Sous le titre, une ligne de cote (comme sur un plan de menuisier) :
+ * c'est le fil conducteur visuel du site — tout est fait sur mesure.
+ *
+ * Les photos viennent de src/data/heroSlides.ts (seules les diapos avec
+ * `photo` sont utilisées ici). Pour mettre une photo de forêt en premier,
+ * ajoute-la en tête de ce fichier.
  */
 import type { Locale } from '../site.config';
 import { t } from '../i18n';
@@ -13,127 +21,72 @@ import { diapos } from '../data/heroSlides';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const tr = t(locale);
+const slides = diapos.filter((d) => d.photo);
+// le titre arrive avec un <em> autour de sa seconde moitié : on en fait
+// simplement une seconde ligne, sans changer de style
+const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>', '</span>');
 ---
-<section class="hero" id="hero" aria-roledescription="carrousel" aria-label={tr('slide.role')}>
-  <div class="hero-piste" id="heroPiste" tabindex="0">
-    {diapos.map((d, i) => (
-      <article class={`hero-slide${d.dessin ? ' clair' : ''}`} id={`slide-${i}`}
-               aria-label={`${i + 1} / ${diapos.length}`}>
-        {d.photo && (
-          <img class="hero-fond" src={`/photos/${d.photo}`} alt=""
-               style={d.cadrage ? `--cadrage:${d.cadrage}` : undefined}
-               loading={i === 0 ? 'eager' : 'lazy'}
-               fetchpriority={i === 0 ? 'high' : 'auto'} />
-        )}
-        {d.dessin && (
-          <img class="hero-dessin" src={`/illustrations/${d.dessin}`} alt=""
-               loading="lazy" width="680" height="520" />
-        )}
-        <div class="hero-in wrap">
-          <div class="hero-txt">
-            <p class="eyebrow">{tr(d.cles.eyebrow)}</p>
-            {i === 0
-              ? <h1 set:html={tr(d.cles.titre)} />
-              : <h2 set:html={tr(d.cles.titre)} />}
-            <p>{tr(d.cles.sub)}</p>
-            <div class="hero-cta">
-              <a class="btn pale" href="#contact">{tr('hero.cta1')}</a>
-              <a class="btn pale ghost-on-photo" href={d.lien}>{tr(d.cles.cta)}</a>
-            </div>
-          </div>
-        </div>
-      </article>
+<section class="hero" id="hero" aria-label={tr('slide.role')}>
+  <div class="hero-fonds" aria-hidden="true">
+    {slides.map((d, i) => (
+      <img class:list={['hero-fond', i === 0 && 'on']} src={`/photos/${d.photo}`} alt=""
+           style={d.cadrage ? `--cadrage:${d.cadrage}` : undefined}
+           loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
     ))}
   </div>
 
-  <button class="hero-fleche prec" id="heroPrec" type="button" aria-label={tr('slide.prev')}>
-    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none">
-      <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.6"
-            stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  </button>
-  <button class="hero-fleche suiv" id="heroSuiv" type="button" aria-label={tr('slide.next')}>
-    <svg viewBox="0 0 24 24" aria-hidden="true" width="22" height="22" fill="none">
-      <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="1.6"
-            stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  </button>
+  <div class="hero-in wrap">
+    {/* le bloc prend la largeur du titre : la cote mesure exactement le titre */}
+    <div class="hero-bloc">
+      <h1 class="hero-titre" set:html={titre} />
+      <div class="cote" aria-hidden="true"><span>{tr('hero.eyebrow')}</span></div>
+    </div>
+    <p class="hero-sub">{tr('hero.sub')}</p>
+    <div class="hero-cta">
+      <a class="btn oak" href="#contact">{tr('hero.cta1')}</a>
+      <a class="btn clair" id="heroVoir" href={slides[0].lien}>{tr(slides[0].cles.cta)}</a>
+    </div>
+  </div>
 
-  <div class="hero-points" id="heroPoints">
-    {diapos.map((d, i) => (
-      <button type="button" data-i={i} aria-current={i === 0 ? 'true' : 'false'}
-              aria-label={`${tr('slide.go')} ${i + 1}`}><span></span></button>
+  <div class="hero-index wrap" role="group" aria-label={tr('slide.role')}>
+    {slides.map((d, i) => (
+      <button type="button" class="hi" data-i={i} data-lien={d.lien} data-cta={tr(d.cles.cta)}
+              aria-pressed={i === 0 ? 'true' : 'false'}>
+        <span class="hi-barre"><i></i></span>
+        <span class="hi-nom">{tr(d.cles.eyebrow)}</span>
+      </button>
     ))}
   </div>
 </section>
 
 <script>
-  const piste = document.getElementById('heroPiste');
-  if (piste) {
-    const slides = [...piste.querySelectorAll<HTMLElement>('.hero-slide')];
-    const points = [...document.querySelectorAll<HTMLButtonElement>('#heroPoints button')];
-    const doux = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hero = document.getElementById('hero');
+  if (hero) {
+    const fonds = [...hero.querySelectorAll<HTMLImageElement>('.hero-fond')];
+    const items = [...hero.querySelectorAll<HTMLButtonElement>('.hi')];
+    const voir = document.getElementById('heroVoir') as HTMLAnchorElement;
     let actif = 0;
 
-    const aller = (i: number) => {
-      const n = (i + slides.length) % slides.length;
-      piste.scrollTo({ left: slides[n].offsetLeft, behavior: doux ? 'smooth' : 'auto' });
+    const montrer = (i: number) => {
+      actif = (i + items.length) % items.length;
+      fonds.forEach((f, j) => f.classList.toggle('on', j === actif));
+      items.forEach((b, j) => b.setAttribute('aria-pressed', String(j === actif)));
+      voir.href = items[actif].dataset.lien!;
+      voir.textContent = items[actif].dataset.cta!;
+      // la photo suivante se charge pendant qu'on regarde celle-ci
+      const suivante = fonds[(actif + 1) % fonds.length];
+      if (suivante.loading === 'lazy') suivante.loading = 'eager';
     };
 
-    // Quelle diapo est réellement à l'écran ? On l'observe au lieu de la
-    // déduire : au doigt, la personne peut s'arrêter où elle veut.
-    const obs = new IntersectionObserver(
-      (entrees) => {
-        for (const e of entrees) {
-          if (e.intersectionRatio < 0.6) continue;
-          actif = slides.indexOf(e.target as HTMLElement);
-          points.forEach((p, i) => p.setAttribute('aria-current', String(i === actif)));
-          // Les points et les flèches flottent au-dessus de toutes les diapos :
-          // ils ne peuvent pas savoir en CSS seul si celle du dessous est claire
-          // ou sombre. On leur dit.
-          document.getElementById('hero')!.classList.toggle(
-            'sur-clair', slides[actif].classList.contains('clair'));
-          // Les diapos hors champ sortent de l'ordre de tabulation, sinon la
-          // tabulation part se perdre dans des boutons qu'on ne voit pas.
-          slides.forEach((s, i) =>
-            s.querySelectorAll<HTMLAnchorElement>('a').forEach(
-              (a) => (a.tabIndex = i === actif ? 0 : -1)
-            )
-          );
-        }
-      },
-      { root: piste, threshold: [0.6] }
-    );
-    slides.forEach((s) => obs.observe(s));
-
-    document.getElementById('heroPrec')!.addEventListener('click', () => aller(actif - 1));
-    document.getElementById('heroSuiv')!.addEventListener('click', () => aller(actif + 1));
-    points.forEach((p) => p.addEventListener('click', () => aller(Number(p.dataset.i))));
-
-    piste.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); aller(actif + 1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); aller(actif - 1); }
+    items.forEach((b, j) => b.addEventListener('click', () => montrer(j)));
+    // La barre de la pièce active se remplit en CSS (6,5 s, en pause au
+    // survol). Quand son animation se termine, on passe à la suivante :
+    // pas de minuteur à synchroniser, et rien ne bouge si le système
+    // demande de réduire les animations (l'animation n'existe pas).
+    hero.addEventListener('animationend', (e) => {
+      if ((e as AnimationEvent).animationName === 'hiPlein') montrer(actif + 1);
     });
-
-    // Défilement automatique, mais jamais contre la personne : il s'arrête au
-    // survol, au focus clavier, dès qu'on pose le doigt sur la piste, quand
-    // l'onglet passe en arrière-plan — et il ne démarre pas du tout si le
-    // système est réglé sur « réduire les animations ».
-    let minuteur: number | undefined;
-    const arreter = () => { if (minuteur) clearInterval(minuteur); minuteur = undefined; };
-    const demarrer = () => {
-      if (!doux) return;
-      arreter();
-      minuteur = window.setInterval(() => { if (!document.hidden) aller(actif + 1); }, 6500);
-    };
-
-    const zone = document.getElementById('hero')!;
-    zone.addEventListener('mouseenter', arreter);
-    zone.addEventListener('mouseleave', demarrer);
-    zone.addEventListener('focusin', arreter);
-    zone.addEventListener('focusout', demarrer);
-    piste.addEventListener('pointerdown', arreter, { passive: true });
-    document.addEventListener('visibilitychange', () => (document.hidden ? arreter() : demarrer()));
-    demarrer();
+    // onglet en arrière-plan : on ne fait pas défiler pour personne
+    document.addEventListener('visibilitychange', () => hero.classList.toggle('pause', document.hidden));
   }
 </script>

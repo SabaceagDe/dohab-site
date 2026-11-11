@@ -76,6 +76,10 @@ const filters = [
     </div>
 
     <p class="empty" id="empty" style="display:none">{tr('work.empty')}</p>
+    {/* on ne montre qu'une partie de la galerie ; le bouton en ajoute */}
+    <div class="plus-wrap">
+      <button type="button" class="btn line" id="galPlus" hidden data-left={tr('work.left')}>{tr('work.more')}</button>
+    </div>
   </div>
 </section>
 
@@ -85,11 +89,13 @@ const filters = [
     position: absolute; right: .55rem; bottom: .55rem; padding: .2rem .5rem; border-radius: 999px;
     font-size: var(--t-xs); font-weight: 600; background: rgba(26, 24, 21, .62); color: #fff;
   }
+  .plus-wrap { display: flex; justify-content: center; margin-top: clamp(1.4rem, 3vw, 2.2rem); }
   .prix { margin-left: auto; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
 </style>
 
 <script>
   import { openLightbox } from '../scripts/lightbox';
+  import { allerA } from '../scripts/smooth';
 
   // ---- filtrage : pièce (chips + tuiles) et teinte (pastilles) ----
   const gal = document.getElementById('gal')!;
@@ -101,20 +107,42 @@ const filters = [
   let room = 'all';
   let finish: string | null = null;
 
+  // Une galerie de 70 photos d'affilée, c'est un mur : on en montre une
+  // rangée de quelques lignes, puis « Voir plus » en ajoute autant.
+  const plus = document.getElementById('galPlus') as HTMLButtonElement;
+  const pas = () => (matchMedia('(max-width: 900px)').matches ? 8 : 12);
+  let limite = pas();
+
   function apply() {
     let shown = 0;
     for (const c of cards) {
       const ok =
         (room === 'all' || c.dataset.room === room) &&
         (!finish || c.dataset.finish === finish);
-      c.classList.toggle('hide', !ok);
       if (ok) shown++;
+      // .hide = hors filtre (la visionneuse l'ignore) ; .cut = au-delà de la limite
+      c.classList.toggle('hide', !ok || shown > limite);
     }
     empty.style.display = shown ? 'none' : 'block';
     activeColor.classList.toggle('on', Boolean(finish));
+    const reste = shown - limite;
+    plus.hidden = reste <= 0;
+    plus.textContent = `${plus.dataset.text ??= plus.textContent!.trim()} (${reste} ${plus.dataset.left})`;
   }
 
+  plus.addEventListener('click', () => {
+    const avant = gal.querySelectorAll('.card:not(.hide)').length;
+    limite += pas();
+    apply();
+    // les nouvelles cartes arrivent en fondu, l'une après l'autre
+    [...gal.querySelectorAll<HTMLElement>('.card:not(.hide)')].slice(avant).forEach((c, i) => {
+      c.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 500, delay: i * 40, easing: 'cubic-bezier(.2,.75,.2,1)', fill: 'backwards' });
+    });
+  });
+
   function setRoom(next: string) {
+    limite = pas();
     room = next;
     chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.room === room)));
     apply();
@@ -126,7 +154,7 @@ const filters = [
   document.querySelectorAll<HTMLElement>('.tile').forEach((tile) =>
     tile.addEventListener('click', () => {
       setRoom(tile.dataset.room!);
-      document.getElementById('work')!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      allerA(document.getElementById('work')!);
     })
   );
 
@@ -136,11 +164,12 @@ const filters = [
     s.addEventListener('click', () => {
       const id = s.dataset.finish!;
       finish = finish === id ? null : id;
+      limite = pas();
       swatches.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.finish === finish)));
       if (finish) {
         (document.getElementById('acSw') as HTMLElement).style.background = s.dataset.hex!;
         document.getElementById('acName')!.textContent = s.dataset.name!;
-        document.getElementById('work')!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        allerA(document.getElementById('work')!);
       }
       apply();
     })
@@ -170,10 +199,9 @@ const filters = [
     const m = location.hash.match(/^#work-([a-z]+)$/);
     if (!m || !PIECES.includes(m[1])) return;
     setRoom(m[1]);
-    document.getElementById('work')!.scrollIntoView({
-      behavior: doux ? 'smooth' : 'auto',
-      block: 'start'
-    });
+    const work = document.getElementById('work')!;
+    if (doux) allerA(work);
+    else work.scrollIntoView({ block: 'start' });
   }
   addEventListener('hashchange', () => depuisAncre(true));
   depuisAncre(false);

@@ -1,6 +1,8 @@
 ---
 import '../styles/tokens.css';
 import '../styles/global.css';
+import '@fontsource-variable/bricolage-grotesque/standard.css';
+import '../styles/atelier.css';
 import { site, type Locale } from '../site.config';
 import { t, locales, localeHref, legalHref } from '../i18n';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
@@ -104,10 +106,13 @@ const jsonLd = {
       <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     )}
   </head>
-  <body>
+  <body class:list={[page === 'home' && 'accueil']}>
     <slot />
     <WhatsAppButton locale={locale} />
 
+    <script>
+      import '../scripts/smooth';
+    </script>
     <script>
       // Apparitions au défilement. Le voile est posé sur l'image et non sur
       // son conteneur : un conteneur découpé a une surface nulle et
