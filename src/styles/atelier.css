@@ -6,8 +6,8 @@
    Idée : le bois, de la forêt jusqu'à la pose.
    - Couleurs : vert forêt profond pour les bandes sombres, lichen clair
      pour les bandes claires, chêne pour les accents (prix, boutons forts).
-   - Titres : Baloo Bhai 2 — ronde et chaleureuse, comme un bord de
-     plan de travail adouci.
+   - Titres : NeverMind (police libre de XMind, licence SIL OFL, servie
+     depuis public/fonts comme Figtree).
    - Fil conducteur : la ligne de cote des plans de menuisier (|—— ——|),
      sous le grand titre et comme règle graduée au-dessus des étapes.
    - Moins de blanc : bandes moins hautes, grilles plus serrées.
@@ -35,7 +35,7 @@
   --on-dark-soft:rgba(238,240,234,.74);
   --on-dark-line:rgba(238,240,234,.16);
 
-  --f-d:"Baloo Bhai 2 Variable","Figtree",sans-serif;
+  --f-d:"NeverMind","Figtree",sans-serif;
   --t-h1:clamp(2.6rem,1.3rem + 4.9vw,6rem);
   --t-h2:clamp(1.95rem,1.2rem + 2.5vw,3.6rem);
   --t-h3:clamp(1.15rem,1.02rem + .5vw,1.45rem);
@@ -43,6 +43,16 @@
   --ease:cubic-bezier(.2,.75,.2,1);
 }
 ::selection{background:var(--oak);color:var(--forest)}
+
+/* NeverMind — https://github.com/xmindltd/nevermind (SIL Open Font License,
+   texte dans public/fonts/nevermind-OFL.txt). Réduite aux caractères latins
+   (français, néerlandais, anglais) : ~17 Ko par graisse. */
+@font-face{font-family:"NeverMind";font-weight:500;font-style:normal;font-display:swap;
+  src:url("/fonts/nevermind-medium.woff2") format("woff2")}
+@font-face{font-family:"NeverMind";font-weight:600;font-style:normal;font-display:swap;
+  src:url("/fonts/nevermind-demibold.woff2") format("woff2")}
+@font-face{font-family:"NeverMind";font-weight:700;font-style:normal;font-display:swap;
+  src:url("/fonts/nevermind-bold.woff2") format("woff2")}
 
 /* Lenis (défilement doux) — styles requis par la bibliothèque */
 html.lenis,html.lenis body{height:auto}
@@ -52,7 +62,7 @@ html.lenis,html.lenis body{height:auto}
 
 /* ---- titres ---- */
 h1,h2,h3{font-family:var(--f-d);font-optical-sizing:auto}
-h2{font-weight:600;letter-spacing:-.015em;line-height:1.02}
+h2{font-weight:600;letter-spacing:-.025em;line-height:1.04}
 h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
 
 /* ---- bandes : moins hautes ---- */
@@ -115,7 +125,7 @@ h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
     linear-gradient(180deg,rgba(12,18,14,.35) 0%,rgba(12,18,14,0) 28%,rgba(12,18,14,.25) 62%,rgba(12,18,14,.86) 100%)}
 .hero-in{position:relative;z-index:2;align-self:end;width:100%;padding-top:8rem;padding-bottom:clamp(1.6rem,3.5vw,2.8rem)}
 .hero-bloc{display:inline-grid;max-width:100%}
-.hero-titre{font-size:var(--t-h1);font-weight:600;line-height:.98;letter-spacing:-.02em;
+.hero-titre{font-size:var(--t-h1);font-weight:600;line-height:1;letter-spacing:-.032em;
   max-width:13ch;color:#fff;text-wrap:balance}
 .hero-titre .l2{display:block}
 
