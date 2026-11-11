@@ -2,7 +2,8 @@
 /**
  * HAUT DE PAGE — version « atelier » (expérience de style).
  *
- * Une photo plein écran qui change toute seule (fondu lent + léger zoom),
+ * Une photo plein écran qui change toute seule (passage dessiné en WebGL,
+ * voir scripts/hero-gl.ts ; simple fondu si le navigateur ne peut pas),
  * un grand titre fixe, et en bas un index des pièces : chaque entrée a sa
  * barre de progression ; quand elle est pleine, on passe à la pièce
  * suivante. Toucher une pièce l'affiche tout de suite et met à jour le
@@ -65,16 +66,22 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
 </section>
 
 <script>
+  import { rideau } from '../scripts/hero-gl';
+
   const hero = document.getElementById('hero');
   if (hero) {
     const fonds = [...hero.querySelectorAll<HTMLImageElement>('.hero-fond')];
     const items = [...hero.querySelectorAll<HTMLButtonElement>('.hi')];
     const voir = document.getElementById('heroVoir') as HTMLAnchorElement;
     let actif = 0;
+    // passage d'une photo à l'autre dessiné en WebGL (scripts/hero-gl.ts) ;
+    // null si le navigateur ne peut pas : il reste alors le fondu des <img>
+    const gl = rideau(hero, fonds);
 
     const montrer = (i: number) => {
       actif = (i + items.length) % items.length;
       fonds.forEach((f, j) => f.classList.toggle('on', j === actif));
+      gl?.aller(actif);
       items.forEach((b, j) => b.setAttribute('aria-pressed', String(j === actif)));
       voir.href = items[actif].dataset.lien!;
       voir.textContent = items[actif].dataset.cta!;
@@ -125,7 +132,11 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
     hero.addEventListener('animationend', (e) => {
       if ((e as AnimationEvent).animationName === 'hiPlein') montrer(actif + 1);
     });
-    // onglet en arrière-plan : on ne fait pas défiler pour personne
-    document.addEventListener('visibilitychange', () => hero.classList.toggle('pause', document.hidden));
+    // onglet en arrière-plan, ou haut de page sorti de l'écran : on ne fait
+    // défiler pour personne (la barre de progression se met en pause)
+    let horsVue = false;
+    const pause = () => hero.classList.toggle('pause', document.hidden || horsVue);
+    document.addEventListener('visibilitychange', pause);
+    new IntersectionObserver(([e]) => { horsVue = !e.isIntersecting; pause(); }).observe(hero);
   }
 </script>

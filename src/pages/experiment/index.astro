@@ -11,6 +11,7 @@ import HeroAtelier from '../../components/HeroAtelier.astro';
 import RoomTiles from '../../components/RoomTiles.astro';
 import Gallery from '../../components/Gallery.astro';
 import Bois from '../../components/Bois.astro';
+import Ruban from '../../components/Ruban.astro';
 import Feature from '../../components/Feature.astro';
 import Stairs from '../../components/Stairs.astro';
 import Finishes from '../../components/Finishes.astro';
@@ -45,6 +46,7 @@ const priced = items.filter((i) => i.price);
     <Steps locale={locale} />
     {priced.length > 0 && <Prices locale={locale} items={priced} />}
     <About locale={locale} photo="salon-panneau-chene.webp" />
+    <Ruban locale={locale} />
     <Contact locale={locale} />
   </main>
   <Footer locale={locale} />

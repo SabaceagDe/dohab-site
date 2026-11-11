@@ -10,8 +10,10 @@
    - Fil conducteur : la ligne de cote des plans de menuisier (|—— ——|),
      sous le grand titre et comme règle graduée au-dessus des étapes.
    - Moins de blanc : bandes moins hautes, grilles plus serrées.
-   - Mouvement : un seul vrai moment à l'ouverture (titre + cote), puis
-     uniquement des réponses aux gestes (visionneuse, survols).
+   - Mouvement : une ouverture (rideau + logo, puis titre + cote), le
+     passage des photos du haut de page, les titres mot par mot, et des
+     réponses aux gestes (curseur, visionneuse, survols). Tout est détaillé
+     dans les sections du bas de ce fichier.
    ================================================================== */
 :root{
   --paper:#F6F7F3;
@@ -394,5 +396,107 @@ html.lenis,html.lenis body{height:auto}
       animation-range:cover 0% cover 100%}
     @keyframes glisse{from{translate:0 -8%}to{translate:0 8%}}
     @keyframes glisseDoux{from{translate:0 -4.5%}to{translate:0 4.5%}}
+  }
+}
+
+/* ==================================================================
+   OUVERTURE — le rideau de la première visite (voir BaseAtelier.astro)
+   Une seule image : le logo clair. On le découpe par un cercle centré sur
+   le O (30,4 % ; 49,6 % de l'image) : le cercle grandit jusqu'au bord des
+   cernes — elles « poussent » depuis le cœur, comme l'arbre — puis jusqu'à
+   découvrir les lettres. Ensuite le fond se lève vers le haut.
+   ================================================================== */
+.intro{display:none}
+@media (prefers-reduced-motion:no-preference){
+  .intro-on .intro{display:grid;place-items:center;position:fixed;inset:0;z-index:500;pointer-events:none;
+    background:var(--forest-2);animation:introLeve .85s cubic-bezier(.7,0,.2,1) 1.6s both}
+  .intro img{--w:clamp(230px,34vw,460px);width:var(--w);height:auto;
+    animation:introLogo 1.35s cubic-bezier(.3,.7,.2,1) .1s both,introPart .45s ease 1.5s forwards}
+  @keyframes introLogo{
+    0%{clip-path:circle(0px at 30.4% 49.6%);scale:.94}
+    52%{clip-path:circle(calc(var(--w) * .105) at 30.4% 49.6%)}
+    100%{clip-path:circle(calc(var(--w) * .76) at 30.4% 49.6%);scale:1}}
+  @keyframes introPart{to{opacity:0;translate:0 -24px}}
+  @keyframes introLeve{from{clip-path:inset(0 0 0 0)}to{clip-path:inset(0 0 100% 0);visibility:hidden}}
+  /* le titre attend que le rideau se lève */
+  .intro-on .hero-titre{animation-delay:1.85s}
+  .intro-on .cote{animation-delay:2.3s}
+  .intro-on .hero-sub,.intro-on .hero-cta{animation-delay:2.6s}
+  .intro-on .hero-index{animation-delay:2.8s,0s}
+}
+
+/* ==================================================================
+   HAUT DE PAGE EN WEBGL (scripts/hero-gl.ts)
+   Le canvas recouvre les <img> dès que sa première image est dessinée.
+   Il « respire » : un zoom très lent, aller-retour, fait par le navigateur
+   sans redessiner (la carte graphique ne travaille que pendant un passage).
+   ================================================================== */
+.hero-gl{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .5s ease}
+.hero-gl.pret{opacity:1;animation:respire 18s ease-in-out infinite alternate}
+@keyframes respire{to{scale:1.06}}
+
+/* ==================================================================
+   TITRES MOT PAR MOT (scripts/fx.ts)
+   .mot = la fenêtre, son <span> = le mot qui monte. Chaque mot part 55 ms
+   après le précédent (--i est son numéro).
+   ================================================================== */
+.mots.rv{opacity:1;transition:none}
+.mot{display:inline-block;overflow:clip;overflow-clip-margin:.02em;padding-bottom:.16em;margin-bottom:-.16em}
+.mot>span{display:inline-block;transition:translate .95s var(--ease),opacity .5s ease;
+  transition-delay:calc(var(--i) * 55ms + var(--d,0ms))}
+.rv:not(.in) .mot>span{translate:0 112%;opacity:0}
+
+/* ==================================================================
+   CURSEUR (scripts/fx.ts) — ordinateur avec souris seulement
+   ================================================================== */
+.curseur{position:fixed;left:0;top:0;z-index:400;width:0;height:0;pointer-events:none;opacity:0;transition:opacity .3s}
+.curseur.la{opacity:1}
+.curseur span{position:absolute;left:-44px;top:-44px;display:grid;place-items:center;width:88px;height:88px;
+  border-radius:50%;background:var(--oak);color:transparent;font-size:var(--t-sm);font-weight:600;letter-spacing:.03em;
+  scale:.1;transition:scale .45s var(--ease),color .2s,background .3s}
+.curseur.lien span{scale:.42;background:rgba(196,153,95,.38)}
+.curseur.voir span{scale:1;color:var(--forest)}
+.curseur.appui span{scale:.86}
+.curseur.appui:not(.voir) span{scale:.3}
+/* sur une photo, la pastille remplace la loupe du système */
+.a-curseur :is(.card,.tile,#prix .item){cursor:none}
+.lb-ouverte .curseur span{background:var(--oak-2)}
+
+/* boutons aimantés : le retour à la place se fait en douceur */
+.btn{transition:background .3s var(--ease),border-color .3s var(--ease),color .3s,transform .3s var(--ease),translate .45s var(--ease)}
+
+/* ==================================================================
+   BANDE DÉFILANTE (components/Ruban.astro)
+   ================================================================== */
+.ruban{overflow:hidden;background:var(--ground);padding-block:clamp(.4rem,1.5vw,1.2rem) clamp(2rem,5vw,4rem);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.ruban-piste{display:flex;width:max-content;animation:ruban 46s linear infinite;will-change:transform}
+.ruban-moitie{display:flex;align-items:center;flex:none}
+.ruban-mot{flex:none;white-space:nowrap;font-size:clamp(2.6rem,8.5vw,7.5rem);font-weight:300;line-height:1.15;
+  letter-spacing:-.01em;color:transparent;-webkit-text-stroke:1px rgba(28,43,34,.72)}
+.ruban-mot.plein{color:var(--forest);-webkit-text-stroke:0}
+.ruban img{flex:none;width:clamp(1.8rem,5.4vw,4.8rem);height:auto;margin-inline:clamp(1rem,3vw,2.6rem);
+  opacity:.8;animation:tourne 30s linear infinite}
+@keyframes ruban{to{transform:translateX(-50%)}}
+@keyframes tourne{to{rotate:1turn}}
+@media (prefers-reduced-motion:reduce){.ruban-piste,.ruban img{animation:none}}
+
+/* ==================================================================
+   AU FIL DU DÉFILEMENT (suite) — même technique que plus haut
+   ================================================================== */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* un trait chêne en haut de l'écran : où on en est dans la page */
+    .accueil::before{content:"";position:fixed;left:0;right:0;top:0;height:2px;z-index:70;pointer-events:none;
+      background:var(--oak-2);transform-origin:left;animation:avance linear both;animation-timeline:scroll(root)}
+    @keyframes avance{from{scale:0 1}to{scale:1 1}}
+    /* la règle graduée des étapes se déroule à mesure qu'on arrive dessus */
+    .steps::before{transform-origin:left;animation:mesure linear both;animation-timeline:view();
+      animation-range:entry 10% cover 42%}
+    @keyframes mesure{from{scale:0 1}to{scale:1 1}}
+    /* la bande forêt s'ouvre : étroite quand elle arrive, pleine largeur ensuite */
+    .bois{animation:ouvre linear both;animation-timeline:view();animation-range:entry 0% entry 90%}
+    @keyframes ouvre{from{clip-path:inset(0 7% round 14px)}to{clip-path:inset(0 0 round 0px)}}
   }
 }
