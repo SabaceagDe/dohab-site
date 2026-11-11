@@ -25,13 +25,6 @@ export interface Diapo {
 export const diapos: Diapo[] = [
   // La première diapo porte le <h1> de la page (voir Hero.astro).
   {
-    // la forêt d'abord : le bois avant le meuble
-    id: 'foret',
-    photo: '/foret/sous-bois.webp',
-    lien: '#work',
-    cles: { eyebrow: 'sl0.eyebrow', titre: 'hero.h1', sub: 'hero.sub', cta: 'hero.cta2' }
-  },
-  {
     id: 'cuisines',
     photo: 'cuisine-noyer-hotte.webp',
     lien: '#work-cuisine',
@@ -72,5 +65,12 @@ export const diapos: Diapo[] = [
     dessin: 'escalier-quart-tournant.svg',
     lien: '#escaliers',
     cles: { eyebrow: 'sl4.eyebrow', titre: 'sl4.h', sub: 'sl4.sub', cta: 'sl4.cta' }
+  },
+  {
+    // la forêt en dernier : on finit sur le bois d'où tout part
+    id: 'foret',
+    photo: '/foret/sous-bois.webp',
+    lien: '#work',
+    cles: { eyebrow: 'sl0.eyebrow', titre: 'hero.h1', sub: 'hero.sub', cta: 'hero.cta2' }
   }
 ];

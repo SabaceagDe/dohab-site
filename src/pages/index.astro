@@ -5,7 +5,6 @@ export const prerender = false;
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
-import Promises from '../components/Promises.astro';
 import RoomTiles from '../components/RoomTiles.astro';
 import Gallery from '../components/Gallery.astro';
 import Feature from '../components/Feature.astro';
@@ -27,14 +26,13 @@ const priced = items.filter((i) => i.price);
   <Nav locale={locale} prix={priced.length > 0} />
   <main>
     <Hero locale={locale} />
-    <Promises locale={locale} />
     <RoomTiles locale={locale} />
     <Gallery locale={locale} items={items} />
     <Bois locale={locale} />
 
     <section class="band tint">
       <div class="wrap">
-        <Feature locale={locale} prefix="feat1" photo="armoire-etageres-noyer.webp" />
+        <Feature locale={locale} prefix="feat1" photo="entree-noyer-banc.webp" />
         <Feature locale={locale} prefix="feat2" photo="cuisine-noyer-ilot-noir.webp" flip />
       </div>
     </section>

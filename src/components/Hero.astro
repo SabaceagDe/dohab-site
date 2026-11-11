@@ -13,7 +13,7 @@
  *
  * Les photos viennent de src/data/heroSlides.ts (seules les diapos avec
  * `photo` sont utilisées ici). Pour mettre une photo de forêt en premier,
- * ajoute-la en tête de ce fichier.
+ * change l'ordre dans ce fichier (la forêt est en dernier).
  */
 import type { Locale } from '../site.config';
 import { t } from '../i18n';
@@ -80,7 +80,7 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
     };
 
     items.forEach((b, j) => b.addEventListener('click', () => montrer(j)));
-    // La barre de la pièce active se remplit en CSS (6,5 s, en pause au
+    // La barre de la pièce active se remplit en CSS (4,8 s, en pause au
     // survol). Quand son animation se termine, on passe à la suivante :
     // pas de minuteur à synchroniser, et rien ne bouge si le système
     // demande de réduire les animations (l'animation n'existe pas).
