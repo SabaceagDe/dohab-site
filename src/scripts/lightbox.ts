@@ -77,20 +77,32 @@ function flip(de: DOMRect, sens: 'entrer' | 'sortir') {
     { duration: sens === 'entrer' ? 520 : 420, easing: EASE, fill: 'both' }).finished.then(() => {});
 }
 
-function show(i: number, dir: 0 | 1 | -1 = 0) {
+const precharge = (i: number) => { new Image().src = slides[(i + slides.length) % slides.length].src; };
+
+async function show(i: number, dir: 0 | 1 | -1 = 0) {
   if (!img) return;
   pos = (i + slides.length) % slides.length;
+  const ici = pos;
   const s = slides[pos];
+  legende(s);
+  // on attend que la photo suivante soit décodée avant de l'afficher : sinon
+  // l'ancienne reste une fraction de seconde puis la nouvelle « saute »
+  const suivante = new Image();
+  suivante.src = s.src;
+  await suivante.decode().catch(() => {});
+  if (pos !== ici || !ouvert) return;            // on a déjà changé de photo entre-temps
   img.getAnimations().forEach((a) => a.cancel());
   img.src = s.src;
   img.alt = s.card.t;
-  legende(s);
   if (dir && !reduit) {
     img.animate([
       { opacity: 0, transform: `translateX(${dir * 42}px) scale(.985)` },
       { opacity: 1, transform: 'none' }
     ], { duration: 380, easing: EASE });
   }
+  // les voisines se chargent pendant qu'on regarde celle-ci
+  precharge(pos + 1);
+  precharge(pos - 1);
 }
 
 /** Ouvre la visionneuse sur `start`, en parcourant `cards` (fiches visibles). */
@@ -128,6 +140,7 @@ export async function openLightbox(cards: HTMLElement[], start: HTMLElement) {
     grand.src = slides[first].src;
     grand.decode().then(() => { if (ouvert && pos === first) img.src = grand.src; }).catch(() => {});
   }
+  if (slides.length > 1) { precharge(first + 1); precharge(first - 1); }
   (document.getElementById('lbClose') as HTMLButtonElement | null)?.focus({ preventScroll: true });
 }
 

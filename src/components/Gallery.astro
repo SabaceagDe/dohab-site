@@ -123,6 +123,20 @@ const filters = [
   };
   let limite = pas();
 
+  // Changement de filtre animé (View Transitions API, version atelier) : le
+  // navigateur compare l'avant et l'après et fait glisser chaque carte de son
+  // ancienne place à la nouvelle ; celles qui arrivent ou partent font un
+  // fondu. Chaque carte a pour cela un nom unique. Sans cette API (ou si le
+  // système demande moins d'animations), le changement est immédiat.
+  const doc = document as Document & { startViewTransition?: (maj: () => void) => unknown };
+  const anime = Boolean(gal.dataset.paquets && doc.startViewTransition) &&
+    !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (anime) cards.forEach((c, i) => {
+    c.style.setProperty('view-transition-name', `carte-${i}`);
+    c.style.setProperty('view-transition-class', 'carte');
+  });
+  const fluide = (maj: () => void) => { anime ? doc.startViewTransition!(maj) : maj(); };
+
   function apply() {
     let shown = 0;
     for (const c of cards) {
@@ -144,6 +158,7 @@ const filters = [
   }
 
   plus?.addEventListener('click', () => {
+    if (anime) return fluide(() => { limite += pas(); apply(); });
     const avant = gal.querySelectorAll('.card:not(.hide)').length;
     limite += pas();
     apply();
@@ -161,7 +176,7 @@ const filters = [
     apply();
   }
 
-  chips.forEach((c) => c.addEventListener('click', () => setRoom(c.dataset.room!)));
+  chips.forEach((c) => c.addEventListener('click', () => fluide(() => setRoom(c.dataset.room!))));
 
   // les tuiles de pièce pilotent le même filtre
   document.querySelectorAll<HTMLElement>('.tile').forEach((tile) =>
@@ -191,7 +206,7 @@ const filters = [
   document.getElementById('acClear')!.addEventListener('click', () => {
     finish = null;
     swatches.forEach((x) => x.setAttribute('aria-pressed', 'false'));
-    apply();
+    fluide(apply);
   });
 
   // ---- agrandissement au clic (visionneuse partagée avec « Prix ») ----

@@ -124,11 +124,23 @@ const tabs = ROOM_ORDER
 
   const show = document.getElementById('showroom');
   const tabs = [...document.querySelectorAll<HTMLButtonElement>('#prix .tab')];
+  // même principe que la galerie : sur la version atelier, les fiches
+  // glissent à leur nouvelle place quand on change d'onglet
+  const doc = document as Document & { startViewTransition?: (maj: () => void) => unknown };
+  const anime = Boolean(document.body.classList.contains('accueil') && doc.startViewTransition) &&
+    !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (anime) show?.querySelectorAll<HTMLElement>('.item').forEach((it, i) => {
+    it.style.setProperty('view-transition-name', `prix-${i}`);
+    it.style.setProperty('view-transition-class', 'carte');
+  });
   tabs.forEach((tab) => tab.addEventListener('click', () => {
-    tabs.forEach((x) => x.setAttribute('aria-pressed', String(x === tab)));
-    const room = tab.dataset.room;
-    show?.querySelectorAll<HTMLElement>('.item').forEach((it) =>
-      it.classList.toggle('hide', room !== 'all' && it.dataset.room !== room));
+    const maj = () => {
+      tabs.forEach((x) => x.setAttribute('aria-pressed', String(x === tab)));
+      const room = tab.dataset.room;
+      show?.querySelectorAll<HTMLElement>('.item').forEach((it) =>
+        it.classList.toggle('hide', room !== 'all' && it.dataset.room !== room));
+    };
+    anime ? doc.startViewTransition!(maj) : maj();
   }));
   show?.addEventListener('click', (e) => {
     const item = (e.target as HTMLElement).closest<HTMLElement>('.item');

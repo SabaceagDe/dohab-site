@@ -348,3 +348,51 @@ html.lenis,html.lenis body{height:auto}
 #contact{background:
   linear-gradient(180deg,rgba(28,43,34,.95),rgba(28,43,34,.86) 45%,rgba(28,43,34,.96)),
   url(/foret/vallee-brume.webp) center/cover}
+
+/* ==================================================================
+   FLUIDITÉ — techniques récentes des navigateurs, sans bibliothèque.
+   Tout est « en plus » : un navigateur qui ne les connaît pas affiche le
+   site normalement, juste sans ces mouvements.
+   ================================================================== */
+
+/* 1. View Transitions : quand on change de filtre (galerie, onglets des
+      prix), chaque carte glisse de son ancienne place à la nouvelle ; celles
+      qui arrivent ou partent font un fondu. Les cartes reçoivent leur nom
+      (view-transition-name) dans les scripts de Gallery et Prices. */
+::view-transition-group(.carte){animation-duration:.5s;animation-timing-function:var(--ease)}
+::view-transition-old(.carte):only-child{animation:carteSort .22s ease both}
+::view-transition-new(.carte):only-child{animation:carteEntre .45s var(--ease) both}
+@keyframes carteSort{to{opacity:0;scale:.95}}
+@keyframes carteEntre{from{opacity:0;scale:.95}}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.3s}
+/* la barre reste au-dessus, sans fondu */
+.accueil .nav{view-transition-name:barre}
+::view-transition-group(barre){z-index:10}
+
+/* 2. Animations pilotées par le défilement (animation-timeline) : c'est la
+      position de la page qui fait avancer l'animation, calculée par le
+      navigateur hors du fil JavaScript — donc sans saccade.
+      On anime `translate` et `scale` (et non `transform`) pour ne pas
+      écraser les effets de survol, qui utilisent `transform`. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* haut de page : la photo descend moins vite que la page, le texte s'efface */
+    .hero-fonds{animation:heroFond linear both;animation-timeline:scroll(root);animation-range:0 100vh}
+    .hero-in{animation:heroTexte linear both;animation-timeline:scroll(root);animation-range:0 75vh}
+    .hero-index{animation:apparait .8s ease 1.05s both,heroTexte linear both;
+      animation-timeline:auto,scroll(root);animation-range:normal,0 55vh}
+    @keyframes heroFond{to{translate:0 16%}}
+    @keyframes heroTexte{to{translate:0 -48px;opacity:0}}
+
+    /* bande forêt, tuiles et photos mises en avant : légère profondeur */
+    .bois-fond{transform:none;scale:1.2;animation:glisse linear both;animation-timeline:view();
+      animation-range:cover 0% cover 100%}
+    .tile img{scale:1.12;animation:glisseDoux linear both;animation-timeline:view();
+      animation-range:cover 0% cover 100%}
+    .feat-art{overflow:hidden;border-radius:var(--r)}
+    .feat-art img{scale:1.12;animation:glisseDoux linear both;animation-timeline:view();
+      animation-range:cover 0% cover 100%}
+    @keyframes glisse{from{translate:0 -8%}to{translate:0 8%}}
+    @keyframes glisseDoux{from{translate:0 -4.5%}to{translate:0 4.5%}}
+  }
+}
