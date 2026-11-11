@@ -1,46 +1,26 @@
 ---
 /**
- * COMPOSANT DE RÉFÉRENCE.
- * Il montre le schéma utilisé partout ailleurs :
- *   1. le frontmatter (entre les ---) tourne au BUILD, sur le serveur ;
- *   2. le markup est généré une fois, en HTML statique ;
- *   3. le bloc script en bas part au navigateur et ne fait que du filtrage.
- * Aucune donnée ne transite par le réseau : tout est déjà dans la page.
+ * GALERIE DES RÉALISATIONS.
+ * Les réalisations viennent de la base (gérées dans /admin/realisations) :
+ * la page d'accueil les lit à chaque visite (lib/vitrine.ts) et les passe
+ * ici. Ce composant ne fait que les afficher ; le script en bas filtre par
+ * pièce et par teinte dans le navigateur, et ouvre la visionneuse.
  */
 import type { Locale } from '../site.config';
 import { t } from '../i18n';
-import { projets, type Projet } from '../data/projets';
-import auto from '../data/galerie-auto.json';
 import { finitionById } from '../data/finitions';
+import { roomKey } from '../lib/realisations';
+import { present, type PublicRealisation } from '../lib/vitrine';
 
-interface Props { locale: Locale }
-const { locale } = Astro.props;
+interface Props { locale: Locale; items: PublicRealisation[] }
+const { locale, items } = Astro.props;
 const tr = t(locale);
-// tr() renvoie la clé elle-même quand la traduction manque ; ici on veut
-// du vide à la place, pour les photos ajoutées sans texte
-const trOu = (cle: string, sinon = '') => (tr(cle) === cle ? sinon : tr(cle));
 
-// Deux sources : les réalisations écrites à la main (projets.ts, avec
-// titre et description) et celles ajoutées par outils/galerie.py depuis
-// le dossier de photos (galerie-auto.json). On les regroupe par pièce ;
-// le tri est stable, donc dans chaque pièce les réalisations écrites à la
-// main passent d'abord, puis les ajouts, du plus récent au plus ancien.
-const ORDRE = ['cuisine', 'salon', 'dressing', 'bain'];
-const tout: Projet[] = [...projets, ...(auto as Projet[])].sort(
-  (a, b) => ORDRE.indexOf(a.room) - ORDRE.indexOf(b.room)
-);
-// sans titre traduit, une photo prend le nom de sa pièce
-const titrePiece: Record<string, string> = {
-  cuisine: 'filter.kitchen', dressing: 'filter.dressing', salon: 'filter.living', bain: 'filter.bath'
-};
-const titre = (p: Projet) => trOu(`${p.id}.t`, tr(titrePiece[p.room]));
-
+// un filtre par pièce présente dans la galerie, dans l'ordre du menu
+const ordreFiltres = ['dressing', 'cuisine', 'salon', 'bain', 'escalier'] as const;
 const filters = [
   { room: 'all', key: 'filter.all' },
-  { room: 'dressing', key: 'filter.dressing' },
-  { room: 'cuisine', key: 'filter.kitchen' },
-  { room: 'salon', key: 'filter.living' },
-  { room: 'bain', key: 'filter.bath' }
+  ...ordreFiltres.filter((r) => items.some((i) => i.room === r)).map((r) => ({ room: r, key: roomKey[r] }))
 ];
 ---
 <section class="band" id="work">
@@ -67,24 +47,27 @@ const filters = [
     </div>
 
     <div class="gal" id="gal">
-      {tout.map((p, i) => {
-        const f = p.finish ? finitionById(p.finish) : undefined;
+      {items.map((r, i) => {
+        const f = r.finish ? finitionById(r.finish) : undefined;
+        const p = present(r, locale);
         return (
           <article
             class="card rv"
-            data-room={p.room}
-            data-finish={p.finish ?? ''}
-            data-title={titre(p)}
-            data-caption={trOu(`${p.id}.c`)}
+            data-room={r.room}
+            data-finish={r.finish ?? ''}
+            data-lb={p.lb}
             style={`--d:${(i % 4) * 80}ms`}>
             <div class="thumb">
-              <img src={`/photos/${p.photo}`} alt={titre(p)} loading="lazy" />
+              <img src={p.cover.thumb} alt={p.title} loading="lazy" decoding="async"
+                width={p.cover.w ?? undefined} height={p.cover.h ?? undefined} />
+              {r.photos.length > 1 && <span class="nb">+{r.photos.length - 1}</span>}
             </div>
-            <h3>{titre(p)}</h3>
-            {f && (
+            <h3>{p.title}</h3>
+            {(f || p.price) && (
               <div class="meta">
-                <span class="dot" style={`background:${f.hex}`}></span>
-                <span>{tr(`finish.${p.finish}`)}</span>
+                {f && <span class="dot" style={`background:${f.hex}`}></span>}
+                {f && <span>{tr(`finish.${r.finish}`)}</span>}
+                {p.price && <span class="prix">{p.price}</span>}
               </div>
             )}
           </article>
@@ -96,7 +79,18 @@ const filters = [
   </div>
 </section>
 
+<style>
+  .thumb { position: relative; }
+  .nb {
+    position: absolute; right: .55rem; bottom: .55rem; padding: .2rem .5rem; border-radius: 999px;
+    font-size: var(--t-xs); font-weight: 600; background: rgba(26, 24, 21, .62); color: #fff;
+  }
+  .prix { margin-left: auto; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+</style>
+
 <script>
+  import { openLightbox } from '../scripts/lightbox';
+
   // ---- filtrage : pièce (chips + tuiles) et teinte (pastilles) ----
   const gal = document.getElementById('gal')!;
   const cards = [...gal.querySelectorAll<HTMLElement>('.card')];
@@ -158,77 +152,20 @@ const filters = [
     apply();
   });
 
-  // ---- agrandissement au clic, et défilement d'une photo à l'autre ----
-  const lb = document.getElementById('lb')!;
-  const lbImg = document.getElementById('lbImg') as HTMLImageElement;
-  const lbCap = document.getElementById('lbCap')!;
-  const lbPrec = document.getElementById('lbPrec')!;
-  const lbSuiv = document.getElementById('lbSuiv')!;
-
+  // ---- agrandissement au clic (visionneuse partagée avec « Prix ») ----
   // La liste est figée à l'ouverture : ce sont les fiches visibles à ce
   // moment-là. Ouvrir une cuisine avec le filtre « Cuisines » actif fait
   // donc défiler les cuisines, et seulement elles.
-  let liste: HTMLElement[] = [];
-  let pos = 0;
-
-  const montrer = (i: number, sens: 0 | 1 | -1 = 0) => {
-    pos = (i + liste.length) % liste.length;       // on boucle aux deux bouts
-    const card = liste[pos];
-    lbImg.src = card.querySelector('img')!.src;
-    // titre en gras, description en dessous : le détail se lit une fois la
-    // photo ouverte, pas dans la grille
-    lbCap.innerHTML =
-      `<strong>${card.dataset.title ?? ''}</strong><span>${card.dataset.caption ?? ''}</span>` +
-      (liste.length > 1 ? `<em>${pos + 1} / ${liste.length}</em>` : '');
-    // petit glissement dans le sens du geste ; relancer l'animation
-    // demande de retirer la classe, forcer un recalcul, puis la remettre
-    lbImg.classList.remove('vers-g', 'vers-d');
-    if (sens) { void lbImg.offsetWidth; lbImg.classList.add(sens > 0 ? 'vers-g' : 'vers-d'); }
-  };
-
-  const fermer = () => lb.classList.remove('on');
-
   gal.addEventListener('click', (e) => {
     const card = (e.target as HTMLElement).closest<HTMLElement>('.card');
     if (!card) return;
-    liste = [...gal.querySelectorAll<HTMLElement>('.card:not(.hide)')];
-    lb.classList.toggle('seule', liste.length < 2);
-    montrer(Math.max(0, liste.indexOf(card)));
-    lb.classList.add('on');
-  });
-
-  lbPrec.addEventListener('click', () => montrer(pos - 1, -1));
-  lbSuiv.addEventListener('click', () => montrer(pos + 1, 1));
-
-  lb.addEventListener('click', (e) => {
-    const el = e.target as HTMLElement;
-    if (el === lb || el.id === 'lbClose') fermer();
-  });
-  addEventListener('keydown', (e) => {
-    if (!lb.classList.contains('on')) return;
-    if (e.key === 'Escape') fermer();
-    if (e.key === 'ArrowRight') montrer(pos + 1, 1);
-    if (e.key === 'ArrowLeft') montrer(pos - 1, -1);
-  });
-
-  // Au doigt : on glisse vers la gauche pour la suivante. Seul un geste
-  // franchement horizontal compte, sinon un simple tapotement ou un
-  // défilement vertical changerait de photo par accident.
-  let x0 = 0, y0 = 0;
-  lb.addEventListener('touchstart', (e) => {
-    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
-  }, { passive: true });
-  lb.addEventListener('touchend', (e) => {
-    const dx = e.changedTouches[0].clientX - x0;
-    const dy = e.changedTouches[0].clientY - y0;
-    if (liste.length < 2 || Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-    dx < 0 ? montrer(pos + 1, 1) : montrer(pos - 1, -1);
+    openLightbox([...gal.querySelectorAll<HTMLElement>('.card:not(.hide)')], card);
   });
 
   // ---- ancres du menu : #work-cuisine descend ici et filtre ----
   // Une ancre plutôt qu'un clic JavaScript, pour que le lien fonctionne
   // aussi depuis les mentions légales, où la galerie n'existe pas encore.
-  const PIECES = ['cuisine', 'dressing', 'salon', 'bain'];
+  const PIECES = ['cuisine', 'dressing', 'salon', 'bain', 'escalier'];
   function depuisAncre(doux: boolean) {
     const m = location.hash.match(/^#work-([a-z]+)$/);
     if (!m || !PIECES.includes(m[1])) return;

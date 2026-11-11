@@ -4,6 +4,7 @@
 // Ce que le Worker reçoit de wrangler.jsonc (bindings + vars).
 interface Env {
   DB: D1Database;
+  PHOTOS: R2Bucket;
   ASSETS: Fetcher;
   ACCESS_TEAM_DOMAIN: string;
   ACCESS_AUD: string;

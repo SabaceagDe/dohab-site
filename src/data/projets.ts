@@ -1,4 +1,8 @@
 /**
+ * ANCIENNE GALERIE — ne plus modifier : les réalisations se gèrent dans
+ * dohab.be/admin/realisations. Ce fichier (avec galerie-auto.json) a été
+ * importé dans la base et ne sert plus que de secours si elle ne répond pas.
+ *
  * LES RÉALISATIONS ÉCRITES À LA MAIN.
  * Pour ajouter une photo, le plus simple n'est plus ici : dépose-la dans
  * le bon sous-dossier de Bureau/dohab_pictures et lance

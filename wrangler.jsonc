@@ -1,8 +1,9 @@
 {
   // Déploiement Cloudflare Workers.
-  // - Les pages publiques sont des fichiers statiques servis depuis ./dist.
-  // - Le Worker (code généré par Astro) ne sert que /admin/* : suivi des
-  //   paiements, export CSV, page de calcul.
+  // - Les pages fixes (mentions légales, images, CSS) sont des fichiers
+  //   statiques servis depuis ./dist.
+  // - Le Worker (code généré par Astro) sert les pages d'accueil (la galerie
+  //   vient de la base), les photos déposées (/media/*) et tout /admin.
   "name": "dohab-site",
   "compatibility_date": "2026-09-11",
   "main": "./dist/_worker.js/index.js",
@@ -24,6 +25,12 @@
       "database_id": "5fd75a21-97e6-465f-a6bd-33711c110af7",
       "migrations_dir": "migrations"
     }
+  ],
+
+  // Photos déposées depuis /admin/realisations. Le bucket doit exister avant
+  // le premier déploiement : Cloudflare → R2 → Create bucket → dohab-photos.
+  "r2_buckets": [
+    { "binding": "PHOTOS", "bucket_name": "dohab-photos" }
   ],
 
   // Cloudflare Access (Zero Trust → Access → Applications → l'app "admin").

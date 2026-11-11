@@ -1,0 +1,153 @@
+---
+// Fiche d'une réalisation : publication, photos (ajout, ordre, suppression),
+// textes et prix.
+export const prerender = false;
+import Admin from '../../../layouts/Admin.astro';
+import Flash from '../../../components/admin/Flash.astro';
+import RealisationFields from '../../../components/admin/RealisationFields.astro';
+import { getRealisation, listPhotos, MAX_PHOTOS, roomFr } from '../../../lib/realisations';
+import { id as parseId } from '../../../lib/forms';
+import { formatEuros } from '../../../lib/money';
+
+const db = Astro.locals.runtime.env.DB;
+const realId = parseId(Astro.params.id);
+const r = realId ? await getRealisation(db, realId) : null;
+if (!r) return Astro.redirect('/admin/realisations?err=introuvable', 303);
+const photos = await listPhotos(db, r.id);
+const title = r.title_fr ?? roomFr[r.room];
+// la galerie publique sait filtrer par pièce via l'ancre #work-<pièce>
+const siteLink = r.room === 'escalier' ? '/fr/#work' : `/fr/#work-${r.room}`;
+---
+<Admin title={title} active="realisations">
+  <p><a href="/admin/realisations">← Réalisations</a></p>
+  <h1>{title}</h1>
+  <Flash />
+
+  <section class:list={['card', 'status', r.published ? 'on' : 'off']}>
+    <div>
+      <strong>{r.published ? 'Visible sur le site' : 'Brouillon — invisible sur le site'}</strong>
+      <span class="muted">
+        {roomFr[r.room]}
+        {r.price_cents && ` · ${formatEuros(r.price_cents)}${r.show_price ? ' (affiché)' : ' (masqué)'}`}
+        {photos.length === 0 && ' · aucune photo : rien ne s’affiche'}
+      </span>
+    </div>
+    <div class="actions">
+      <form method="post" action="/admin/api/realisations">
+        <input type="hidden" name="realisation_id" value={r.id} />
+        {r.published
+          ? <button class="btn ghost" name="_action" value="unpublish">Retirer du site</button>
+          : <button class="btn" name="_action" value="publish">Publier</button>}
+        <button class="btn ghost" name="_action" value="top">Mettre en premier</button>
+      </form>
+      {r.published === 1 && <a class="btn ghost" href={siteLink} target="_blank" rel="noopener">Voir sur le site</a>}
+    </div>
+  </section>
+
+  <section class="card" id="photos">
+    <h2>Photos <span class="muted">{photos.length} / {MAX_PHOTOS}</span></h2>
+    <ul class="photos">
+      {photos.map((p, i) => (
+        <li>
+          <img src={p.thumb ?? p.src} alt="" loading="lazy" />
+          {i === 0 && <span class="cover">Couverture</span>}
+          <form method="post" action="/admin/api/photos" class="tools">
+            <input type="hidden" name="photo_id" value={p.id} />
+            <button name="_action" value="left" disabled={i === 0} aria-label="Avancer">◀</button>
+            <button name="_action" value="right" disabled={i === photos.length - 1} aria-label="Reculer">▶</button>
+            {i > 0 && <button name="_action" value="first" class="txt">Couverture</button>}
+            <button name="_action" value="delete" class="del" aria-label="Supprimer"
+              data-confirm="Supprimer cette photo ? Elle sera effacée définitivement.">✕</button>
+          </form>
+        </li>
+      ))}
+    </ul>
+    {photos.length < MAX_PHOTOS && (
+      <label class="add">
+        <input id="add" type="file" accept="image/*" multiple data-real={r.id} />
+        <span>+ Ajouter des photos</span>
+      </label>
+    )}
+    <p id="up" class="muted" hidden></p>
+  </section>
+
+  <form class="card" method="post" action="/admin/api/realisations">
+    <input type="hidden" name="realisation_id" value={r.id} />
+    <input type="hidden" name="published" value={r.published} />
+    <h2>Détails</h2>
+    <RealisationFields r={r} />
+    <div class="actions">
+      <button class="btn" name="_action" value="update">Enregistrer les modifications</button>
+    </div>
+  </form>
+
+  <form method="post" action="/admin/api/realisations" class="danger-zone">
+    <input type="hidden" name="realisation_id" value={r.id} />
+    <button class="btn danger" name="_action" value="delete"
+      data-confirm="Supprimer cette réalisation ? Elle disparaîtra du site.">Supprimer la réalisation</button>
+  </form>
+</Admin>
+
+<style>
+  .status { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; }
+  .status > div:first-child { display: grid; gap: .15rem; }
+  .status.on { border-left: 4px solid var(--a-accent); }
+  .status.off { border-left: 4px solid var(--a-due); }
+  .status .actions { margin: 0; }
+  .status form { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .status .btn { text-decoration: none; display: inline-flex; align-items: center; }
+  .photos { list-style: none; margin: 0 0 .9rem; padding: 0; display: grid; gap: .6rem;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr)); }
+  .photos li { position: relative; border-radius: 8px; overflow: hidden; background: var(--a-line); }
+  .photos img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .cover { position: absolute; top: .35rem; left: .35rem; font-size: .72rem; font-weight: 600; padding: .15rem .45rem;
+           border-radius: 999px; background: var(--a-accent); color: var(--a-accent-ink); }
+  .tools { display: flex; gap: 1px; background: var(--a-line); }
+  .tools button {
+    flex: 1; min-height: 40px; border: 0; background: var(--a-card); color: var(--a-ink); font: inherit;
+    font-size: .85rem; cursor: pointer;
+  }
+  .tools button:disabled { color: var(--a-line); cursor: default; }
+  .tools .txt { flex: 2; font-size: .75rem; }
+  .tools .del { color: var(--a-error); }
+  .add { display: flex; justify-content: center; padding: .9rem; border: 2px dashed var(--a-line); border-radius: 10px;
+         cursor: pointer; font-weight: 600; color: var(--a-accent); }
+  .add:hover, .add:focus-within { border-color: var(--a-accent); }
+  .add input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  #up { margin: .6rem 0 0; }
+  .danger-zone { margin-top: 1.5rem; text-align: right; }
+</style>
+
+<script>
+  import { uploadPhoto, uploadError } from '../../../scripts/photos';
+
+  const input = document.getElementById('add') as HTMLInputElement | null;
+  const out = document.getElementById('up')!;
+  input?.addEventListener('change', async () => {
+    const files = [...(input.files ?? [])];
+    if (!files.length) return;
+    input.disabled = true;
+    out.hidden = false;
+    const errors: string[] = [];
+    for (let i = 0; i < files.length; i++) {
+      out.textContent = `Envoi de la photo ${i + 1} / ${files.length}…`;
+      try {
+        await uploadPhoto(input.dataset.real!, files[i]);
+      } catch (e) {
+        errors.push(`${files[i].name} : ${uploadError[(e as Error).message] ?? 'échec'}`);
+      }
+    }
+    if (errors.length) {
+      out.textContent = `Pas envoyées — ${errors.join(' · ')} `;
+      input.disabled = false;
+      if (errors.length < files.length) {
+        const a = document.createElement('a');
+        a.href = `${location.pathname}?ok=photos#photos`;
+        a.textContent = 'Afficher les photos envoyées';
+        out.appendChild(a);
+      }
+      return;
+    }
+    location.href = `${location.pathname}?ok=photos#photos`;
+  });
+</script>
