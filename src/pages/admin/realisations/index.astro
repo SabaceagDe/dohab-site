@@ -1,0 +1,110 @@
+---
+// Liste des réalisations : brouillons d'abord, puis les publiées dans
+// l'ordre du site. Le filtre se fait dans le navigateur.
+export const prerender = false;
+import Admin from '../../../layouts/Admin.astro';
+import Flash from '../../../components/admin/Flash.astro';
+import { listRealisations, ROOMS, roomFr } from '../../../lib/realisations';
+import { formatEuros } from '../../../lib/money';
+
+const list = await listRealisations(Astro.locals.runtime.env.DB);
+const published = list.filter((r) => r.published).length;
+const priced = list.filter((r) => r.published && r.show_price && r.price_cents).length;
+const counts = Object.fromEntries(ROOMS.map((room) => [room, list.filter((r) => r.room === room).length]));
+---
+<Admin title="Réalisations" active="realisations">
+  <div class="title">
+    <h1>Réalisations</h1>
+    <a class="btn" href="/admin/realisations/nouvelle">+ Nouvelle</a>
+  </div>
+  <Flash />
+
+  <p class="muted stats">
+    {published} sur le site · {priced} avec prix affiché · {list.length - published} brouillon{list.length - published > 1 ? 's' : ''}
+  </p>
+
+  <div class="filters" role="group" aria-label="Filtrer">
+    <button type="button" data-f="all" aria-pressed="true">Toutes</button>
+    <button type="button" data-f="draft" aria-pressed="false">Brouillons</button>
+    <button type="button" data-f="price" aria-pressed="false">Avec prix</button>
+    {ROOMS.filter((room) => counts[room]).map((room) => (
+      <button type="button" data-f={room} aria-pressed="false">{roomFr[room]} <span class="muted">{counts[room]}</span></button>
+    ))}
+  </div>
+
+  {list.length === 0 && <p class="muted">Aucune réalisation pour l’instant.</p>}
+
+  <ul class="reals">
+    {list.map((r) => (
+      <li data-room={r.room} data-draft={r.published ? '0' : '1'} data-price={r.show_price && r.price_cents ? '1' : '0'}>
+        <a href={`/admin/realisations/${r.id}`}>
+          <div class="img">
+            {r.cover ? <img src={r.cover} alt="" loading="lazy" /> : <span class="muted">sans photo</span>}
+            {r.photo_count > 1 && <span class="count">{r.photo_count}</span>}
+            {!r.published && <span class="badge">Brouillon</span>}
+          </div>
+          <div class="txt">
+            <strong>{r.title_fr ?? roomFr[r.room]}</strong>
+            <span class="muted">{roomFr[r.room]}{r.commune ? ` · ${r.commune}` : ''}</span>
+            {r.price_cents && (
+              <span class:list={['money', !r.show_price && 'hidden-price']}>
+                {formatEuros(r.price_cents)}{!r.show_price && ' (masqué)'}
+              </span>
+            )}
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p id="aucune" class="muted" hidden>Rien dans ce filtre.</p>
+</Admin>
+
+<style>
+  .title { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .title .btn { text-decoration: none; display: inline-flex; align-items: center; }
+  .stats { margin: -.3rem 0 .9rem; font-size: .9rem; }
+  .filters { display: flex; gap: .4rem; overflow-x: auto; padding-bottom: .3rem; margin-bottom: .9rem; }
+  .filters button {
+    font: inherit; font-size: .9rem; white-space: nowrap; cursor: pointer; min-height: 40px;
+    padding: .4rem .8rem; border-radius: 999px; border: 1px solid var(--a-line);
+    background: var(--a-card); color: var(--a-ink);
+  }
+  .filters button[aria-pressed='true'] { background: var(--a-accent); border-color: var(--a-accent); color: var(--a-accent-ink); }
+  .filters button[aria-pressed='true'] .muted { color: inherit; opacity: .75; }
+  .reals { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem;
+           grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); }
+  .reals[hidden], .reals li[hidden] { display: none; }
+  .reals a { display: grid; text-decoration: none; background: var(--a-card); border: 1px solid var(--a-line);
+             border-radius: 10px; overflow: hidden; height: 100%; }
+  .reals a:hover { border-color: var(--a-accent); }
+  .img { position: relative; aspect-ratio: 4 / 3; background: var(--a-line); display: grid; place-items: center; }
+  .img img { width: 100%; height: 100%; object-fit: cover; }
+  .badge, .count {
+    position: absolute; top: .45rem; font-size: .75rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px;
+  }
+  .badge { left: .45rem; background: var(--a-due-soft); color: var(--a-due); }
+  .count { right: .45rem; background: rgba(0, 0, 0, .55); color: #fff; }
+  .txt { display: grid; gap: .1rem; padding: .65rem .75rem .8rem; min-width: 0; }
+  .txt strong, .txt span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .txt .muted { font-size: .85rem; }
+  .txt .money { font-weight: 600; margin-top: .15rem; }
+  .hidden-price { color: var(--a-muted); font-weight: 400 !important; }
+</style>
+
+<script>
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.filters button')];
+  const items = [...document.querySelectorAll<HTMLLIElement>('.reals li')];
+  const none = document.getElementById('aucune')!;
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    const f = b.dataset.f!;
+    buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    let shown = 0;
+    for (const li of items) {
+      const d = li.dataset;
+      const ok = f === 'all' || (f === 'draft' ? d.draft === '1' : f === 'price' ? d.price === '1' : d.room === f);
+      li.hidden = !ok;
+      if (ok) shown++;
+    }
+    none.hidden = shown > 0;
+  }));
+</script>

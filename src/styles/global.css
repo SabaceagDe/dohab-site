@@ -259,8 +259,8 @@ section[id]{scroll-margin-top:84px}
 .lb.on{display:flex}
 /* la légende est collée en bas : on réserve sa place sous la photo,
    sinon le texte passait par-dessus le bas de l'image */
-.lb{padding-bottom:clamp(7.5rem,14vh,9rem)}
-.lb img{max-width:100%;max-height:calc(100vh - 12rem);width:auto;border-radius:var(--r)}
+.lb{padding-bottom:clamp(9.5rem,19vh,11.5rem)}
+.lb img{max-width:100%;max-height:calc(100vh - 14.5rem);width:auto;border-radius:var(--r)}
 .lb .cap{position:absolute;left:0;right:0;bottom:0;padding:1.2rem;color:rgba(255,255,255,.9);
   font-size:var(--t-sm);text-align:center}
 .lb .close{position:absolute;top:1rem;right:1.1rem;background:none;border:1px solid rgba(255,255,255,.35);
@@ -385,6 +385,8 @@ section[id]{scroll-margin-top:84px}
 /* légende de la photo agrandie */
 .lb .cap strong{display:block;font-weight:600;margin-bottom:.2rem}
 .lb .cap span{display:block;opacity:.75;max-width:60ch;margin-inline:auto}
+.lb .cap .prix{display:block;font-weight:600;font-size:var(--t-lg);color:#fff;margin:.1rem 0 .35rem;font-variant-numeric:tabular-nums}
+.lb .cap small{display:block;opacity:.6;font-size:var(--t-xs);margin-top:.3rem;letter-spacing:.04em}
 
 /* ================= page des mentions légales =====================
    Une colonne étroite, du texte qui se lit. Rien d'autre.

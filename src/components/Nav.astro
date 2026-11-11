@@ -12,8 +12,9 @@ import { t, locales, localeHref, legalHref } from '../i18n';
  *                les mentions légales, sinon changer de langue fait
  *                perdre la page.
  */
-interface Props { locale: Locale; page?: 'home' | 'legal' }
-const { locale, page = 'home' } = Astro.props;
+// prix : la section « Prix » existe sur la page (au moins un prix affiché)
+interface Props { locale: Locale; page?: 'home' | 'legal'; prix?: boolean }
+const { locale, page = 'home', prix = false } = Astro.props;
 const tr = t(locale);
 
 const base = page === 'home' ? '' : localeHref(locale);
@@ -33,6 +34,7 @@ const versLangue = page === 'legal' ? legalHref : localeHref;
       <a href={ancre('work-salon')}>{tr('filter.living')}</a>
       <a href={ancre('work-bain')}>{tr('filter.bath')}</a>
       <a href={ancre('escaliers')}>{tr('nav.stairs')}</a>
+      {prix && <a href={ancre('prix')}>{tr('nav.prices')}</a>}
       <a href={ancre('about')}>{tr('nav.about')}</a>
     </nav>
 

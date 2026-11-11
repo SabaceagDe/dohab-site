@@ -1,0 +1,137 @@
+---
+/**
+ * PRIX — LE SHOWROOM.
+ * De vraies réalisations avec le prix auquel elles ont été vendues.
+ * Une réalisation n'apparaît ici que si, dans l'admin, elle a un prix ET la
+ * case « afficher ce prix sur le site » est cochée. Sans aucune, la section
+ * n'est pas affichée du tout (la page d'accueil ne l'inclut pas).
+ *
+ * En haut, un onglet par pièce avec le plus petit prix vendu (« dès … ») :
+ * c'est l'idée de budget, calculée toute seule à partir des ventes réelles.
+ */
+import type { Locale } from '../site.config';
+import { t, euros, whatsappHref } from '../i18n';
+import { ROOM_ORDER, roomKey } from '../lib/realisations';
+import { present, type PublicRealisation } from '../lib/vitrine';
+
+interface Props { locale: Locale; items: PublicRealisation[] }
+const { locale, items } = Astro.props;
+const tr = t(locale);
+
+const tabs = ROOM_ORDER
+  .map((room) => {
+    const prices = items.filter((i) => i.room === room).map((i) => i.price!);
+    return prices.length ? { room, from: Math.min(...prices) } : null;
+  })
+  .filter((x): x is { room: (typeof ROOM_ORDER)[number]; from: number } => x !== null);
+---
+<section class="band" id="prix">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow rv">{tr('prices.eyebrow')}</p>
+        <h2 class="rv" style="--d:60ms">{tr('prices.h2')}</h2>
+      </div>
+      <p class="lead rv" style="--d:120ms">{tr('prices.sub')}</p>
+    </div>
+
+    {tabs.length > 1 && (
+      <div class="tabs rv" role="group">
+        <button type="button" class="tab" data-room="all" aria-pressed="true">
+          <span>{tr('filter.all')}</span>
+        </button>
+        {tabs.map((tb) => (
+          <button type="button" class="tab" data-room={tb.room} aria-pressed="false">
+            <span>{tr(roomKey[tb.room])}</span>
+            <small>{tr('prices.from')} {euros(locale, tb.from)}</small>
+          </button>
+        ))}
+      </div>
+    )}
+
+    <div class="show" id="showroom">
+      {items.map((r, i) => {
+        const p = present(r, locale);
+        return (
+          <article class="item rv" data-room={r.room} data-lb={p.lb} style={`--d:${(i % 4) * 70}ms`}>
+            <div class="ph">
+              <img src={p.cover.thumb} alt={p.title} loading="lazy" decoding="async"
+                width={p.cover.w ?? undefined} height={p.cover.h ?? undefined} />
+              {r.photos.length > 1 && <span class="nb">+{r.photos.length - 1}</span>}
+            </div>
+            <div class="txt">
+              <span class="room">{tr(roomKey[r.room])}{p.meta && ` · ${p.meta}`}</span>
+              <h3>{p.title}</h3>
+              <p class="amount"><small>{tr('prices.sold')}</small> {p.price}</p>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+
+    <div class="prices-foot rv">
+      <p>{tr('prices.note')}</p>
+      <div class="prices-cta">
+        <a class="btn" href="#contact">{tr('prices.cta')}</a>
+        <a class="btn line" href={whatsappHref(locale)} target="_blank" rel="noopener">{tr('direct.wa')}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tabs { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .3rem; margin-bottom: clamp(1.2rem, 2.5vw, 2rem);
+          scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    display: grid; gap: .1rem; text-align: left; cursor: pointer; flex: none;
+    padding: .6rem 1rem; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface);
+    font: inherit; color: var(--ink);
+  }
+  .tab span { font-size: var(--t-sm); font-weight: 600; }
+  .tab small { font-size: var(--t-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .tab:hover { border-color: var(--accent); }
+  .tab[aria-pressed='true'] { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+  .tab[aria-pressed='true'] small { color: inherit; opacity: .85; }
+
+  .show { display: grid; gap: clamp(1rem, 2vw, 1.6rem);
+          grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); }
+  .item { cursor: zoom-in; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+          overflow: hidden; display: flex; flex-direction: column; }
+  .item.hide { display: none; }
+  .ph { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--surface-2); }
+  .ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2, .7, .2, 1); }
+  .item:hover .ph img { transform: scale(1.04); }
+  .nb { position: absolute; right: .55rem; bottom: .55rem; padding: .2rem .5rem; border-radius: 999px;
+        font-size: var(--t-xs); font-weight: 600; background: rgba(26, 24, 21, .62); color: #fff; }
+  .txt { display: grid; gap: .3rem; padding: 1rem 1.1rem 1.15rem; }
+  .room { font-size: var(--t-xs); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .txt h3 { font-size: var(--t-md); font-weight: 500; line-height: 1.35; }
+  .item:hover h3 { color: var(--accent); }
+  .amount { margin-top: .2rem; font-size: clamp(1.3rem, 1.15rem + .6vw, 1.6rem); font-weight: 600;
+            font-variant-numeric: tabular-nums; color: var(--ink); }
+  .amount small { font-size: var(--t-sm); font-weight: 400; color: var(--soft); margin-right: .15rem; }
+
+  .prices-foot { margin-top: clamp(1.6rem, 3vw, 2.4rem); display: flex; flex-wrap: wrap; align-items: center;
+                 justify-content: space-between; gap: 1rem 2rem; }
+  .prices-foot p { max-width: 62ch; font-size: var(--t-sm); color: var(--soft); line-height: 1.6; }
+  .prices-cta { display: flex; flex-wrap: wrap; gap: .6rem; }
+  @media (max-width: 520px) { .prices-cta, .prices-cta .btn { width: 100%; } }
+</style>
+
+<script>
+  import { openLightbox } from '../scripts/lightbox';
+
+  const show = document.getElementById('showroom');
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('#prix .tab')];
+  tabs.forEach((tab) => tab.addEventListener('click', () => {
+    tabs.forEach((x) => x.setAttribute('aria-pressed', String(x === tab)));
+    const room = tab.dataset.room;
+    show?.querySelectorAll<HTMLElement>('.item').forEach((it) =>
+      it.classList.toggle('hide', room !== 'all' && it.dataset.room !== room));
+  }));
+  show?.addEventListener('click', (e) => {
+    const item = (e.target as HTMLElement).closest<HTMLElement>('.item');
+    if (item) openLightbox([...show.querySelectorAll<HTMLElement>('.item:not(.hide)')], item);
+  });
+</script>

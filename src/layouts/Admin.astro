@@ -7,7 +7,7 @@ import '../styles/tokens.css';
 
 interface Props {
   title: string;
-  active?: 'paiements' | 'calcul';
+  active?: 'paiements' | 'realisations' | 'calcul';
 }
 const { title, active } = Astro.props;
 const user = Astro.locals.user;
@@ -26,6 +26,7 @@ const user = Astro.locals.user;
       <a class="brand" href="/admin/paiements">DO HAB</a>
       <nav>
         <a href="/admin/paiements" aria-current={active === 'paiements' ? 'page' : undefined}>Paiements</a>
+        <a href="/admin/realisations" aria-current={active === 'realisations' ? 'page' : undefined}>Réalisations</a>
         <a href="/admin/calcul" aria-current={active === 'calcul' ? 'page' : undefined}>Calcul</a>
       </nav>
     </header>
@@ -36,6 +37,14 @@ const user = Astro.locals.user;
       {user && <span>Connecté : {user}</span>}
       <a href="/cdn-cgi/access/logout">Se déconnecter</a>
     </footer>
+    <script>
+      // Un bouton avec data-confirm="…" demande confirmation avant d'envoyer
+      // son formulaire (suppression d'une photo, d'une réalisation…).
+      document.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-confirm]');
+        if (btn && !confirm(btn.dataset.confirm!)) e.preventDefault();
+      });
+    </script>
   </body>
 </html>
 
@@ -94,10 +103,10 @@ const user = Astro.locals.user;
     background: var(--a-card);
     border-bottom: 1px solid var(--a-line);
   }
-  .brand { font-weight: 600; letter-spacing: .08em; text-decoration: none; }
-  .top nav { display: flex; gap: .25rem; }
+  .brand { font-weight: 600; letter-spacing: .08em; text-decoration: none; white-space: nowrap; }
+  .top nav { display: flex; gap: .25rem; overflow-x: auto; }
   .top nav a {
-    text-decoration: none; padding: .45rem .7rem; border-radius: 6px; color: var(--a-soft);
+    text-decoration: none; padding: .45rem .7rem; border-radius: 6px; color: var(--a-soft); white-space: nowrap;
   }
   .top nav a[aria-current='page'] { background: var(--a-accent-soft); color: var(--a-ink); font-weight: 600; }
 

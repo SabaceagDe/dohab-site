@@ -1,0 +1,170 @@
+---
+// Nouvelle réalisation : photos + pièce + prix, depuis le téléphone.
+// Sans JavaScript, la page ne peut pas réduire les photos : le formulaire
+// est donc envoyé par le script ci-dessous (création, puis photo par photo).
+export const prerender = false;
+import Admin from '../../../layouts/Admin.astro';
+import Flash from '../../../components/admin/Flash.astro';
+import RealisationFields from '../../../components/admin/RealisationFields.astro';
+---
+<Admin title="Nouvelle réalisation" active="realisations">
+  <p><a href="/admin/realisations">← Réalisations</a></p>
+  <h1>Nouvelle réalisation</h1>
+  <Flash />
+
+  <form id="new" class="card" method="post" action="/admin/api/realisations">
+    <input type="hidden" name="_action" value="create" />
+
+    <div class="pick">
+      <label class="drop">
+        <input id="files" type="file" accept="image/*" multiple />
+        <span class="big">+ Ajouter des photos</span>
+        <span class="muted">Depuis la galerie du téléphone ou l’appareil photo. La première sera la couverture.</span>
+      </label>
+      <ul id="previews" class="previews"></ul>
+    </div>
+
+    <RealisationFields />
+
+    <fieldset class="pub">
+      <legend>Publication</legend>
+      <label class="check"><input type="radio" name="published" value="1" checked /> <span>Publier tout de suite sur le site</span></label>
+      <label class="check"><input type="radio" name="published" value="0" /> <span>Garder en brouillon (invisible sur le site)</span></label>
+    </fieldset>
+
+    <p id="msg" class="flash err" role="alert" hidden></p>
+    <div class="actions">
+      <button class="btn" type="submit" id="go">Enregistrer</button>
+      <a class="btn ghost" href="/admin/realisations">Annuler</a>
+    </div>
+  </form>
+</Admin>
+
+<style>
+  .drop {
+    display: grid; gap: .3rem; justify-items: center; text-align: center; cursor: pointer;
+    padding: 1.4rem 1rem; border: 2px dashed var(--a-line); border-radius: 10px; background: var(--a-bg);
+  }
+  .drop:hover, .drop:focus-within { border-color: var(--a-accent); }
+  .drop input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .drop .big { font-size: 1.1rem; font-weight: 600; color: var(--a-accent); }
+  .drop .muted { font-size: .85rem; }
+  .previews { list-style: none; margin: .75rem 0 1rem; padding: 0; display: grid; gap: .5rem;
+              grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); }
+  .previews:empty { display: none; }
+  /* les vignettes sont créées par le script : les styles « scoped » d'Astro
+     ne les atteignent pas, d'où les :global() */
+  .previews :global(li) { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: var(--a-line); }
+  .previews :global(img) { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .previews :global(.rm) {
+    position: absolute; top: .25rem; right: .25rem; width: 28px; height: 28px; border-radius: 50%;
+    border: 0; background: rgba(0, 0, 0, .6); color: #fff; font-size: 1rem; line-height: 1; cursor: pointer;
+  }
+  .previews :global(.first)::after {
+    content: 'Couverture'; position: absolute; left: 0; right: 0; bottom: 0; padding: .15rem;
+    font-size: .7rem; text-align: center; background: rgba(0, 0, 0, .55); color: #fff;
+  }
+  .previews :global(.state) {
+    position: absolute; inset: 0; display: grid; place-items: center; font-size: .8rem; font-weight: 600;
+    background: rgba(255, 255, 255, .7); color: #222;
+  }
+  .previews :global(.state.ok) { background: rgba(93, 110, 81, .55); color: #fff; }
+  .previews :global(.state.ko) { background: rgba(179, 38, 30, .7); color: #fff; padding: .3rem; text-align: center; }
+  .pub { display: grid; gap: .5rem; margin-top: 1rem; }
+  .check { display: flex; align-items: center; gap: .55rem; color: var(--a-ink); cursor: pointer; }
+  .check input { width: 1.2rem; height: 1.2rem; margin: 0; accent-color: var(--a-accent); flex: none; }
+</style>
+
+<script>
+  import { uploadPhoto, uploadError } from '../../../scripts/photos';
+
+  const form = document.getElementById('new') as HTMLFormElement;
+  const input = document.getElementById('files') as HTMLInputElement;
+  const list = document.getElementById('previews')!;
+  const msg = document.getElementById('msg')!;
+  const go = document.getElementById('go') as HTMLButtonElement;
+  let files: File[] = [];
+
+  function draw() {
+    list.replaceChildren(...files.map((f, i) => {
+      const li = document.createElement('li');
+      if (i === 0) li.className = 'first';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(f);
+      img.alt = '';
+      img.onload = () => URL.revokeObjectURL(img.src);
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'rm';
+      rm.textContent = '×';
+      rm.setAttribute('aria-label', 'Retirer cette photo');
+      rm.addEventListener('click', () => { files.splice(i, 1); draw(); });
+      li.appendChild(img);
+      li.appendChild(rm);
+      return li;
+    }));
+  }
+
+  input.addEventListener('change', () => {
+    files = files.concat([...(input.files ?? [])]);
+    input.value = '';
+    draw();
+  });
+
+  const fail = (text: string) => { msg.textContent = text; msg.hidden = false; msg.scrollIntoView({ block: 'center' }); };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.hidden = true;
+    if (!files.length) return fail('Ajoutez au moins une photo.');
+    if (!form.reportValidity()) return;
+    go.disabled = true;
+    go.textContent = 'Enregistrement…';
+
+    // 1. la fiche
+    const res = await fetch(form.action, {
+      method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' }
+    }).catch(() => null);
+    const body = (res ? await res.json().catch(() => ({})) : {}) as { id?: number; error?: string };
+    if (!res?.ok || !body.id) {
+      go.disabled = false;
+      go.textContent = 'Enregistrer';
+      const texts: Record<string, string> = {
+        piece: 'Choisissez la pièce.', prix: 'Le prix n’est pas un montant valable (ex. 8450).',
+        annee: 'L’année n’est pas valable.'
+      };
+      return fail(texts[body.error ?? ''] ?? 'Enregistrement impossible : connexion perdue ou session expirée. Rechargez la page.');
+    }
+
+    // 2. les photos, une par une, dans l'ordre choisi
+    list.querySelectorAll('.rm').forEach((b) => b.remove());
+    const items = [...list.children] as HTMLElement[];
+    let failed = 0;
+    for (let i = 0; i < files.length; i++) {
+      const state = document.createElement('span');
+      state.className = 'state';
+      state.textContent = 'Envoi…';
+      items[i].appendChild(state);
+      go.textContent = `Photo ${i + 1} / ${files.length}…`;
+      try {
+        await uploadPhoto(body.id, files[i]);
+        state.className = 'state ok';
+        state.textContent = '✓';
+      } catch (err) {
+        failed++;
+        state.className = 'state ko';
+        state.textContent = uploadError[(err as Error).message] ?? 'échec';
+      }
+    }
+    if (failed) {
+      go.textContent = 'Terminé';
+      fail(`${failed} photo(s) n’ont pas pu être envoyées. La réalisation est créée : ouvrez-la pour réessayer.`);
+      const a = document.createElement('a');
+      a.href = `/admin/realisations/${body.id}`;
+      a.textContent = ' Ouvrir la réalisation →';
+      msg.appendChild(a);
+      return;
+    }
+    location.href = `/admin/realisations/${body.id}?ok=reacree`;
+  });
+</script>

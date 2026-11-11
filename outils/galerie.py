@@ -1,5 +1,9 @@
 """
-AJOUTER DES PHOTOS À LA GALERIE.
+ANCIEN OUTIL — la galerie se gère maintenant dans dohab.be/admin/realisations.
+Gardé pour mémoire : il alimentait src/data/galerie-auto.json, qui ne sert
+plus que de secours si la base ne répond pas.
+
+AJOUTER DES PHOTOS À LA GALERIE (ancienne méthode).
 
     py outils/galerie.py
 

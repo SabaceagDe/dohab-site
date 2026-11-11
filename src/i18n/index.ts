@@ -40,3 +40,13 @@ export const locales = ['nl', 'fr', 'en'] as const;
  */
 export const whatsappHref = (locale: Locale) =>
   `${site.whatsapp}?text=${encodeURIComponent(t(locale)('wa.text'))}`;
+
+/**
+ * Montant en euros, sans centimes, à la manière de chaque langue :
+ * fr « 8 450 € » · nl « € 8.450 » · en « €8,450 ».
+ */
+export function euros(locale: Locale, cents: number): string {
+  const tag = locale === 'en' ? 'en-IE' : `${locale}-BE`;
+  return new Intl.NumberFormat(tag, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
+    .format(Math.round(cents / 100));
+}

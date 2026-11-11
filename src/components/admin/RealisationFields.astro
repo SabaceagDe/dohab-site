@@ -1,0 +1,98 @@
+---
+// Champs d'une réalisation — partagés par « nouvelle » et « modifier ».
+// Pensé pour le téléphone : gros boutons à toucher plutôt que des listes.
+import { centsToInput } from '../../lib/money';
+import { ROOMS, roomFr, type RealisationRow } from '../../lib/realisations';
+import { finitions } from '../../data/finitions';
+
+interface Props { r?: RealisationRow }
+const { r } = Astro.props;
+// nouvelle réalisation : « afficher le prix » coché par défaut
+const showPrice = r ? r.show_price === 1 : true;
+// le nom d'une teinte est écrit « Eik / Chêne » : on garde la partie française
+const nomFr = (n: string) => n.split('/').pop()!.trim();
+---
+<fieldset class="chips">
+  <legend>Pièce</legend>
+  {ROOMS.map((room) => (
+    <label class="chip">
+      <input type="radio" name="room" value={room} required checked={r?.room === room} />
+      <span>{roomFr[room]}</span>
+    </label>
+  ))}
+</fieldset>
+
+<fieldset class="chips">
+  <legend>Teinte principale <span class="opt">(sert au filtre par couleur)</span></legend>
+  <label class="chip">
+    <input type="radio" name="finish" value="" checked={!r?.finish} />
+    <span>Aucune</span>
+  </label>
+  {finitions.map((f) => (
+    <label class="chip">
+      <input type="radio" name="finish" value={f.id} checked={r?.finish === f.id} />
+      <span class="dot" style={`background:${f.hex}`}></span>
+      <span>{nomFr(f.n)}</span>
+    </label>
+  ))}
+</fieldset>
+
+<div class="price-box">
+  <label>Prix de vente, TVA comprise (€) <span class="opt">(facultatif)</span>
+    <input name="price" inputmode="decimal" autocomplete="off" placeholder="ex. 8450"
+      value={r?.price_cents ? (r.price_cents % 100 === 0 ? String(r.price_cents / 100) : centsToInput(r.price_cents)) : ''} />
+  </label>
+  <label class="check">
+    <input type="checkbox" name="show_price" value="1" checked={showPrice} />
+    <span>Afficher ce prix sur le site <span class="opt">(section « Prix »)</span></span>
+  </label>
+  <p class="muted hint">Le montant payé par le client. S’il n’est pas affiché, il reste visible ici uniquement.</p>
+</div>
+
+<div class="grid two">
+  <label class="span">Titre <span class="opt">(facultatif — vide : « Cuisine », « Salle de bain »…)</span>
+    <input name="title_fr" maxlength="120" placeholder="ex. Cuisine en noyer avec îlot" value={r?.title_fr ?? ''} />
+  </label>
+  <label class="span">Description <span class="opt">(facultatif)</span>
+    <textarea name="desc_fr" maxlength="1000" placeholder="ex. Façades noyer, plan en quartz, électroménager encastré.">{r?.desc_fr ?? ''}</textarea>
+  </label>
+  <label>Commune <span class="opt">(la ville seulement)</span>
+    <input name="commune" maxlength="80" placeholder="ex. Uccle" value={r?.commune ?? ''} />
+  </label>
+  <label>Année de pose <span class="opt">(facultatif)</span>
+    <input name="year" inputmode="numeric" maxlength="4" placeholder="ex. 2026" value={r?.year ?? ''} />
+  </label>
+</div>
+
+<details class="tr" open={Boolean(r?.title_nl || r?.title_en || r?.desc_nl || r?.desc_en)}>
+  <summary>Traductions néerlandais / anglais <span class="opt">(facultatif)</span></summary>
+  <p class="muted hint">Laissées vides, le site affiche le texte français sur les pages NL et EN.</p>
+  <div class="grid two">
+    <label>Titre NL<input name="title_nl" maxlength="120" lang="nl" value={r?.title_nl ?? ''} /></label>
+    <label>Titre EN<input name="title_en" maxlength="120" lang="en" value={r?.title_en ?? ''} /></label>
+    <label>Description NL<textarea name="desc_nl" maxlength="1000" lang="nl">{r?.desc_nl ?? ''}</textarea></label>
+    <label>Description EN<textarea name="desc_en" maxlength="1000" lang="en">{r?.desc_en ?? ''}</textarea></label>
+  </div>
+</details>
+
+<style>
+  .chips { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: .9rem; }
+  .chips legend { width: 100%; margin-bottom: .2rem; }
+  .chip {
+    display: inline-flex; align-items: center; gap: .45rem; cursor: pointer;
+    padding: .55rem .85rem; min-height: 44px; border: 1px solid var(--a-line); border-radius: 999px;
+    background: var(--a-card); color: var(--a-ink); font-size: .95rem;
+  }
+  .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .chip:has(input:checked) { border-color: var(--a-accent); background: var(--a-accent-soft); font-weight: 600; }
+  .chip:has(input:focus-visible) { outline: 2px solid var(--a-accent); outline-offset: 2px; }
+  .dot { width: .9rem; height: .9rem; border-radius: 50%; border: 1px solid var(--a-line); flex: none; }
+  .price-box { display: grid; gap: .55rem; margin-bottom: .9rem; padding: .85rem; border-radius: 8px;
+               background: var(--a-accent-soft); }
+  .price-box input[name=price] { max-width: 14rem; font-size: 1.1rem; }
+  .check { display: flex; align-items: center; gap: .55rem; color: var(--a-ink); font-size: .95rem; cursor: pointer; }
+  .check input { width: 1.25rem; height: 1.25rem; accent-color: var(--a-accent); margin: 0; flex: none; }
+  .hint { font-size: .82rem; margin: 0; }
+  .tr { margin-top: .9rem; }
+  .tr .hint { margin-bottom: .6rem; }
+</style>

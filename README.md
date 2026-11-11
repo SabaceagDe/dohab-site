@@ -1,14 +1,16 @@
 # dohab-site
 
-Site vitrine DO HAB — Astro, trois langues. Le site public est généré en
-statique ; seul l'espace interne `/admin` tourne côté serveur (Worker
-Cloudflare + base D1), derrière Cloudflare Access.
+Site vitrine DO HAB — Astro, trois langues, Worker Cloudflare + base D1.
+Les pages d'accueil sont rendues à chaque visite (la galerie et les prix
+viennent de la base) ; l'espace interne `/admin` (paiements, réalisations)
+est derrière Cloudflare Access. Les photos déposées vivent dans R2.
 
 ## Démarrer
 
 ```bash
 npm install
-npm run dev      # http://localhost:4321
+npm run db:local # crée / met à jour la base locale (.wrangler/)
+npm run dev      # http://localhost:4321 — /admin sans connexion en dev
 ```
 
 `npm run build` produit le site final dans `dist/`. C'est ce dossier
@@ -20,7 +22,7 @@ qu'on déposera sur Cloudflare Pages ou Netlify.
 | --- | --- |
 | un numéro, un e-mail, la TVA, l'adresse | `src/site.config.ts` |
 | n'importe quel texte visible | `src/i18n/nl.json`, `fr.json`, `en.json` |
-| ajouter / retirer une réalisation | `src/data/projets.ts` + la photo dans `public/photos/` |
+| ajouter / retirer une réalisation, son prix | **dohab.be/admin/realisations** (pas de code) |
 | les teintes du nuancier | `src/data/finitions.ts` |
 | les quatre tuiles de pièce | `src/data/rooms.ts` |
 | les couleurs, la typo, les espacements | `src/styles/tokens.css` |
@@ -56,6 +58,25 @@ préfixés (`/fr/`, `/en/`). Ce sont trois vraies pages, pas un bouton
 JavaScript : Google peut les indexer séparément et chacune déclare ses
 sœurs en `hreflang`. Pour mettre le français devant, il suffit de changer
 `defaultLocale` dans `astro.config.mjs` et de déplacer les pages.
+
+## Réalisations et prix
+
+Gérées dans `/admin/realisations` : photos, pièce, teinte, prix de vente
+(TVA comprise), textes FR (+ NL/EN facultatifs), publication.
+
+- Base : tables `realisations` et `realisation_photos`
+  (`migrations/0002_realisations.sql`). L'ancienne galerie y a été
+  importée par `migrations/0003_import_galerie.sql`
+  (généré par `outils/import_galerie.py`).
+- Photos : le navigateur les réduit (2000 px + miniature 900 px, WebP) et
+  retire les données EXIF, dont le GPS ; le Worker vérifie le type réel
+  et les range dans le bucket R2 `dohab-photos`, servies par `/media/…`.
+- Site : `src/lib/vitrine.ts` lit les réalisations publiées ;
+  `Gallery.astro` les affiche ; `Prices.astro` (section « Prix ») montre
+  celles dont le prix est affiché, avec le « dès … » par pièce.
+  Si la base ne répond pas, l'ancienne galerie (`src/data/`) s'affiche.
+- Déploiement : commande `npm run deploy` (migrations D1 distantes, puis
+  `wrangler deploy`). Le bucket R2 doit exister avant.
 
 ## À faire (dans l'ordre)
 

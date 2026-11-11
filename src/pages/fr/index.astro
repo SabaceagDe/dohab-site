@@ -1,4 +1,7 @@
 ---
+// Rendue à chaque visite (et non plus au build) : la galerie et les prix
+// viennent de la base, gérée dans /admin/realisations.
+export const prerender = false;
 import Base from '../../layouts/Base.astro';
 import Nav from '../../components/Nav.astro';
 import Hero from '../../components/Hero.astro';
@@ -9,19 +12,23 @@ import Feature from '../../components/Feature.astro';
 import Stairs from '../../components/Stairs.astro';
 import Finishes from '../../components/Finishes.astro';
 import Steps from '../../components/Steps.astro';
+import Prices from '../../components/Prices.astro';
+import { loadVitrine } from '../../lib/vitrine';
 import About from '../../components/About.astro';
 import Contact from '../../components/Contact.astro';
 import Footer from '../../components/Footer.astro';
 
 const locale = 'fr' as const;
+const items = await loadVitrine(Astro.locals.runtime?.env?.DB);
+const priced = items.filter((i) => i.price);
 ---
 <Base locale={locale}>
-  <Nav locale={locale} />
+  <Nav locale={locale} prix={priced.length > 0} />
   <main>
     <Hero locale={locale} />
     <Promises locale={locale} />
     <RoomTiles locale={locale} />
-    <Gallery locale={locale} />
+    <Gallery locale={locale} items={items} />
 
     <section class="band tint">
       <div class="wrap">
@@ -33,6 +40,7 @@ const locale = 'fr' as const;
     <Stairs locale={locale} />
     <Finishes locale={locale} />
     <Steps locale={locale} />
+    {priced.length > 0 && <Prices locale={locale} items={priced} />}
     <About locale={locale} photo="salon-panneau-chene.webp" />
     <Contact locale={locale} />
   </main>

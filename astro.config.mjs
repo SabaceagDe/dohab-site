@@ -6,9 +6,10 @@ import cloudflare from '@astrojs/cloudflare';
 // Si un jour le français doit passer devant, il suffit de changer
 // defaultLocale et de déplacer les pages — rien d'autre ne bouge.
 //
-// Le site public reste 100 % statique (output par défaut). Seules les pages
-// qui déclarent `export const prerender = false` (tout ce qui est sous
-// /admin) tournent côté serveur, dans le Worker Cloudflare, avec la base D1.
+// Par défaut les pages sont statiques (générées au build). Celles qui
+// déclarent `export const prerender = false` tournent côté serveur, dans le
+// Worker Cloudflare, avec la base D1 : les trois pages d'accueil (galerie et
+// prix lus dans la base), /media/* (photos R2) et tout /admin.
 //
 // Adaptateur en v12 : c'est la dernière version compatible Astro 5.
 // Les v13/v14 exigent Astro 6/7 — monter Astro sera un chantier séparé.
