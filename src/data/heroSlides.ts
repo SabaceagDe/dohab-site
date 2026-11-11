@@ -12,7 +12,7 @@
  */
 export interface Diapo {
   id: string;
-  photo?: string;      // fichier dans public/photos/
+  photo?: string;      // fichier dans public/photos/, ou chemin complet ('/foret/…')
   dessin?: string;     // fichier dans public/illustrations/ — diapo claire
   // Sur ordinateur la diapo est très large et peu haute : une photo prise
   // en portrait n'en montre qu'une bande. `cadrage` choisit laquelle —
@@ -24,6 +24,13 @@ export interface Diapo {
 
 export const diapos: Diapo[] = [
   // La première diapo porte le <h1> de la page (voir Hero.astro).
+  {
+    // la forêt d'abord : le bois avant le meuble
+    id: 'foret',
+    photo: '/foret/sous-bois.webp',
+    lien: '#work',
+    cles: { eyebrow: 'sl0.eyebrow', titre: 'hero.h1', sub: 'hero.sub', cta: 'hero.cta2' }
+  },
   {
     id: 'cuisines',
     photo: 'cuisine-noyer-hotte.webp',

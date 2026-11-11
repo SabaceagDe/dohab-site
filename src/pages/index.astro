@@ -13,6 +13,7 @@ import Stairs from '../components/Stairs.astro';
 import Finishes from '../components/Finishes.astro';
 import Steps from '../components/Steps.astro';
 import Prices from '../components/Prices.astro';
+import Bois from '../components/Bois.astro';
 import { loadVitrine } from '../lib/vitrine';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
@@ -29,6 +30,7 @@ const priced = items.filter((i) => i.price);
     <Promises locale={locale} />
     <RoomTiles locale={locale} />
     <Gallery locale={locale} items={items} />
+    <Bois locale={locale} />
 
     <section class="band tint">
       <div class="wrap">

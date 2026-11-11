@@ -129,7 +129,7 @@ h3{font-weight:560;font-stretch:90%;letter-spacing:-.01em}
 .hero-cta{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:clamp(1.2rem,2.4vw,1.8rem)}
 
 /* l'index des pièces, en bas */
-.hero-index{position:relative;z-index:2;width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+.hero-index{position:relative;z-index:2;width:100%;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);
   gap:clamp(.7rem,1.6vw,1.4rem);padding-bottom:clamp(1.1rem,2.4vw,1.8rem)}
 .hi{display:grid;gap:.6rem;padding:.5rem 0;background:none;border:0;cursor:pointer;text-align:left;
   color:rgba(255,255,255,.6);font-size:var(--t-sm);transition:color .3s}
@@ -296,3 +296,41 @@ h3{font-weight:560;font-stretch:90%;letter-spacing:-.01em}
   .band{padding-block:clamp(2.3rem,7vw,3.4rem)}
   .card h3{font-size:var(--t-xs)}
 }
+
+/* ==================================================================
+   LA FORÊT ET LE BOIS (photos libres de droits dans public/foret/)
+   ================================================================== */
+/* bande plein écran : collines de sapins, phrase par-dessus */
+.bois{position:relative;overflow:hidden;min-height:clamp(420px,72vh,720px);display:grid;align-items:end;
+  background:var(--forest);color:#fff}
+.bois-fond{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 70%;
+  transform:scale(1.15);will-change:transform}
+.bois::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(12,18,14,.15) 0%,rgba(12,18,14,0) 35%,rgba(12,18,14,.72) 100%)}
+.bois-in{position:relative;z-index:2;width:100%;padding-block:clamp(2.5rem,6vw,5rem)}
+.bois-bloc{display:inline-grid;max-width:100%}
+.bois h2{font-size:clamp(2.3rem,1.3rem + 4vw,5.2rem);font-weight:580;font-stretch:82%;line-height:.95;
+  letter-spacing:-.028em;max-width:14ch;color:#fff}
+.bois .cote{margin-top:1.1rem}
+.bois p{margin-top:1rem;max-width:44ch;color:rgba(255,255,255,.86);font-size:var(--t-lg);line-height:1.55}
+
+/* teintes : du vrai bois à côté des échantillons */
+.finis-cadre{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,2fr);gap:clamp(1rem,2.5vw,2.2rem);align-items:stretch}
+.finis-bois{border-radius:var(--r);overflow:hidden;min-height:100%}
+.finis-bois img{width:100%;height:100%;object-fit:cover}
+.finis-cadre .finis{grid-template-columns:repeat(3,minmax(0,1fr))}
+.finis-cadre .fin .swatch{aspect-ratio:4/3}
+@media (max-width:760px){
+  .finis-cadre{grid-template-columns:1fr}
+  .finis-bois{aspect-ratio:16/9;min-height:0}
+  .finis-cadre .finis{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* étapes : rondins de sapin sous un voile forêt */
+#process{background:
+  linear-gradient(180deg,rgba(28,43,34,.93),rgba(28,43,34,.88) 50%,rgba(28,43,34,.95)),
+  url(/foret/rondins-sapin.webp) center/cover}
+/* contact : vallée dans la brume sous un voile forêt */
+#contact{background:
+  linear-gradient(180deg,rgba(28,43,34,.95),rgba(28,43,34,.86) 45%,rgba(28,43,34,.96)),
+  url(/foret/vallee-brume.webp) center/cover}

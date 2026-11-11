@@ -29,7 +29,8 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
 <section class="hero" id="hero" aria-label={tr('slide.role')}>
   <div class="hero-fonds" aria-hidden="true">
     {slides.map((d, i) => (
-      <img class:list={['hero-fond', i === 0 && 'on']} src={`/photos/${d.photo}`} alt=""
+      <img class:list={['hero-fond', i === 0 && 'on']} alt=""
+           src={d.photo!.startsWith('/') ? d.photo : `/photos/${d.photo}`}
            style={d.cadrage ? `--cadrage:${d.cadrage}` : undefined}
            loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} />
     ))}

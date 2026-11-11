@@ -45,6 +45,25 @@ document.addEventListener('click', (e) => {
   else allerA(cible);
 });
 
+// Profondeur : les images marquées data-parallax="0.2" glissent un peu
+// moins vite que la page. Calculé une fois par image affichée (rAF).
+const plans = [...document.querySelectorAll<HTMLElement>('[data-parallax]')];
+if (plans.length && !reduit) {
+  let prevu = false;
+  const bouger = () => {
+    prevu = false;
+    for (const el of plans) {
+      const r = el.parentElement!.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) continue;
+      // -0.5 quand la section entre par le bas, +0.5 quand elle sort par le haut
+      const p = (innerHeight / 2 - (r.top + r.height / 2)) / (innerHeight + r.height);
+      el.style.transform = `translate3d(0, ${p * Number(el.dataset.parallax) * r.height * 2}px, 0) scale(1.15)`;
+    }
+  };
+  addEventListener('scroll', () => { if (!prevu) { prevu = true; requestAnimationFrame(bouger); } }, { passive: true });
+  bouger();
+}
+
 // La barre est transparente au-dessus de la grande photo d'accueil, puis
 // prend un fond dès qu'on descend.
 if (nav) {

@@ -16,6 +16,13 @@ const tr = t(locale);
       <p class="lead rv" style="--d:120ms">{tr('colors.sub')}</p>
     </div>
 
+    {/* à gauche, du vrai bois ; à droite, les teintes */}
+    <div class="finis-cadre">
+    <div class="finis-bois rv-img">
+      <img src="/foret/rondins-bouleau.webp" alt={tr('bois.alt')} loading="lazy" decoding="async"
+           width="1000" height="1511" />
+    </div>
+    <div>
     <div class="finis">
       {finitions.map((f, i) => (
         <button
@@ -33,5 +40,7 @@ const tr = t(locale);
     </div>
 
     <p class="note rv">{tr('colors.note')}</p>
+    </div>
+    </div>
   </div>
 </section>
