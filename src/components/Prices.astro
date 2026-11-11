@@ -1,0 +1,76 @@
+---
+/**
+ * PRIX INDICATIFS : une carte par type de meuble, avec un prix de départ
+ * et un exemple concret de ce que ce prix représente.
+ * Pas un tarif : un ordre de grandeur pour que le client sache où il se
+ * situe avant de demander un devis. Les montants sont dans data/prix.ts.
+ */
+import type { Locale } from '../site.config';
+import { t, whatsappHref } from '../i18n';
+import { prix } from '../data/prix';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const tr = t(locale);
+
+// fr-BE : « 4 500 € » · nl-BE : « € 4.500 » · en-IE : « €4,500 »
+const eur = new Intl.NumberFormat(locale === 'en' ? 'en-IE' : `${locale}-BE`,
+  { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+---
+<section class="band" id="prix">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow rv">{tr('prices.eyebrow')}</p>
+        <h2 class="rv" style="--d:60ms">{tr('prices.h2')}</h2>
+      </div>
+      <p class="lead rv" style="--d:120ms">{tr('prices.sub')}</p>
+    </div>
+
+    <div class="prices">
+      {prix.map((p, i) => (
+        <article class="price rv" style={`--d:${i * 70}ms`}>
+          <h3>{tr(p.key)}</h3>
+          {p.from === null ? (
+            <p class="amount quote">{tr('prices.quote')}</p>
+          ) : (
+            <p class="amount"><span class="from">{tr('prices.from')}</span> {eur.format(p.from)}</p>
+          )}
+          <p class="ex">{tr(`price.${p.id}.ex`)}</p>
+        </article>
+      ))}
+    </div>
+
+    <div class="prices-foot rv">
+      <p>{tr('prices.note')}</p>
+      <div class="prices-cta">
+        <a class="btn" href="#contact">{tr('prices.cta')}</a>
+        <a class="btn line" href={whatsappHref(locale)} target="_blank" rel="noopener">{tr('direct.wa')}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .prices {
+    display: grid; gap: clamp(.8rem, 1.6vw, 1.4rem);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+  }
+  .price {
+    border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: var(--r);
+    background: var(--surface); padding: 1.3rem 1.25rem 1.4rem;
+    display: flex; flex-direction: column; gap: .55rem;
+  }
+  .price h3 { font-size: var(--t-md); font-weight: 600; }
+  .amount { font-size: clamp(1.5rem, 1.3rem + .8vw, 1.9rem); font-weight: 600; line-height: 1.15;
+            font-variant-numeric: tabular-nums; color: var(--ink); }
+  .amount .from { display: block; font-size: var(--t-xs); font-weight: 500; letter-spacing: .08em;
+                  text-transform: uppercase; color: var(--muted); margin-bottom: .2rem; }
+  .amount.quote { font-size: var(--t-lg); color: var(--soft); }
+  .ex { font-size: var(--t-sm); color: var(--muted); line-height: 1.55; }
+
+  .prices-foot { margin-top: clamp(1.6rem, 3vw, 2.4rem); display: flex; flex-wrap: wrap; align-items: center;
+          justify-content: space-between; gap: 1rem 2rem; }
+  .prices-foot p { max-width: 62ch; font-size: var(--t-sm); color: var(--soft); line-height: 1.6; }
+  .prices-cta { display: flex; flex-wrap: wrap; gap: .6rem; }
+  @media (max-width: 520px) { .prices-cta, .prices-cta .btn { width: 100%; } }
+</style>
