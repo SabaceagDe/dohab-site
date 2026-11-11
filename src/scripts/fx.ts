@@ -2,16 +2,13 @@
  * Les « plus » de la version atelier (dohab.be/experiment) :
  *   1. les titres arrivent mot par mot ;
  *   2. le O du logo suit la souris et grandit sur les photos ;
- *   3. des boutons « aimantés » (ils se penchent vers la souris) ;
- *   4. la bande défilante accélère quand on fait défiler la page.
+ *   3. des boutons « aimantés » (ils se penchent vers la souris).
  *
  * Rien ici n'est nécessaire au site : si ce fichier ne se charge pas, tout
  * reste lisible et cliquable. 2 et 3 n'existent que sur un ordinateur avec
  * une vraie souris ; tout est coupé si le système demande de réduire les
  * animations.
  */
-import { lenis } from './smooth';
-
 const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const souris = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
@@ -117,23 +114,5 @@ if (souris && !reduit) {
       b.style.translate = `${(dx * 14).toFixed(1)}px ${(dy * 10).toFixed(1)}px`;
     });
     b.addEventListener('pointerleave', () => { r = null; b.style.translate = ''; });
-  });
-}
-
-/* ------------------------------------------------------------------
-   4. Bande défilante
-   Elle avance toute seule (animation CSS). Ici on règle juste sa vitesse
-   sur celle du défilement : plus on descend vite, plus elle file, et elle
-   repart dans l'autre sens quand on remonte.
-   ------------------------------------------------------------------ */
-const piste = document.querySelector<HTMLElement>('.ruban-piste');
-const anim = piste?.getAnimations()[0];
-if (anim && lenis) {
-  let calme = 0;
-  lenis.on('scroll', ({ velocity }: { velocity: number }) => {
-    const elan = Math.min(7, Math.abs(velocity) * 0.22);
-    anim.playbackRate = (velocity < 0 ? -1 : 1) * (1 + elan);
-    clearTimeout(calme);
-    calme = window.setTimeout(() => { anim.playbackRate = 1; }, 160);
   });
 }
