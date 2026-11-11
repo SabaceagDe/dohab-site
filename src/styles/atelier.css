@@ -261,10 +261,17 @@ html.lenis,html.lenis body{height:auto}
 /* ---- contact : sur fond forêt ---- */
 #contact h2{color:var(--on-dark)}
 .field label{color:var(--on-dark-soft);text-transform:none;letter-spacing:.01em;font-size:var(--t-sm)}
-.field input,.field textarea,.field select{background:rgba(238,240,234,.06);border-color:var(--on-dark-line);
-  color:var(--on-dark);border-radius:var(--r);transition:border-color .25s,background .25s}
-.field select option{color:var(--ink)}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--oak);background:rgba(238,240,234,.1)}
+/* Champs clairs, texte foncé. Des champs translucides sur le fond sombre
+   devenaient illisibles selon le navigateur : la liste déroulante native,
+   le remplissage automatique (Chrome, Firefox) peignent un fond clair sous
+   un texte resté clair. En clair, c'est lisible partout. */
+.field input,.field textarea,.field select{background:var(--paper);border:1px solid transparent;
+  color:var(--ink);border-radius:var(--r);color-scheme:light;transition:border-color .25s,box-shadow .25s}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--oak);
+  box-shadow:0 0 0 3px rgba(196,153,95,.35)}
+.field.bad input,.field.bad textarea{border-color:#E08A6F;box-shadow:0 0 0 3px rgba(224,138,111,.3)}
+.field.bad label{color:#F2B39E}
 #contact .btn{background:var(--oak);border-color:var(--oak);color:var(--forest)}
 #contact .btn:hover{background:var(--oak-2);border-color:var(--oak-2)}
 .form-note{color:var(--on-dark-soft)}
