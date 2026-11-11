@@ -78,12 +78,44 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
       items.forEach((b, j) => b.setAttribute('aria-pressed', String(j === actif)));
       voir.href = items[actif].dataset.lien!;
       voir.textContent = items[actif].dataset.cta!;
+      ajusterNav();
       // la photo suivante se charge pendant qu'on regarde celle-ci
       const suivante = fonds[(actif + 1) % fonds.length];
       if (suivante.loading === 'lazy') suivante.loading = 'eager';
     };
 
+    // Barre du haut lisible sur toutes les photos : on mesure la luminosité
+    // de la bande du haut de chaque photo (réduite à 48 px de large dans un
+    // <canvas>) ; au-dessus d'une photo claire, la barre passe en texte foncé.
+    const nav = document.querySelector<HTMLElement>('.nav');
+    const clarte = new Map<HTMLImageElement, boolean>();
+    const estClaire = (img: HTMLImageElement): boolean | null => {
+      if (clarte.has(img)) return clarte.get(img)!;
+      if (!img.complete || !img.naturalWidth) return null;
+      const w = 48;
+      const h = Math.max(1, Math.round((w * img.naturalHeight) / img.naturalWidth));
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext('2d', { willReadFrequently: true })!;
+      ctx.drawImage(img, 0, 0, w, h);
+      // la bande où se trouvent les liens : le haut de la photo, de 30 % à 90 % de la largeur
+      const px = ctx.getImageData(Math.round(w * 0.3), 0, Math.round(w * 0.6), Math.max(1, Math.round(h * 0.14))).data;
+      let somme = 0;
+      for (let k = 0; k < px.length; k += 4) somme += 0.2126 * px[k] + 0.7152 * px[k + 1] + 0.0722 * px[k + 2];
+      const claire = somme / (px.length / 4) / 255 > 0.56;
+      clarte.set(img, claire);
+      return claire;
+    };
+    const ajusterNav = () => {
+      const img = fonds[actif];
+      const claire = estClaire(img);
+      if (claire === null) return img.addEventListener('load', ajusterNav, { once: true });
+      nav?.classList.toggle('sur-clair', claire);
+    };
+
     items.forEach((b, j) => b.addEventListener('click', () => montrer(j)));
+    ajusterNav();
     // La barre de la pièce active se remplit en CSS (4,8 s, en pause au
     // survol). Quand son animation se termine, on passe à la suivante :
     // pas de minuteur à synchroniser, et rien ne bouge si le système
