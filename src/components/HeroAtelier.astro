@@ -4,7 +4,7 @@
  *
  * Une photo plein écran qui change toute seule (passage dessiné en WebGL,
  * voir scripts/hero-gl.ts ; simple fondu si le navigateur ne peut pas),
- * un grand titre fixe, et en bas un index des pièces : chaque entrée a sa
+ * une phrase courte par photo, et en bas un index des pièces : chaque entrée a sa
  * barre de progression ; quand elle est pleine, on passe à la pièce
  * suivante. Toucher une pièce l'affiche tout de suite et met à jour le
  * lien « Voir les cuisines / armoires… ».
@@ -25,11 +25,12 @@ const tr = t(locale);
 const slides = [
   ...diapos.filter((d) => d.photo),
   { id: 'foret', photo: '/foret/sous-bois.webp', lien: '#work',
-    cles: { eyebrow: 'sl0.eyebrow', titre: 'hero.h1', sub: 'hero.sub', cta: 'hero.cta2' } }
+    cles: { eyebrow: 'sl0.eyebrow', titre: 'hero.h1', sub: '', cta: 'hero.cta2' } }
 ];
-// le titre arrive avec un <em> autour de sa seconde moitié : on en fait
-// simplement une seconde ligne, sans changer de style
-const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>', '</span>');
+// Chaque photo a sa phrase courte (les mêmes que sur le site normal :
+// « Votre cuisine, en mieux. »). Le titre arrive avec un <em> autour de sa
+// seconde moitié : on en fait simplement une seconde ligne.
+const lignes = (cle: string) => tr(cle).replace('<em>', '<span class="l2">').replace('</em>', '</span>');
 ---
 <section class="hero" id="hero" aria-label={tr('slide.role')}>
   <div class="hero-fonds" aria-hidden="true">
@@ -42,12 +43,22 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
   </div>
 
   <div class="hero-in wrap">
-    {/* le bloc prend la largeur du titre : la cote mesure exactement le titre */}
+    {/* Les titres sont empilés au même endroit ; seul celui de la photo
+        affichée est visible (.on). Le premier est le <h1> de la page. Le bloc
+        prend la largeur du titre le plus long : la cote le mesure. */}
     <div class="hero-bloc">
-      <h1 class="hero-titre" set:html={titre} />
+      <div class="hero-titres">
+        {slides.map((d, i) => i === 0
+          ? <h1 class="hero-titre on" set:html={lignes(d.cles.titre)} />
+          : <h2 class="hero-titre" aria-hidden="true" set:html={lignes(d.cles.titre)} />)}
+      </div>
       <div class="cote" aria-hidden="true"><span>{tr('hero.eyebrow')}</span></div>
     </div>
-    <p class="hero-sub">{tr('hero.sub')}</p>
+    <div class="hero-subs">
+      {slides.map((d, i) => (
+        <p class:list={['hero-sub', i === 0 && 'on']} aria-hidden={i === 0 ? undefined : 'true'}>{d.cles.sub ? tr(d.cles.sub) : ''}</p>
+      ))}
+    </div>
     <div class="hero-cta">
       <a class="btn oak" href="#contact">{tr('hero.cta1')}</a>
       <a class="btn clair" id="heroVoir" href={slides[0].lien}>{tr(slides[0].cles.cta)}</a>
@@ -73,6 +84,8 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
     const fonds = [...hero.querySelectorAll<HTMLImageElement>('.hero-fond')];
     const items = [...hero.querySelectorAll<HTMLButtonElement>('.hi')];
     const voir = document.getElementById('heroVoir') as HTMLAnchorElement;
+    const titres = [...hero.querySelectorAll<HTMLElement>('.hero-titre')];
+    const subs = [...hero.querySelectorAll<HTMLElement>('.hero-sub')];
     let actif = 0;
     // passage d'une photo à l'autre dessiné en WebGL (scripts/hero-gl.ts) ;
     // null si le navigateur ne peut pas : il reste alors le fondu des <img>
@@ -83,6 +96,11 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
       fonds.forEach((f, j) => f.classList.toggle('on', j === actif));
       gl?.aller(actif);
       items.forEach((b, j) => b.setAttribute('aria-pressed', String(j === actif)));
+      // la phrase de la photo affichée (les autres sont cachées, aussi aux lecteurs d'écran)
+      for (const liste of [titres, subs]) liste.forEach((el, j) => {
+        el.classList.toggle('on', j === actif);
+        if (j === actif) el.removeAttribute('aria-hidden'); else el.setAttribute('aria-hidden', 'true');
+      });
       voir.href = items[actif].dataset.lien!;
       voir.textContent = items[actif].dataset.cta!;
       ajusterNav();
