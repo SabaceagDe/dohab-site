@@ -82,6 +82,8 @@ const titre = tr('hero.h1').replace('<em>', '<span class="l2">').replace('</em>'
       // la photo suivante se charge pendant qu'on regarde celle-ci
       const suivante = fonds[(actif + 1) % fonds.length];
       if (suivante.loading === 'lazy') suivante.loading = 'eager';
+      // … et se décode à l'avance, pour que le fondu ne saccade pas
+      suivante.decode?.().catch(() => {});
     };
 
     // Barre du haut lisible sur toutes les photos : on mesure la luminosité

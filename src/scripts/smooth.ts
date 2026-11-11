@@ -15,13 +15,9 @@ import Lenis from 'lenis';
 const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const nav = document.querySelector<HTMLElement>('.nav');
 
-export const lenis = reduit ? null : new Lenis({ lerp: 0.09, wheelMultiplier: 0.9 });
+// autoRaf : Lenis se cale lui-même sur le rafraîchissement de l'écran
+export const lenis = reduit ? null : new Lenis({ lerp: 0.1, autoRaf: true });
 (window as unknown as { __defil?: Lenis | null }).__defil = lenis;
-
-if (lenis) {
-  const boucle = (t: number) => { lenis.raf(t); requestAnimationFrame(boucle); };
-  requestAnimationFrame(boucle);
-}
 
 /** Hauteur de la barre collante, pour ne pas cacher le titre de la section. */
 export const decalage = () => -((nav?.offsetHeight ?? 0) + 8);
@@ -46,9 +42,12 @@ document.addEventListener('click', (e) => {
 });
 
 // Profondeur : les images marquées data-parallax="0.2" glissent un peu
-// moins vite que la page. Calculé une fois par image affichée (rAF).
+// moins vite que la page. Les navigateurs récents le font tout seuls en CSS
+// (animations pilotées par le défilement, voir atelier.css) : ce calcul en
+// JavaScript ne sert que de secours pour les autres.
+const cssDefilement = CSS.supports('animation-timeline: view()');
 const plans = [...document.querySelectorAll<HTMLElement>('[data-parallax]')];
-if (plans.length && !reduit) {
+if (plans.length && !reduit && !cssDefilement) {
   let prevu = false;
   const bouger = () => {
     prevu = false;
@@ -62,6 +61,21 @@ if (plans.length && !reduit) {
   };
   addEventListener('scroll', () => { if (!prevu) { prevu = true; requestAnimationFrame(bouger); } }, { passive: true });
   bouger();
+}
+
+// Les photos chargées en cours de route (galerie, « Voir plus »…) arrivent
+// en fondu au lieu d'apparaître d'un coup.
+if (!reduit) {
+  const fondu = (img: HTMLImageElement) => {
+    if (img.complete) return;
+    img.style.opacity = '0';
+    img.addEventListener('load', () => {
+      img.style.opacity = '';
+      img.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 550, easing: 'ease-out' });
+    }, { once: true });
+    img.addEventListener('error', () => { img.style.opacity = ''; }, { once: true });
+  };
+  document.querySelectorAll<HTMLImageElement>('main img[loading="lazy"]:not(.hero-fond)').forEach(fondu);
 }
 
 // La barre est transparente au-dessus de la grande photo d'accueil, puis
