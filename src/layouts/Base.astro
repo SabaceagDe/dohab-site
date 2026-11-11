@@ -1,7 +1,6 @@
 ---
 import '../styles/tokens.css';
 import '../styles/global.css';
-import '../styles/atelier.css';
 import { site, type Locale } from '../site.config';
 import { t, locales, localeHref, legalHref } from '../i18n';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
@@ -11,8 +10,12 @@ interface Props {
   title?: string;
   description?: string;
   page?: 'home' | 'legal';
+  /** page à ne pas montrer dans Google (ex. /experiment) */
+  noindex?: boolean;
+  /** classe ajoutée à <body> (ex. 'accueil' pour la version atelier) */
+  bodyClass?: string;
 }
-const { locale, title, description, page = 'home' } = Astro.props;
+const { locale, title, description, page = 'home', noindex = false, bodyClass } = Astro.props;
 const tr = t(locale);
 
 const pageTitle = title ?? `${site.name} — ${tr('hero.eyebrow')}`;
@@ -68,6 +71,7 @@ const jsonLd = {
     <meta name="theme-color" content="#5D6E51" />
 
     <link rel="canonical" href={canonique} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
@@ -105,13 +109,10 @@ const jsonLd = {
       <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     )}
   </head>
-  <body class:list={[page === 'home' && 'accueil']}>
+  <body class={bodyClass}>
     <slot />
     <WhatsAppButton locale={locale} />
 
-    <script>
-      import '../scripts/smooth';
-    </script>
     <script>
       // Apparitions au défilement. Le voile est posé sur l'image et non sur
       // son conteneur : un conteneur découpé a une surface nulle et

@@ -12,7 +12,7 @@
  */
 export interface Diapo {
   id: string;
-  photo?: string;      // fichier dans public/photos/, ou chemin complet ('/foret/…')
+  photo?: string;      // fichier dans public/photos/
   dessin?: string;     // fichier dans public/illustrations/ — diapo claire
   // Sur ordinateur la diapo est très large et peu haute : une photo prise
   // en portrait n'en montre qu'une bande. `cadrage` choisit laquelle —
@@ -65,12 +65,5 @@ export const diapos: Diapo[] = [
     dessin: 'escalier-quart-tournant.svg',
     lien: '#escaliers',
     cles: { eyebrow: 'sl4.eyebrow', titre: 'sl4.h', sub: 'sl4.sub', cta: 'sl4.cta' }
-  },
-  {
-    // la forêt en dernier : on finit sur le bois d'où tout part
-    id: 'foret',
-    photo: '/foret/sous-bois.webp',
-    lien: '#work',
-    cles: { eyebrow: 'sl0.eyebrow', titre: 'hero.h1', sub: 'hero.sub', cta: 'hero.cta2' }
   }
 ];

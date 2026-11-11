@@ -6,8 +6,7 @@
    Idée : le bois, de la forêt jusqu'à la pose.
    - Couleurs : vert forêt profond pour les bandes sombres, lichen clair
      pour les bandes claires, chêne pour les accents (prix, boutons forts).
-   - Titres : NeverMind (police libre de XMind, licence SIL OFL, servie
-     depuis public/fonts comme Figtree).
+   - Titres : Figtree et mêmes tailles que le site normal.
    - Fil conducteur : la ligne de cote des plans de menuisier (|—— ——|),
      sous le grand titre et comme règle graduée au-dessus des étapes.
    - Moins de blanc : bandes moins hautes, grilles plus serrées.
@@ -35,24 +34,11 @@
   --on-dark-soft:rgba(238,240,234,.74);
   --on-dark-line:rgba(238,240,234,.16);
 
-  --f-d:"NeverMind","Figtree",sans-serif;
-  --t-h1:clamp(2.6rem,1.3rem + 4.9vw,6rem);
-  --t-h2:clamp(1.95rem,1.2rem + 2.5vw,3.6rem);
-  --t-h3:clamp(1.15rem,1.02rem + .5vw,1.45rem);
+  --f-d:var(--f);         /* titres : Figtree, comme le site normal */
   --r:4px;
   --ease:cubic-bezier(.2,.75,.2,1);
 }
 ::selection{background:var(--oak);color:var(--forest)}
-
-/* NeverMind — https://github.com/xmindltd/nevermind (SIL Open Font License,
-   texte dans public/fonts/nevermind-OFL.txt). Réduite aux caractères latins
-   (français, néerlandais, anglais) : ~17 Ko par graisse. */
-@font-face{font-family:"NeverMind";font-weight:500;font-style:normal;font-display:swap;
-  src:url("/fonts/nevermind-medium.woff2") format("woff2")}
-@font-face{font-family:"NeverMind";font-weight:600;font-style:normal;font-display:swap;
-  src:url("/fonts/nevermind-demibold.woff2") format("woff2")}
-@font-face{font-family:"NeverMind";font-weight:700;font-style:normal;font-display:swap;
-  src:url("/fonts/nevermind-bold.woff2") format("woff2")}
 
 /* Lenis (défilement doux) — styles requis par la bibliothèque */
 html.lenis,html.lenis body{height:auto}
@@ -61,9 +47,6 @@ html.lenis,html.lenis body{height:auto}
 .lb-ouverte{overflow:hidden}
 
 /* ---- titres ---- */
-h1,h2,h3{font-family:var(--f-d);font-optical-sizing:auto}
-h2{font-weight:600;letter-spacing:-.025em;line-height:1.04}
-h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
 
 /* ---- bandes : moins hautes ---- */
 .band{padding-block:clamp(2.8rem,6vw,5.5rem)}
@@ -97,7 +80,6 @@ h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
 /* ---- navigation : sombre, transparente au-dessus de la photo d'accueil ---- */
 .nav{background:rgba(28,43,34,.94);border-bottom:1px solid transparent;color:var(--on-dark);
   transition:background .45s var(--ease),backdrop-filter .45s}
-.brand b{font-family:var(--f-d);font-weight:700;letter-spacing:.12em;font-size:1.2rem}
 .nav-links a{color:var(--on-dark-soft)}
 .nav-links a:hover{color:#fff;border-bottom-color:var(--oak)}
 .lang a{color:var(--on-dark-soft)}
@@ -125,8 +107,8 @@ h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
     linear-gradient(180deg,rgba(12,18,14,.35) 0%,rgba(12,18,14,0) 28%,rgba(12,18,14,.25) 62%,rgba(12,18,14,.86) 100%)}
 .hero-in{position:relative;z-index:2;align-self:end;width:100%;padding-top:8rem;padding-bottom:clamp(1.6rem,3.5vw,2.8rem)}
 .hero-bloc{display:inline-grid;max-width:100%}
-.hero-titre{font-size:var(--t-h1);font-weight:600;line-height:1;letter-spacing:-.032em;
-  max-width:13ch;color:#fff;text-wrap:balance}
+.hero-titre{font-size:var(--t-h1);font-weight:400;line-height:1.12;
+  max-width:22ch;color:#fff;text-wrap:balance}
 .hero-titre .l2{display:block}
 
 /* la cote : |—— Mobilier sur mesure ——| sur toute la largeur du titre */
@@ -175,7 +157,6 @@ h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
     rgba(12,18,14,.5) 42%,rgba(12,18,14,.92) 100%)}
   .hero-fond{object-position:var(--cadrage,50% 60%)}
   .hero-in{padding-top:9rem}
-  .hero-titre{max-width:12ch}
   .hero-sub{display:none}
   .hero-cta .btn{flex:1 1 auto}
   .hero-index{display:flex;overflow-x:auto;scrollbar-width:none;gap:1rem;
@@ -202,8 +183,7 @@ h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
 .tile{aspect-ratio:3/4;border-radius:var(--r)}
 .tile img{transition:transform 1.1s var(--ease)}
 .tile:hover img{transform:scale(1.06)}
-.tile span{font-family:var(--f-d);font-size:clamp(1.15rem,1rem + .7vw,1.6rem);font-weight:600;
-  letter-spacing:-.01em;padding:1.1rem 1.2rem}
+.tile span{padding:1rem 1.1rem}
 .tile span::after{content:"";display:block;width:2.2rem;height:1.5px;margin-top:.55rem;background:var(--oak-2);
   transform-origin:left;transition:transform .5s var(--ease)}
 .tile:hover span::after{transform:scaleX(2)}
@@ -247,7 +227,7 @@ h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
   background:repeating-linear-gradient(90deg,var(--oak) 0 1px,transparent 1px 2%)  top/100% 7px no-repeat,
              repeating-linear-gradient(90deg,var(--oak) 0 1.5px,transparent 1.5px 20%) top/100% 14px no-repeat}
 .step .num{width:auto;height:auto;background:none;border-radius:0;color:var(--oak-2);
-  font-family:var(--f-d);font-size:clamp(2rem,1.5rem + 1.6vw,3rem);font-weight:700;line-height:1}
+  font-size:clamp(1.5rem,1.3rem + .8vw,2.1rem);font-weight:500;line-height:1}
 .step h3{color:var(--on-dark);font-size:var(--t-h3);margin-top:.5rem}
 .step p{color:var(--on-dark-soft)}
 #process h2{color:var(--on-dark)}
@@ -320,8 +300,8 @@ h3{font-weight:600;letter-spacing:-.005em;line-height:1.15}
   background:linear-gradient(180deg,rgba(12,18,14,.15) 0%,rgba(12,18,14,0) 35%,rgba(12,18,14,.72) 100%)}
 .bois-in{position:relative;z-index:2;width:100%;padding-block:clamp(2.5rem,6vw,5rem)}
 .bois-bloc{display:inline-grid;max-width:100%}
-.bois h2{font-size:clamp(2.3rem,1.3rem + 4vw,5.2rem);font-weight:600;line-height:1;
-  letter-spacing:-.018em;max-width:14ch;color:#fff}
+.bois h2{font-size:var(--t-h1);font-weight:400;line-height:1.12;
+  max-width:20ch;color:#fff}
 .bois .cote{margin-top:1.1rem}
 .bois p{margin-top:1rem;max-width:44ch;color:rgba(255,255,255,.86);font-size:var(--t-lg);line-height:1.55}
 

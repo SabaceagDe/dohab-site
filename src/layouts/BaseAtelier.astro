@@ -1,0 +1,19 @@
+---
+/**
+ * Mise en page de la version « atelier » (dohab.be/experiment).
+ * C'est la mise en page normale (Base.astro) + le style atelier + le
+ * défilement doux. Comme atelier.css n'est importé qu'ici, il ne touche
+ * jamais les pages normales du site.
+ */
+import Base from './Base.astro';
+import '../styles/atelier.css';
+import type { Locale } from '../site.config';
+interface Props { locale: Locale; title?: string }
+const { locale, title } = Astro.props;
+---
+<Base locale={locale} title={title} noindex bodyClass="accueil">
+  <slot />
+</Base>
+<script>
+  import '../scripts/smooth';
+</script>

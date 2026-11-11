@@ -1,0 +1,51 @@
+---
+// VERSION « ATELIER » — EXPÉRIENCE DE STYLE, en français seulement.
+// Visible sur dohab.be/experiment pour que le patron la voie avant de
+// décider ; elle n'est pas indexée par Google (noindex) et aucun lien du
+// site n'y mène. Mêmes données que l'accueil (galerie, prix).
+// Le style vient de layouts/BaseAtelier.astro → styles/atelier.css.
+export const prerender = false;
+import BaseAtelier from '../../layouts/BaseAtelier.astro';
+import Nav from '../../components/Nav.astro';
+import HeroAtelier from '../../components/HeroAtelier.astro';
+import RoomTiles from '../../components/RoomTiles.astro';
+import Gallery from '../../components/Gallery.astro';
+import Bois from '../../components/Bois.astro';
+import Feature from '../../components/Feature.astro';
+import Stairs from '../../components/Stairs.astro';
+import Finishes from '../../components/Finishes.astro';
+import Steps from '../../components/Steps.astro';
+import Prices from '../../components/Prices.astro';
+import About from '../../components/About.astro';
+import Contact from '../../components/Contact.astro';
+import Footer from '../../components/Footer.astro';
+import { loadVitrine } from '../../lib/vitrine';
+
+const locale = 'fr' as const;
+const items = await loadVitrine(Astro.locals.runtime?.env?.DB);
+const priced = items.filter((i) => i.price);
+---
+<BaseAtelier locale={locale}>
+  <Nav locale={locale} prix={priced.length > 0} />
+  <main>
+    <HeroAtelier locale={locale} />
+    <RoomTiles locale={locale} />
+    <Gallery locale={locale} items={items} paquets />
+    <Bois locale={locale} />
+
+    <section class="band tint">
+      <div class="wrap">
+        <Feature locale={locale} prefix="feat1" photo="rangement-colonnes-noires.webp" />
+        <Feature locale={locale} prefix="feat2" photo="cuisine-noyer-ilot-noir.webp" flip />
+      </div>
+    </section>
+
+    <Stairs locale={locale} />
+    <Finishes locale={locale} bois />
+    <Steps locale={locale} />
+    {priced.length > 0 && <Prices locale={locale} items={priced} />}
+    <About locale={locale} photo="salon-panneau-chene.webp" />
+    <Contact locale={locale} />
+  </main>
+  <Footer locale={locale} />
+</BaseAtelier>

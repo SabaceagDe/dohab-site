@@ -12,8 +12,9 @@ import { finitionById } from '../data/finitions';
 import { roomKey } from '../lib/realisations';
 import { present, type PublicRealisation } from '../lib/vitrine';
 
-interface Props { locale: Locale; items: PublicRealisation[] }
-const { locale, items } = Astro.props;
+// paquets : n'afficher que quelques lignes, avec « Voir plus » (version atelier)
+interface Props { locale: Locale; items: PublicRealisation[]; paquets?: boolean }
+const { locale, items, paquets = false } = Astro.props;
 const tr = t(locale);
 
 // un filtre par pièce présente dans la galerie, dans l'ordre du menu
@@ -46,7 +47,7 @@ const filters = [
       </span>
     </div>
 
-    <div class="gal" id="gal">
+    <div class="gal" id="gal" data-paquets={paquets ? "1" : undefined}>
       {items.map((r, i) => {
         const f = r.finish ? finitionById(r.finish) : undefined;
         const p = present(r, locale);
@@ -77,9 +78,11 @@ const filters = [
 
     <p class="empty" id="empty" style="display:none">{tr('work.empty')}</p>
     {/* on ne montre qu'une partie de la galerie ; le bouton en ajoute */}
-    <div class="plus-wrap">
-      <button type="button" class="btn line" id="galPlus" hidden data-left={tr('work.left')}>{tr('work.more')}</button>
-    </div>
+    {paquets && (
+      <div class="plus-wrap">
+        <button type="button" class="btn line" id="galPlus" hidden data-left={tr('work.left')}>{tr('work.more')}</button>
+      </div>
+    )}
   </div>
 </section>
 
@@ -95,7 +98,6 @@ const filters = [
 
 <script>
   import { openLightbox } from '../scripts/lightbox';
-  import { allerA } from '../scripts/smooth';
 
   // ---- filtrage : pièce (chips + tuiles) et teinte (pastilles) ----
   const gal = document.getElementById('gal')!;
@@ -109,8 +111,16 @@ const filters = [
 
   // Une galerie de 70 photos d'affilée, c'est un mur : on en montre une
   // rangée de quelques lignes, puis « Voir plus » en ajoute autant.
-  const plus = document.getElementById('galPlus') as HTMLButtonElement;
-  const pas = () => (matchMedia('(max-width: 900px)').matches ? 8 : 12);
+  const plus = document.getElementById('galPlus') as HTMLButtonElement | null;   // absent sur le site normal
+  // sans data-paquets (site normal) : pas de limite, tout s'affiche
+  const pas = () => (!gal.dataset.paquets ? Infinity : matchMedia('(max-width: 900px)').matches ? 8 : 12);
+  // défilement doux de la version atelier s'il est chargé, sinon natif
+  const allerA = (el: HTMLElement) => {
+    const d = (window as unknown as { __defil?: { scrollTo(el: HTMLElement, o: object): void } | null }).__defil;
+    const nav = document.querySelector<HTMLElement>('.nav');
+    if (d) d.scrollTo(el, { offset: -((nav?.offsetHeight ?? 0) + 8), duration: 1.2 });
+    else el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   let limite = pas();
 
   function apply() {
@@ -125,12 +135,15 @@ const filters = [
     }
     empty.style.display = shown ? 'none' : 'block';
     activeColor.classList.toggle('on', Boolean(finish));
-    const reste = shown - limite;
-    plus.hidden = reste <= 0;
-    plus.textContent = `${plus.dataset.text ??= plus.textContent!.trim()} (${reste} ${plus.dataset.left})`;
+    if (plus) {
+      const reste = shown - limite;
+      // style="display" plutôt que hidden : la classe .btn l'emporterait sur [hidden]
+      plus.style.display = reste > 0 ? '' : 'none';
+      plus.textContent = `${plus.dataset.text ??= plus.textContent!.trim()} (${reste} ${plus.dataset.left})`;
+    }
   }
 
-  plus.addEventListener('click', () => {
+  plus?.addEventListener('click', () => {
     const avant = gal.querySelectorAll('.card:not(.hide)').length;
     limite += pas();
     apply();
