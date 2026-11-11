@@ -23,7 +23,12 @@ const versLangue = page === 'legal' ? legalHref : localeHref;
 ---
 <header class="nav">
   <div class="wrap nav-in">
-    <a class="brand" href={localeHref(locale)}><b>DO&nbsp;HAB</b></a>
+    {/* deux versions du logo : lettres foncées (fond clair) et claires (fond
+        sombre) ; le CSS affiche celle qui convient (global.css / atelier.css) */}
+    <a class="brand" href={localeHref(locale)}>
+      <img class="logo logo-fonce" src="/logo/dohab-mark-fonce.webp" alt="DO HAB" width="531" height="125" />
+      <img class="logo logo-clair" src="/logo/dohab-mark-clair.webp" alt="" width="531" height="125" />
+    </a>
     <nav class="nav-links">
       {/* Le menu annonce des pièces, pas des sections : un clic descend à
           la galerie ET applique le filtre. Le "-cuisine" de l'ancre est lu

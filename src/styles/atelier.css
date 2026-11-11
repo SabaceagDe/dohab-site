@@ -87,9 +87,25 @@ html.lenis,html.lenis body{height:auto}
 .lang a[data-active="true"]{background:rgba(238,240,234,.12);color:var(--oak-2)}
 .nav .btn{background:var(--oak);border-color:var(--oak);color:var(--forest)}
 .nav .btn:hover{background:var(--oak-2);border-color:var(--oak-2)}
-.accueil .nav{position:fixed;left:0;right:0;top:0;backdrop-filter:none;
+.accueil .nav{position:fixed;left:0;right:0;top:0;backdrop-filter:none;border-bottom:0;
   background:linear-gradient(180deg,rgba(12,18,14,.6),rgba(12,18,14,0))}
 .accueil .nav.solide{background:rgba(28,43,34,.94);backdrop-filter:blur(14px)}
+
+/* logo : version claire sur fond sombre… */
+.logo-clair{display:block !important}
+.logo-fonce{display:none !important}
+.brand .logo{height:34px}
+/* …sauf quand la barre transparente passe au-dessus d'une photo claire :
+   le script du haut de page mesure la luminosité du haut de chaque photo
+   et ajoute .sur-clair à la barre → texte et logo foncés */
+.accueil .nav{transition:background .45s var(--ease),color .45s}
+.accueil .nav.sur-clair:not(.solide){background:linear-gradient(180deg,rgba(246,247,243,.82),rgba(246,247,243,0))}
+.accueil .nav.sur-clair:not(.solide) :is(.nav-links a,.lang a){color:rgba(27,34,29,.82)}
+.accueil .nav.sur-clair:not(.solide) :is(.nav-links a,.lang a):hover{color:var(--ink)}
+.accueil .nav.sur-clair:not(.solide) .lang a[data-active="true"]{background:rgba(27,34,29,.08);color:var(--forest)}
+.accueil .nav.sur-clair:not(.solide) .logo-clair{display:none !important}
+.accueil .nav.sur-clair:not(.solide) .logo-fonce{display:block !important}
+.nav-links a,.lang a{transition:color .45s}
 
 /* ==================================================================
    HAUT DE PAGE
@@ -104,7 +120,7 @@ html.lenis,html.lenis body{height:auto}
 .hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:
     linear-gradient(90deg,rgba(12,18,14,.72) 0%,rgba(12,18,14,.3) 55%,rgba(12,18,14,0) 82%),
-    linear-gradient(180deg,rgba(12,18,14,.35) 0%,rgba(12,18,14,0) 28%,rgba(12,18,14,.25) 62%,rgba(12,18,14,.86) 100%)}
+    linear-gradient(180deg,rgba(12,18,14,0) 0%,rgba(12,18,14,0) 28%,rgba(12,18,14,.25) 62%,rgba(12,18,14,.86) 100%)}
 .hero-in{position:relative;z-index:2;align-self:end;width:100%;padding-top:8rem;padding-bottom:clamp(1.6rem,3.5vw,2.8rem)}
 .hero-bloc{display:inline-grid;max-width:100%}
 .hero-titre{font-size:var(--t-h1);font-weight:400;line-height:1.12;
@@ -153,7 +169,7 @@ html.lenis,html.lenis body{height:auto}
 
 @media (max-width:860px){
   .hero{min-height:max(620px,100svh)}
-  .hero::after{background:linear-gradient(180deg,rgba(12,18,14,.5) 0%,rgba(12,18,14,.12) 22%,
+  .hero::after{background:linear-gradient(180deg,rgba(12,18,14,0) 0%,rgba(12,18,14,0) 22%,
     rgba(12,18,14,.5) 42%,rgba(12,18,14,.92) 100%)}
   .hero-fond{object-position:var(--cadrage,50% 60%)}
   .hero-in{padding-top:9rem}
@@ -263,7 +279,7 @@ html.lenis,html.lenis body{height:auto}
 .foot{background:var(--forest-2);border-top:0;color:var(--on-dark)}
 .foot p,.foot li{color:var(--on-dark-soft)}
 .foot .k{color:var(--on-dark);text-transform:none;letter-spacing:.01em}
-.foot b{font-family:var(--f-d)}
+.foot-logo{width:200px}
 .foot a:hover,.foot ul a:hover{color:var(--oak-2)}
 .legal{border-top-color:var(--on-dark-line);color:rgba(238,240,234,.55)}
 

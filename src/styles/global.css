@@ -46,6 +46,10 @@ section[id]{scroll-margin-top:84px}
 .nav-in{display:flex;align-items:center;gap:1.6rem;height:76px}
 .brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;margin-right:auto}
 .brand b{font-weight:600;letter-spacing:.16em;font-size:1.02rem}
+/* logo : version aux lettres foncées sur le site normal (fond clair) */
+.brand .logo{display:block;height:30px;width:auto}
+.foot-logo{display:block;width:180px;height:auto}
+.logo-clair{display:none !important}
 .nav-links{display:flex;gap:1.9rem}
 .nav-links a{font-size:var(--t-sm);font-weight:400;text-decoration:none;color:var(--soft);
   padding-block:.2rem;border-bottom:1px solid transparent;transition:.25s}
