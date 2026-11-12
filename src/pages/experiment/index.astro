@@ -16,7 +16,6 @@ import Stairs from '../../components/Stairs.astro';
 import Finishes from '../../components/Finishes.astro';
 import Steps from '../../components/Steps.astro';
 import Prices from '../../components/Prices.astro';
-import About from '../../components/About.astro';
 import Contact from '../../components/Contact.astro';
 import Footer from '../../components/Footer.astro';
 import { loadVitrine } from '../../lib/vitrine';
@@ -26,7 +25,7 @@ const items = await loadVitrine(Astro.locals.runtime?.env?.DB);
 const priced = items.filter((i) => i.price);
 ---
 <BaseAtelier locale={locale}>
-  <Nav locale={locale} prix={priced.length > 0} />
+  <Nav locale={locale} prix={priced.length > 0} apropos={false} />
   <main>
     <HeroAtelier locale={locale} />
     <RoomTiles locale={locale} />
@@ -44,7 +43,10 @@ const priced = items.filter((i) => i.price);
     <Finishes locale={locale} bois />
     <Steps locale={locale} />
     {priced.length > 0 && <Prices locale={locale} items={priced} />}
-    <About locale={locale} photo="salon-panneau-chene.webp" />
+    {/* Section « À propos » retirée pour l'instant. Pour la remettre :
+        importer components/About.astro, remettre ici
+        <About locale={locale} photo="salon-panneau-chene.webp" />
+        et enlever apropos={false} sur <Nav> plus haut. */}
     <Contact locale={locale} />
   </main>
   <Footer locale={locale} />
