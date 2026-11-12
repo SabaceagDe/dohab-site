@@ -2,7 +2,7 @@
 /**
  * BANDE « LE BOIS » — une respiration plein écran entre la galerie et les
  * meubles mis en avant : la forêt en fond (elle glisse un peu moins vite que
- * la page, effet de profondeur), une phrase, la ligne de cote.
+ * la page, effet de profondeur) et une phrase.
  * Photo : public/foret/collines-sapins.webp (libre de droits).
  */
 import type { Locale } from '../site.config';
@@ -17,7 +17,6 @@ const tr = t(locale);
   <div class="wrap bois-in">
     <div class="bois-bloc rv">
       <h2>{tr('bois.h')}</h2>
-      <div class="cote nue" aria-hidden="true"></div>
       <p>{tr('bois.sub')}</p>
     </div>
   </div>

@@ -9,9 +9,6 @@
  * suivante. Toucher une pièce l'affiche tout de suite et met à jour le
  * lien « Voir les cuisines / armoires… ».
  *
- * Sous le titre, une ligne de cote (comme sur un plan de menuisier) :
- * c'est le fil conducteur visuel du site — tout est fait sur mesure.
- *
  * Les photos viennent de src/data/heroSlides.ts (seules les diapos avec
  * `photo` sont utilisées ici), puis la forêt, ajoutée juste en dessous.
  */
@@ -44,15 +41,13 @@ const lignes = (cle: string) => tr(cle).replace('<em>', '<span class="l2">').rep
 
   <div class="hero-in wrap">
     {/* Les titres sont empilés au même endroit ; seul celui de la photo
-        affichée est visible (.on). Le premier est le <h1> de la page. Le bloc
-        prend la largeur du titre le plus long : la cote le mesure. */}
+        affichée est visible (.on). Le premier est le <h1> de la page. */}
     <div class="hero-bloc">
       <div class="hero-titres">
         {slides.map((d, i) => i === 0
           ? <h1 class="hero-titre on" set:html={lignes(d.cles.titre)} />
           : <h2 class="hero-titre" aria-hidden="true" set:html={lignes(d.cles.titre)} />)}
       </div>
-      <div class="cote" aria-hidden="true"><span>{tr('hero.eyebrow')}</span></div>
     </div>
     <div class="hero-subs">
       {slides.map((d, i) => (
