@@ -13,8 +13,10 @@ import { t, locales, localeHref, legalHref } from '../i18n';
  *                perdre la page.
  */
 // prix : la section « Prix » existe sur la page (au moins un prix affiché)
-interface Props { locale: Locale; page?: 'home' | 'legal'; prix?: boolean }
-const { locale, page = 'home', prix = false } = Astro.props;
+// apropos : la section « À propos » existe sur la page (false sur /experiment
+//           tant qu'elle y est retirée, sinon le lien ne mènerait nulle part)
+interface Props { locale: Locale; page?: 'home' | 'legal'; prix?: boolean; apropos?: boolean }
+const { locale, page = 'home', prix = false, apropos = true } = Astro.props;
 const tr = t(locale);
 
 const base = page === 'home' ? '' : localeHref(locale);
@@ -40,7 +42,7 @@ const versLangue = page === 'legal' ? legalHref : localeHref;
       <a href={ancre('work-bain')}>{tr('filter.bath')}</a>
       <a href={ancre('escaliers')}>{tr('nav.stairs')}</a>
       {prix && <a href={ancre('prix')}>{tr('nav.prices')}</a>}
-      <a href={ancre('about')}>{tr('nav.about')}</a>
+      {apropos && <a href={ancre('about')}>{tr('nav.about')}</a>}
     </nav>
 
     {/* De vraies URL, plus un bouton JavaScript : chaque langue est
